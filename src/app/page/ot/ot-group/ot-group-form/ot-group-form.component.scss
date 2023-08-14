@@ -1,0 +1,19 @@
+.ot-type-exist {
+  margin-top: 5px;
+  padding: 5px 8px;
+  font-size: 12px;
+  background-color: white;
+  border: #dddddd 2px solid;
+
+  &__title {
+    color: #808080;
+  }
+
+
+  &__entry {
+    color: #0e335a;
+    &:hover{
+      background-color: #efefef;
+    }
+  }
+}

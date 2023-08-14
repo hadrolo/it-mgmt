@@ -47,6 +47,7 @@ const routes: Routes = [
             {path: 'dashboard/user/:uid', component: UserMgmtFormComponent},
             {path: 'user/:user', component: UserMgmtFormComponent},
             {path: 'right', loadChildren: () => import('./../framework/modules/right/right.module').then(m => m.RightModule), data: {rights: ['Right/openRights']}, canActivate: [RightGuard]},
+            {path: 'ot', loadChildren: () => import('./ot/ot.module').then(m => m.OtModule)},
             {path: 'log', component: LogfileViewerComponent},
         ]
     }

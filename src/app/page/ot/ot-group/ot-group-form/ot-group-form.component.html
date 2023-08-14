@@ -1,0 +1,88 @@
+<div *ngIf="view.setting.formViewMode == OtViewMode.GROUP_INSERT || view.setting.formViewMode == OtViewMode.GROUP_EDIT" [formGroup]="otGroupForm" class="pb-3">
+    <div class="row">
+        <div class="col-auto">
+            <label>Level</label>
+            <input class="form-control validation-field" type="text" formControlName="level" autocomplete="off">
+            <small class="text-danger" *ngIf="otGroupForm.controls.level.touched">
+                <span class="text-danger" *ngIf="otGroupForm.controls.level.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+            </small>
+        </div>
+        <div class="col">
+            <label>OTTID</label>
+            <div class="d-flex">
+                <div *ngIf="!view.setting.insertOtType">
+                    <select class="form-select validation-field" formControlName="ottid" autocomplete="off" style="min-width: 200px !important;">
+                        <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                        <option *ngFor="let type of view.data.otTypes" [ngValue]="type.OTTID">
+                            {{type.name}}
+                        </option>
+                    </select>
+                    <small class="text-danger" *ngIf="otGroupForm.controls.ottid.touched">
+                        <span class="text-danger" *ngIf="otGroupForm.controls.ottid.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+                    </small>
+                </div>
+                <div *ngIf="view.setting.insertOtType">
+                    <input (keyup)="checkTypeExist()" class="form-control validation-field" type="text" formControlName="ottype" autocomplete="off">
+                    <div *ngIf="view.data.otTypeLike?.length > 0" class="ot-type-exist">
+                        <div class="ot-type-exist__title">Typ gefunden:</div>
+                        <div class="d-flex ot-type-exist__entry" *ngFor="let type of view.data.otTypeLike" (click)="useTypeFound(type.OTTID)">
+                            <div class="pr-2">{{type.name}}</div>
+                        </div>
+                    </div>
+                    <small class="text-danger" *ngIf="otGroupForm.controls.ottype.touched">
+                        <span class="text-danger" *ngIf="otGroupForm.controls.ottype.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+                    </small>
+                </div>
+                <div *ngIf="!view.setting.insertOtType" class="">
+                    <button (click)="enableInsertModeType()" type="button" class="btn btn-secondary"><i class="fas fa-plus"></i></button>
+                </div>
+                <div *ngIf="view.setting.insertOtType" class="">
+                    <button (click)="disableInsertModeType()" type="button" class="btn btn-secondary"><i class="fas fa-times"></i></button>
+                    <button (click)="insertOtType()" [disabled]="otGroupForm.invalid || view.data.otTypeExist?.length > 0" type="button" class="btn btn-success"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label>Name</label>
+            <input (keyup)="checkGroupnameExist()" class="form-control validation-field" type="text" formControlName="groupname" autocomplete="off">
+            <div *ngIf="view.data.otGroupnameLike?.length > 0" class="ot-type-exist">
+                <div class="ot-type-exist__title">Name(n) gefunden:</div>
+                <div class="d-flex ot-type-exist__entry" *ngFor="let group of view.data.otGroupnameLike" (click)="openForm(OtViewMode.GROUP_EDIT, group.OTGID)">
+                    <div class="pr-2">{{group.groupname}}</div>
+                </div>
+            </div>
+            <small class="text-danger" *ngIf="otGroupForm.controls.groupname.touched">
+                <span class="text-danger" *ngIf="otGroupForm.controls.groupname.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+            </small>
+        </div>
+        <div class="col">
+            <label>Grouplevel</label>
+            <input class="form-control validation-field" type="text" formControlName="grouplevel" autocomplete="off">
+            <small class="text-danger" *ngIf="otGroupForm.controls.grouplevel.touched">
+                <span class="text-danger" *ngIf="otGroupForm.controls.grouplevel.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+            </small>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <label>Description</label>
+            <textarea class="form-control" rows="3" formControlName="description" autocomplete="off"></textarea>
+        </div>
+    </div>
+    <div class="row pt-2">
+        <div class="col-auto">
+            <button (click)="closeForm()" type="button" class="btn btn-secondary me-1"><i class="fas fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</button>
+        </div>
+        <div *ngIf="!view.setting.insertOtType" class="col text-end">
+            <button (click)="insertOtGroup()" [disabled]="otGroupForm.invalid || view.data.otGroupnameExist?.length > 0" type="button" class="btn btn-success" data-dismiss="modal"><i class="fas fa-plus"></i> {{'FW.BUTTON.SAVE' | translate}}</button>
+        </div>
+    </div>
+</div>
+<!--
+<pre class="pt-3">
+    {{view.setting|json}}
+    otViewMode: {{otViewMode}}
+</pre>
+-->

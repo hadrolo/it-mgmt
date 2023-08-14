@@ -1,0 +1,20 @@
+.ot-group {
+  &__row {
+    padding-top: 5px;
+
+    &:hover{
+      background-color: #efefef;
+    }
+    &-name {
+      font-weight: bold;
+    }
+
+    &-type {
+      font-weight: normal;
+    }
+  }
+
+  &__form {
+    max-width: 600px !important;
+  }
+}
