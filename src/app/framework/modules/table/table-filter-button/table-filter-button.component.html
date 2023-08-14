@@ -1,0 +1,16 @@
+<ng-container *ngIf="!data.config.dataConfig.columnFilter.active">
+    <button class="btn btn-sm btn-dark"
+            (click)="toggleFilter()"
+            [matTooltip]="'FW.TABLE.ENABLE_FILTER' | translate"><i class="fa fa-filter"></i></button>
+</ng-container>
+
+<ng-container *ngIf="data.config.dataConfig.columnFilter.active">
+    <button class="btn btn-sm btn-dark me-1"
+            (click)="resetFilter()"
+            [disabled]="!checkFiltered()"
+            [matTooltip]="'FW.TABLE.RESET_FILTER' | translate"><i class="fa fa-trash"></i></button>
+    <button class="btn btn-sm btn-dark"
+            (click)="toggleFilter()"
+            [class.fw-table-button-filtered]="checkFiltered()"
+            [matTooltip]="'FW.TABLE.DISABLE_FILTER' | translate"><i class="fa fa-times"></i></button>
+</ng-container>

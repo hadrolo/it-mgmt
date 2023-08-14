@@ -1,0 +1,7 @@
+<select
+        class="form-select form-select-sm fw-table-row-switch"
+        [(ngModel)]="data.config.paginConfig.itemsPerPage"
+        (change)="tableService.changeRows.next(data)"
+        [matTooltip]="'FW.TABLE.ROW_SWITCH' | translate">
+    <option *ngFor="let row of data.config.paginConfig.rowFields" [ngValue]="row">{{row}}</option>
+</select>

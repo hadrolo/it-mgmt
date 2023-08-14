@@ -1,0 +1,135 @@
+<ng-template #modalUserprofile>
+    <div mat-dialog-content>
+        <div class="modal-form__title">
+            <i class="fa fa-user"></i> {{'FW.USER.PROFILE' | translate}}
+        </div>
+        <div class="modal-content pt-2">
+            <form [formGroup]="userForm" class="form">
+                <div class="row">
+                    <div class="col">
+                        <div class="d-flex">
+                            <div class="flex-grow-1 pe-2">
+                                <label>{{'USER.USERNAME' | translate}}</label>
+                                <input class="form-control form-control-sm" type="text" formControlName="username" minlength="4" #username>
+
+                                <div *ngIf="view.setting.showPasswordUpdate === true">
+                                    <label>{{'USER.PASSWORD' | translate}}</label>
+                                    <input class="form-control form-control-sm" type="password" formControlName="password" minlength="6" autocomplete="off">
+                                    <small class="text-danger"
+                                           *ngIf="userForm.controls.password.touched && userForm.controls.password.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</small>
+                                    <small class="text-danger" *ngIf="userForm.controls.password.errors?.minLength">{{'FW.USER.PASSWORD_LENGTH' | translate}}</small>
+                                    <div class="pt-1">
+                                        <input class="form-control form-control-sm" type="password" formControlName="confirmPassword" autocomplete="off">
+                                        <small class="text-danger" *ngIf="userForm.get('confirmPassword').errors?.['nomatch']">{{'FW.USER.PASSWORD_DOES_NOT_MATCH' | translate}}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div *ngIf="view.setting.formViewMode === FormViewMode.VIEW && view.setting.showPasswordUpdate === false" class="mt-auto">
+                                <button (click)="enablePasswortUpdate()" class="btn btn-secondary btn-sm" type="submit">
+                                    <i class="fa fa-key"></i> {{'FW.USER.CHANGE_PASSWORD' | translate}}
+                                </button>
+                            </div>
+                        </div>
+
+
+                        <div class="row pt-2">
+                            <div class="col-md-6">
+                                <label>{{'FW.USER.FIRSTNAME' | translate}}</label>
+                                <input class="form-control form-control-sm" type="text" formControlName="firstname" autocomplete="off">
+                            </div>
+                            <div class="col-md-6">
+                                <label>{{'FW.USER.LASTNAME' | translate}}</label>
+                                <input class="form-control form-control-sm" type="text" formControlName="lastname" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col-md-3">
+                                <label>{{'FW.USER.POSTCODE' | translate}}</label>
+                                <input class="form-control form-control-sm" type="text" formControlName="postcode" autocomplete="off">
+                            </div>
+                            <div class="col-md-9">
+                                <label>{{'FW.USER.COUNTRY' | translate}}</label>
+                                <select class="form-select form-select-sm validation-field" formControlName="country" autocomplete="off">
+                                    <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                    <option *ngFor="let country of view.data.countryList" [ngValue]="country">
+                                        {{ country.country }}
+                                    </option>
+                                </select>
+                                <small class="text-danger" *ngIf="userForm.controls.country.touched">
+                                    <span class="text-danger" *ngIf="userForm.controls.country.errors?.required">{{'FORM.SELECT_REQUIRED' | translate}}</span>
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col">
+                                <label>{{'FW.USER.EMAIL' | translate}}</label>
+                                <input (focusout)="checkEmailExist()" class="form-control form-control-sm" type="text" formControlName="email" autocomplete="off">
+                                <small class="text-danger" *ngIf="userForm.controls.email.errors?.email">{{'FW.FORM.INVALID_EMAIL' | translate}}</small>
+                                <small class="text-danger" *ngIf="view.setting.emailExist">{{'FW.USER.EMAIL_ALREADY_EXISTS' | translate}}</small>
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col">
+                                <div class="row pt-2">
+                                    <div class="col">
+                                        <label>{{'FW.USER.LANGUAGE' | translate}}</label>
+                                        <select class="form-select form-select-sm validation-field" formControlName="language" name="active" autocomplete="off">
+                                            <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                            <option *ngFor="let language of view.data.languageList" [ngValue]="language">
+                                                {{ ('FW.LANGUAGE.' + language.toUpperCase()) | translate }}
+                                            </option>
+                                        </select>
+                                        <small class="text-danger" *ngIf="userForm.controls.language.touched">
+                                            <span class="text-danger" *ngIf="userForm.controls.language.errors?.required">{{'FW.FORM.SELECT_REQUIRED' | translate}}</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col-md-12">
+                                <label>{{'FW.USER.INFO' | translate}}</label>
+                                <textarea class="form-control form-control-sm" rows="4" formControlName="info" autocomplete="off"></textarea>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="col">
+                        <div class="mr-2">
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.VIEW && !view.setting.showPasswordUpdate"
+                                    class="btn btn-secondary me-2"
+                                    type="submit" mat-dialog-close><i class="fa fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.EDIT || (view.setting.showPasswordUpdate)"
+                                    (click)="switchFormViewMode(FormViewMode.VIEW)"
+                                    class="btn btn-secondary me-2"
+                                    type="submit"><i class="fa fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.VIEW && !view.setting.showPasswordUpdate"
+                                    (click)="switchFormViewMode(FormViewMode.EDIT)"
+                                    class="btn btn-success me-2"
+                                    type="submit"><i class="fas fa-edit"></i> {{'FW.BUTTON.EDIT' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.EDIT || (view.setting.showPasswordUpdate)"
+                                    [disabled]="userForm.invalid"
+                                    (click)="updateUser()"
+                                    class="btn btn-success me-2"
+                                    type="submit"><i class="fas fa-check"></i> {{'FW.BUTTON.SAVE' | translate}}</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</ng-template>

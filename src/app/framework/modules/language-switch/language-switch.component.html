@@ -1,0 +1,16 @@
+<div class="language-switch dropdown">
+    <span class="dropdown-toggle" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
+                <img *ngIf="selectedLanguage && showFlags" [src]="'../../../../assets/framework/img/countries/'+ selectedLanguage.iso3 + '.jpg'" class="language-switch__flag"/>
+                <span *ngIf="selectedLanguage && showText" class="ps-1">{{ selectedLanguage.text }}</span>
+                <span *ngIf="selectedLanguage && showIso3" class="ps-1">{{ selectedLanguage.short|uppercase }}</span>
+    </span>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <li *ngFor="let lang of fwLanguages" (click)="set(lang.short)">
+            <span class="dropdown-item">
+                <img *ngIf="showFlags" [src]="'../../../../assets/framework/img/countries/'+ lang.iso3 + '.jpg'" class="language-switch__flag"/>
+                <span *ngIf="showText" class="ps-1">{{ lang.text }}</span>
+                <span *ngIf="showIso3" class="ps-1">{{ lang.short|uppercase }}</span>
+            </span>
+        </li>
+    </ul>
+</div>

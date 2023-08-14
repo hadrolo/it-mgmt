@@ -1,0 +1,21 @@
+<p class="form-text fw-form-element" *ngIf="!(config.viewMode == FormViewMode.EDIT || config.viewMode == FormViewMode.INSERT)">{{ element._foreignValue }}</p>
+
+<ng-container *ngIf="config.viewMode == FormViewMode.EDIT || config.viewMode == FormViewMode.INSERT">
+    <select
+        [name]="element.name" autocomplete="off"
+        [(ngModel)]="element._value"
+        (ngModelChange)="getNgModel()"
+        [disabled]="element._disabled || element.readOnly"
+        [required]="element._DB_required"
+        class="form-control"
+        [class.form-control-sm]="config.formInputSize === FormInputSize.SMALL"
+        [class.form-control-lg]="config.formInputSize === FormInputSize.LARGE"
+        #model="ngModel">
+        <option *ngIf="element.placeholder" value="" disabled selected style="display: none;">{{element.placeholder}}</option>
+        <option *ngFor="let m of element._data" [ngValue]="m[element.name]">
+            {{ m[element.foreignName] }}
+        </option>
+    </select>
+
+    <!--<app-form-validation-info *ngIf="config.formValidationStyle === FormValidationStyle.FIELD" [config]="config" [key]="key"></app-form-validation-info>-->
+</ng-container>

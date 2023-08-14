@@ -1,0 +1,27 @@
+<div class="modal fade" id="remove-localstorage-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remove FW localStorage items</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span *ngIf="keys.length == 0">No items found!</span>
+                <form>
+                    <div class="form-check" *ngFor="let key of keys">
+                        <input type="checkbox" [name]="key.name" class="form-check-input" [(ngModel)]="key.checked">
+                        <label class="form-check-label">{{ key.name }}</label>
+                        <i class="fa fa-info-circle ms-2" (click)="showInfo(key)"></i>
+                        <pre *ngIf="key.show" class="p-1">{{ key.data | json }}</pre>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{'FW.BUTTON.CANCEL' | translate}}</button>
+                <button type="button" class="btn btn-danger" *ngIf="keys.length > 0" data-dismiss="modal" (click)="remove()">{{'FW.BUTTON.DELETE' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

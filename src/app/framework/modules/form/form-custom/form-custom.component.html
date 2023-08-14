@@ -1,0 +1,9 @@
+<form>
+    <ng-content></ng-content>
+</form>
+
+<div class="alert alert-danger" *ngIf="missingFields().length > 0">
+    <ul class="mb-0 pl-3">
+        <li *ngFor="let m of missingFields() | keyvalue">Field with key "{{m.value[0]}}" has not been added!</li>
+    </ul>
+</div>

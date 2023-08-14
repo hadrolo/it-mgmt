@@ -1,0 +1,37 @@
+<div class="pb-3" *ngFor="let api of apis">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ api.name }}</h5>
+            <div class="card-text">
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                    <tr>
+                        <th>Controllers</th>
+                        <th *ngFor="let userType of userTypes">{{ (this.settingsService.frameworkSettings.userAssignment.usertypePrefix + '.' + userType) | translate }}</th>
+                        <th *ngIf="api.no_access">No access definition</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let acc of api.access">
+                        <td style="background: #efefef">{{ acc.name }}</td>
+                        <td *ngFor="let userType of userTypes">
+                            <ul>
+                                <ng-container *ngFor="let rule of acc['rules']">
+                                    <ng-container *ngIf="rule['rules'].includes(userType) || rule['rules'].includes('ALL')">
+                                        <li [class.text-info]="rule['rules'].includes('ALL')" [class.text-danger]="!rule.exists">{{ rule.method }}</li>
+                                    </ng-container>
+                                </ng-container>
+                            </ul>
+                        </td>
+                        <td style="background: #ffeeee" *ngIf="api.no_access">
+                            <ul>
+                                <li [class.text-danger]="true" *ngFor="let miss of acc['missing']">{{ miss }}</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

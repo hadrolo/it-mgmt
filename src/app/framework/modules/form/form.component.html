@@ -1,0 +1,78 @@
+<ng-container *ngIf="loaded">
+    <app-form-card *ngIf="config.formType === FormType.CARD" [config]="config"></app-form-card>
+
+    <app-form-custom *ngIf="config.formType === FormType.CUSTOM" [config]="config">
+        <ng-content></ng-content>
+    </app-form-custom>
+</ng-container>
+
+<ng-template *ngIf="config.formType === FormType.MODAL" #fwModalForm>
+    <div *ngIf="config.modalName + '-modal'"
+         [class.modal-form]="config.viewMode !== FormViewMode.DELETE"
+         [class.modal-delete]="config.viewMode === FormViewMode.DELETE"
+         mat-dialog-content>
+        <div
+            [class.modal-form__title]="config.viewMode !== FormViewMode.DELETE"
+            [class.modal-delete__title]="config.viewMode === FormViewMode.DELETE"
+            class="modal-form__title ">
+            <ng-container *ngIf="config.viewMode === FormViewMode.VIEW"><i class="fa-solid fa-eye"></i> {{ config.titleView }}</ng-container>
+            <ng-container *ngIf="config.viewMode === FormViewMode.INSERT"><i class="fa-solid fa-plus"></i> {{ config.titleInsert }}</ng-container>
+            <ng-container *ngIf="config.viewMode === FormViewMode.EDIT"><i class="fa-solid fa-pen-to-square"></i> {{ config.titleEdit }}</ng-container>
+            <ng-container *ngIf="config.viewMode === FormViewMode.DELETE"><i class="fa fa-warning"></i> {{ config.titleDelete }}</ng-container>
+        </div>
+        <div
+            [class.modal-form__content]="config.viewMode !== FormViewMode.DELETE"
+            [class.modal-delete__content]="config.viewMode === FormViewMode.DELETE">
+            <app-form-form [config]="config"></app-form-form>
+        </div>
+        <div
+            [class.modal-form__buttons]="config.viewMode !== FormViewMode.DELETE"
+            [class.modal-delete__buttons]="config.viewMode === FormViewMode.DELETE"
+            class="d-flex">
+            <ng-container *ngIf="config.viewMode === FormViewMode.VIEW">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <app-form-button [config]="config" [key]="FormButtonType.EDIT"></app-form-button>
+                        <app-form-button [config]="config" [key]="FormButtonType.SET_DELETE" class="ms-1"></app-form-button>
+                    </div>
+                    <div class="ms-auto">
+                        <app-form-button [config]="config" [key]="FormButtonType.CANCEL_VIEW" mat-dialog-close></app-form-button>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="config.viewMode === FormViewMode.INSERT">
+                <div class="d-flex">
+                    <div class="me-1">
+                        <app-form-button [config]="config" [key]="FormButtonType.INSERT"></app-form-button>
+                    </div>
+                    <div class="ms-auto">
+                        <app-form-button [config]="config" [key]="FormButtonType.CANCEL_INSERT"></app-form-button>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="config.viewMode === FormViewMode.EDIT">
+                <div class="d-flex">
+                    <div class="me-3">
+                        <app-form-button [config]="config" [key]="FormButtonType.UPDATE"></app-form-button>
+                    </div>
+                    <div class="ml-auto">
+                        <app-form-button [config]="config" [key]="FormButtonType.CANCEL_EDIT" class="ml-1"></app-form-button>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="config.viewMode === FormViewMode.DELETE">
+                <div class="d-flex">
+                    <div class="me-1">
+                        <app-form-button [config]="config" [key]="FormButtonType.DELETE"></app-form-button>
+                    </div>
+                    <div class="ml-auto">
+                        <app-form-button [config]="config" [key]="FormButtonType.CANCEL_DELETE"></app-form-button>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</ng-template>

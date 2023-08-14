@@ -1,0 +1,10 @@
+<form>
+    <div
+         *ngFor="let field of config.formFields | keyvalue: keepOriginalOrder"
+         [class.mb-small]="config.formInputSize === FormInputSize.SMALL"
+         [class.mb-default]="config.formInputSize === FormInputSize.DEFAULT"
+         [class.mb-large]="config.formInputSize === FormInputSize.LARGE">
+        <app-form-element [config]="config" [key]="field.key"></app-form-element>
+    </div>
+</form>
+

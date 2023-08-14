@@ -1,0 +1,144 @@
+<div class="btn-group btn-group-toggle mb-3" data-bs-toggle="buttons" *ngIf="showViewLayoutSwitcher">
+    <label class="btn btn-secondary" [class.active]="viewLayout == fileViewLayout.TABLE"
+           (click)="setLayout(fileViewLayout.TABLE)">
+        <input type="radio" name="options" autocomplete="off" checked> {{ 'FW.TABLE.TABLE' | translate }}
+    </label>
+    <label class="btn btn-secondary" [class.active]="viewLayout == fileViewLayout.TILES"
+           (click)="setLayout(fileViewLayout.TILES)">
+        <input type="radio" name="options" autocomplete="off"> {{ 'FW.TABLE.TILES' | translate }}
+    </label>
+</div>
+
+<div class="pb-2 d-flex flex-wrap">
+    <ng-container *ngIf="files.length == 0 && viewNoFilesText">
+        <span class="font-italic">{{viewNoFilesText}}</span>
+    </ng-container>
+
+    <ng-container *ngIf="viewLayout == fileViewLayout.TILES">
+        <div *ngFor="let file of files">
+            <ng-container *ngIf="viewFullscreen">
+                <img [src]="file.imgData" class="img-fluid">
+            </ng-container>
+            <ng-container *ngIf="!viewFullscreen">
+                <div class="d-flex uploadedimage rounded" style="cursor: pointer">
+                    <div class="rounded">
+                        <div class="d-flex flex-row">
+                            <div class="d-flex flex-column">
+                                <div (click)="openFileModal(file.FID)">
+                                    <div class="d-flex position-relative">
+                                        <img class="img-fluid rounded"
+                                             [src]="file.imgData | safeHtmlPipe"
+                                             [ngStyle]="{'width ':viewThumbnailsSize !== null ? viewThumbnailsSize : 'auto', 'height':viewThumbnailsSize !== null ? viewThumbnailsSize : 'auto' }">
+                                        <div *ngIf="viewReadonly === false" class="position-absolute"
+                                             style="right: 0; top: 0;">
+                                            <button type="button" class="btn btn-danger btn-sm"
+                                                    (click)="openDeleteFileModal($event, file)"><i
+                                                class="fa fa-times"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div *ngIf="viewThumbnailsTitle === true" class="text-center">
+                                    <small>{{file.display_name}}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="viewLayout == fileViewLayout.TABLE && files.length > 0">
+        <table class="table table-sm">
+            <thead>
+            <tr>
+                <th *ngIf="viewReadonly === false" style="width: 50px"></th>
+                <th>{{'FW.FILE.PREVIEW' | translate}}</th>
+                <ng-container *ngFor="let fi of settingsService.frameworkSettings.file.fileViewerFileInfo.rows">
+                    <th>{{fi.valueTrans | translate}}</th>
+                </ng-container>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let file of files">
+                <td *ngIf="viewReadonly === false">
+                    <button type="button" class="btn btn-danger btn-sm" (click)="openDeleteFileModal($event, file)"><i
+                        class="fa fa-times"></i></button>
+                </td>
+                <td>
+                    <img
+                        style="cursor: pointer"
+                        class="img-fluid rounded"
+                        [src]="file.imgData | safeHtmlPipe"
+                        [ngStyle]="{'width ':viewThumbnailsSize !== null ? viewThumbnailsSize : 'auto', 'height':viewThumbnailsSize !== null ? viewThumbnailsSize : 'auto' }"
+                        (click)="openFileModal(file.FID)">
+                </td>
+                <ng-container *ngFor="let fi of settingsService.frameworkSettings.file.fileViewerFileInfo.rows">
+                    <td>
+                        <ng-container [ngSwitch]="fi.field">
+                            <ng-container *ngSwitchCase="'size'">
+                                {{file[fi.field] | fileSize}}
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'create_date'">
+                                {{file[fi.field] | date: "dd.MM.yyyy, HH:mm"}}
+                            </ng-container>
+                            <ng-container *ngSwitchCase="'create_UID'">
+                                {{file.firstname}} {{file.lastname}}
+                            </ng-container>
+                            <ng-container *ngSwitchDefault>
+                                {{file[fi.field]}}
+                            </ng-container>
+                        </ng-container>
+                    </td>
+                </ng-container>
+            </tr>
+            </tbody>
+        </table>
+    </ng-container>
+</div>
+
+<div *ngIf="viewReadonly === false" class="modal fade" id="del-file-modal_{{randomID}}" tabindex="-1" role="dialog"
+     aria-labelledby="modal-del-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header state bg-danger text-white">
+                <h4 class="modal-title" id="modal-del-label"><i
+                    class="fa fa-warning"></i> {{'FW.FILE.DELETE_HEADER' | translate}}</h4>
+            </div>
+            <div *ngIf="result.selectedFile" class="modal-body">
+                <div class="row">
+                    <div class="col-md-8 pt-3">
+                        <table class="deleteInfo">
+                            <tbody>
+                            <tr *ngFor="let fi of settingsService.frameworkSettings.file.fileViewerFileInfo.rows">
+                                <td>{{fi.valueTrans | translate}}</td>
+                                <td>
+                                    <strong>{{fi.field == 'size' ? (result.selectedFile[fi.field] | fileSize) : result.selectedFile[fi.field]}}</strong>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <img [src]="result.selectedFile.imgData" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"
+                        (click)="deleteFile(result.selectedFile)">{{'FW.FILE.DELETE' | translate}}</button>
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">{{'FW.FILE.CANCEL' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-file-modal #fileModalComponent
+    [viewFlipImage]="viewEditModeFlipImage"
+    [viewFileInfo]="viewShowFileInfo"
+    [viewZoomNavigator]="viewZoomNavigator"
+    [viewZoomNavigatorMinValue]="viewZoomNavigatorMinValue"
+    [viewZoomNavigatorMaxValue]="viewZoomNavigatorMaxValue"
+    [files]="files"
+></app-file-modal>

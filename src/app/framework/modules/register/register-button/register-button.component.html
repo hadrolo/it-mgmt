@@ -1,0 +1,19 @@
+<ngx-invisible-recaptcha
+    *ngIf="button.type == 'confirm' && button.captcha && settingsService.frameworkSettings.production && settingsService.frameworkSettings.auth.googleRecaptcha"
+    #captchaElem
+    [siteKey]="settingsService.frameworkSettings.auth.googleRecaptchaSiteKey"
+    (success)="action()"
+    [useGlobalDomain]="false"
+    [hl]="userService.currentUser.language"
+    [theme]="'light'"
+    [type]="'image'"
+    [badge]="'bottomleft'"
+    [ngModel]="recaptcha"
+    [ngModelOptions]="{ standalone: true }">
+</ngx-invisible-recaptcha>
+<button class="btn" type="button" [formGroup]="registerService.registerFormGroup"
+        *ngIf="button" [disabled]="button.type == 'confirm' && registerService.registerFormGroup.invalid"
+        (click)="prepareAction()"
+        [class]="button.buttonClass">
+    <i [class]="button.iconClass"></i> {{button.valueTrans | translate}}
+</button>

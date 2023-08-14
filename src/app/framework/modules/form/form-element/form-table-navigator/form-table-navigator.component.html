@@ -1,0 +1,12 @@
+<div class="fw-form-table-navigator" *ngIf="viewButtons">
+    <button type="button"
+            class="btn fw-form-table-navigator-button text-white"
+            [disabled]="prevPk == null"
+            [ngClass]="[style.bootstrapButtonName, style.bootstrapButtonSize]"
+            (click)="prev()"><i class="fa fa-caret-left text-white"></i></button>
+    <button type="button"
+            class="btn fw-form-table-navigator-button ms-1 text-white"
+            [disabled]="nextPk == null"
+            [ngClass]="[style.bootstrapButtonName, style.bootstrapButtonSize]"
+            (click)="next()"><i class="fa fa-caret-right text-white"></i></button>
+</div>

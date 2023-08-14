@@ -1,0 +1,63 @@
+<app-toolbar [title]="'FW.RIGHT.MGMT_TITLE' | translate">
+    <!--    <button
+                type="button"
+                mat-icon-button
+                *ngIf="rightService.allowed('Dashboard/openSettings')"
+                [matTooltip]="translateService.instant('FW.TOOLTIP.DASHBOARD_SETTINGS')"
+                (click)="openDashboardSettings()">
+            <mat-icon aria-label="Side nav toggle icon">settings</mat-icon>
+        </button>-->
+</app-toolbar>
+
+
+<div class="container-fluid pt-2">
+    <div class="row justify-content-start">
+        <div class="col">
+            <div class="widgetLink rounded w-100">
+                <div class="row h-100">
+                    <div class="my-auto w-100 ps-3 pe-3" (click)="openRouterLink('right-group-setup')">
+                        <i class="fa fa-cubes fa-2x"></i><br>
+                        <strong>{{'FW.RIGHT.RIGHT_GROUP_TITLE'|translate}}</strong>
+                        <div class="pt-1" style="font-size:80%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widgetLink rounded w-100">
+                <div class="row h-100">
+                    <div class="my-auto w-100 ps-3 pe-3" (click)="openRouterLink('right-setup/list')">
+                        <i class="fa fa-cube fa-2x"></i><br>
+                        <strong>{{'FW.RIGHT.RIGHT_TITLE'|translate}}</strong>
+                        <div class="pt-1" style="font-size:80%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="widgetLink rounded w-100">
+                <div class="row h-100">
+                    <div class="my-auto w-100 ps-3 pe-3" (click)="openRouterLink('groupright-setup')">
+                        <i class="fa fa-shield-alt fa-2x"></i><br>
+                        <strong>{{'FW.RIGHT.USERTYPE_RIGHT_TITLE'|translate}}</strong>
+                        <div class="pt-1" style="font-size:80%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--        <div class="widgetLink col rounded mr-3">
+                    <div class="row h-100 ps-3 pr-3">
+                        <div class="p-2 my-auto w-100" (click)="openRouterLink('userright-assign')">
+                            <i class="fa fa-user-shield fa-2x"></i><br>
+                            <strong>Benutzer Rechte</strong>
+                            <div class="pt-1" style="font-size:80%">
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+    </div>
+</div>

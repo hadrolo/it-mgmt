@@ -1,0 +1,510 @@
+// GLOBAL SETTING
+$card-background-color: white;
+$hover-background-color: #f1f1f1;
+$hover-background2-color: #cbcbcb;
+$hover-font-color: black;
+$focus-background-color: rgba(36, 90, 167, 0.89);
+$focus-text-color: white;
+$filtered-background-color: rgba(36, 90, 167, 0.89);
+$filtered-text-color: white;
+
+// Modals (Material) -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+.modal-delete {
+  color: #707070 !important;
+
+  &--sm {
+    max-width: 400px;
+  }
+
+  &__title {
+    font-size: 22px;
+    font-weight: 500;
+
+    i {
+      color: #ff6262;
+    }
+  }
+
+  &__content {
+    padding-top: 15px;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  &__content-sm {
+    font-size: 12px;
+    color: #9c9c9c;
+    border-bottom: 1px solid #cacaca;
+  }
+
+  &__confirmation {
+    padding-top: 15px;
+  }
+
+  &__confirmation-text {
+    font-size: 12px;
+    line-height: 1;
+  }
+
+  &__buttons {
+    padding-top: 15px;
+  }
+}
+
+.del-field {
+  td {
+    vertical-align: top;
+    text-align: left;
+  }
+
+  td:last-child {
+    font-weight: bold;
+    padding-left: 5px;
+  }
+
+  &__message {
+    font-size: small;
+    /*color: #9a9a9a;*/
+    padding-right: 2px;
+    /*border: 1px solid #cccccc;*/
+    background-color: #efefef;
+  }
+
+  &__arrow {
+    margin: 0 6px;
+  }
+}
+
+.modal-form {
+  color: #707070 !important;
+
+  &--m {
+    max-width: 600px;
+  }
+
+  &--sm {
+    max-width: 400px;
+  }
+
+  &__title {
+    font-size: 22px;
+    font-weight: 500;
+
+    i {
+      color: #72B190;
+    }
+  }
+
+  &__content {
+    padding-top: 15px;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  &__buttons {
+    padding-top: 15px;
+  }
+}
+
+
+.fw-card-body {
+  h1 {
+    font-size: 1.8em;
+    font-weight: bolder;
+  }
+}
+
+// TAG
+
+.fw-tags {
+  .fw-tag {
+    padding: 7px 10px;
+    background: cadetblue;
+    color: white;
+    font-size: 90%;
+    margin-right: 5px;
+    font-weight: normal;
+  }
+
+  .fw-tags-input {
+    display: inline-block;
+    width: auto;
+  }
+
+  .fw-tag-delete-icon {
+    margin-left: 5px;
+
+    &:hover {
+      cursor: pointer;
+      color: red;
+    }
+  }
+
+  .fw-tag-viewer {
+    cursor: pointer;
+
+    &:hover {
+      background: darken(cadetblue, 10%)
+    }
+  }
+}
+
+// FILE
+.fw-file-upload {
+  .input-width {
+    width: 200px;
+  }
+}
+
+.fw-file-upload-drop-zone {
+  width: 450px;
+  padding: 2rem;
+  text-align: center;
+  border: 2px dashed #979797;
+  position: relative;
+
+  &:hover {
+    border: 2px dashed #666;
+  }
+}
+
+.fw-file-upload-disabled {
+  color: gray;
+
+  &:hover {
+    border: 2px dashed #979797;
+  }
+}
+
+
+// FORM
+.fw-form-element {
+  font-weight: bold;
+}
+
+.validation-info-list {
+  color: tomato;
+  font-size: 75%;
+}
+
+.fw-table {
+  font-size: 85%;
+}
+
+
+// TABLE MODUL - ALPHA CARD
+.fw-table-alpha-card-body {
+  background: $card-background-color;
+}
+
+.fw-table-alpha-filter {
+  margin: 1px;
+  padding: 2px 4px;
+  font-weight: bold;
+  color: $focus-text-color !important;
+  background-color: $focus-background-color;
+  cursor: pointer;
+}
+
+.fw-table-alpha-filter:hover {
+  color: $focus-text-color !important;
+  background-color: $focus-background-color !important;
+  cursor: not-allowed;
+}
+
+.fw-table-alpha-active {
+  margin: 1px;
+  padding: 2px 4px;
+  font-weight: bold;
+  color: black;
+  cursor: pointer;
+}
+
+.fw-table-alpha-active:hover {
+  background: $hover-background2-color;
+  color: $hover-font-color;
+}
+
+.fw-table-row-focused {
+  background: $focus-background-color;
+  color: $focus-text-color;
+}
+
+.fw-table-alpha-inactive {
+  margin: 1px;
+  padding: 2px 4px;
+  color: #6C757D;
+}
+
+.fw-table-alpha-all {
+  width: 42px;
+  text-align: center;
+  font-weight: bold;
+  color: black;
+  cursor: pointer;
+}
+
+// TABLE MODULE - TABLE
+.fw-table {
+  .table-sortable > thead > tr > th {
+    cursor: pointer;
+    position: relative;
+  }
+
+  table.table-hover tbody tr:hover {
+    background-color: $hover-background-color;
+    color: $hover-font-color !important;
+  }
+}
+
+.fw-table-card-body {
+  background-color: $card-background-color;
+
+  h1 {
+    font-size: 1.8em;
+    font-weight: bolder;
+  }
+}
+
+.fw-table-column-sorted-header {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  background-color: rgba(210, 210, 210, 0.1) !important;
+}
+
+.fw-table-column-sorted {
+  background-color: rgba(210, 210, 210, 0.1) !important;
+  font-weight: 500 !important;
+}
+
+.fw-table-field-filtered {
+  color: $filtered-text-color;
+  background-color: $filtered-background-color;
+}
+
+.fw-table-filed-noSort {
+  color: lighten(#000, 40%);
+}
+
+.fw-table-button-filtered {
+  /*    background-color: $filtered-background-color;
+      border-color: darken($filtered-background-color, 2%);
+      color: $filtered-text-color;*/
+}
+
+.fw-table-row-switch {
+  min-width: 55px !important;
+}
+
+.fw-table-index {
+  font-size: 85%;
+}
+
+// TABLE MODULE - PAGINATION
+.ngx-pagination {
+  padding: 0;
+  margin: 0;
+}
+
+.ngx-pagination .disabled {
+  color: black !important;
+}
+
+.fw-table-pagination {
+  margin-block-start: 0 !important;
+  padding-inline-start: 0 !important;
+  color: #212121;
+  font-size: 16px;
+  font-weight: 500;
+
+  .ngx-pagination {
+    a {
+      text-decoration: none !important;
+    }
+
+    .ng-star-inserted:hover:not(.current) {
+      border-radius: 5px;
+      background-color: $hover-background2-color;
+    }
+
+    .current {
+      border-radius: 5px;
+      color: $filtered-text-color;
+      background-color: $filtered-background-color;
+
+      :hover {
+        color: $filtered-text-color;
+        background-color: $filtered-background-color;
+      }
+    }
+  }
+}
+
+
+// FORM-TABLE-NAVIGATOR --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+.fw-form-table-navigator {
+
+}
+
+.fw-form-table-navigator-button {
+}
+
+.fw-table-row-count {
+  color: #212121;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+
+// HISTORY
+.fw-history {
+  .card-header {
+    background: #f2f2f2;
+    font-size: 100% !important;
+    padding: 0 0 0 5px !important;
+  }
+
+  .card-header:hover {
+    background: $hover-background-color;
+  }
+
+  .card-body {
+    font-size: 85% !important;
+  }
+
+  .btn-link {
+    font-size: 85% !important;
+    color: black;
+    padding: 2px !important;
+  }
+
+  .oldValue {
+    color: #6f6f6f;
+  }
+
+  .newValue {
+    color: black;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+  }
+}
+
+// INTRO SERVICE
+.introjs-hint-dot {
+  border: 10px solid rgba(241, 0, 0, 0.6);
+  margin-left: -10px;
+  margin-top: 10px;
+}
+
+.introjs-hint-pulse {
+  border: 5px solid rgba(241, 0, 0, 0.6);
+  margin-left: -10px;
+  margin-top: 10px;
+}
+
+.introjs-overlay {
+  /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#000000+0,000000+100&0+0,0.65+100 */
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000066', endColorstr='#a60000E6', GradientType=1); /* IE6-9 fallback on horizontal gradient */
+
+}
+
+// FAVORITE --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+.fw-favorite {
+  ul {
+    margin-bottom: 0;
+  }
+}
+
+.fw-info-footer {
+  position: fixed;
+  bottom: 0;
+  margin: 0 10px;
+}
+
+// RIGHT -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+.fw-right {
+  label {
+    font-size: 12px;
+  }
+
+  &__alias-assigned{
+    color: #9d9d9d;
+    &-title{
+      font-weight: bold;
+    }
+    &-right{
+      font-size: 12px !important;
+      color: #9d9d9d;
+    }
+  }
+
+  &__alias-form {
+    background-color: #E9ECEF;
+    border: 1px solid #ced4da;
+
+    &-unassign-button:hover {
+      background-color: #BB2D3B !important;
+      color: white;
+    }
+  }
+}
+.fw-right-group {
+  margin-top: 4px;
+  color: #5b5b5b;
+  font-size: 0.8em;
+
+  &__allow-permanent {
+    background-color: #81de93 !important;
+  }
+
+  &__assigned {
+    background-color: #bbfac6 !important;
+  }
+
+  &__assigned-alias {
+/*    background-color: #e7f037 !important;*/
+    background-color: #81de93 !important;
+  }
+
+  &__allow-from-alias {
+    background-color: #d1ffda !important;
+/*    background-color: #feffdb !important;*/
+  }
+
+  &__rightinfo {
+    padding-top: 3px;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+}
+
+
+
+// Butttons --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// Demo: <span class="badge fw-button-xs--success">text</i></span>
+.fw-button-xs {
+  &--success {
+    background-color: #198754 !important;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #157347 !important;
+      color: white;
+    }
+  }
+
+  &--danger {
+    background-color: #dc3534 !important;
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #BB2D3B !important;
+      color: white;
+    }
+  }
+}

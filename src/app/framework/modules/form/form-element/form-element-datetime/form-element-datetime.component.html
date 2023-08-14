@@ -1,0 +1,17 @@
+<p class="form-text fw-form-element" *ngIf="!(config.viewMode == FormViewMode.EDIT || config.viewMode == FormViewMode.INSERT)">{{ element._value | date:'dd.MM.y' }}</p>
+
+<ng-container *ngIf="config.viewMode == FormViewMode.EDIT || config.viewMode == FormViewMode.INSERT">
+    <input
+        [name]="element.name" autocomplete="off"
+        [(ngModel)]="element._value"
+        (ngModelChange)="getNgModel()"
+        [disabled]="element._disabled || element.readOnly"
+        [required]="element._DB_required"
+        type="datetime-local"
+        class="form-control"
+        [class.form-control-sm]="config.formInputSize === FormInputSize.SMALL"
+        [class.form-control-lg]="config.formInputSize === FormInputSize.LARGE"
+        #model="ngModel">
+
+    <app-form-validation-info *ngIf="config.formValidationStyle === FormValidationStyle.FIELD" [config]="config" [key]="key"></app-form-validation-info>
+</ng-container>

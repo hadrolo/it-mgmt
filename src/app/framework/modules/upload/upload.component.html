@@ -1,0 +1,64 @@
+<div class="d-flex">
+    <input style="display: none" type="file" (change)="selectFiles($event)" #fileInput [accept]="config.uploadAccept" [multiple]="config.allowMultipleUpload" [(ngModel)]="fileInputModel">
+    <div *ngIf="(upload.selectedFiles == null || (upload.uploadedCount == '0')) && ( !upload.uploadMaxFilecount || upload.countAlreadyUploaded < upload.uploadMaxFilecount )" class="row pb-3">
+        <div class="ps-3 pe-3">
+            <button type="submit" class="btn btn-info me-2" (click)="fileInput.click()" [disabled]="upload.uploadDisabled">
+                <i class="fa fa-mouse-pointer fa-sm"></i>
+                {{config.layout.form.buttons.selectFiles}} <span *ngIf="config.uploadMaxFilesize > 0">({{(config.uploadMaxFilesize) | number: '1.0-2'}} MB)</span>
+            </button>
+        </div>
+    </div>
+
+    <div *ngIf="upload.selectedFiles != null">
+        <div *ngIf="upload.status !== 'finished' && !upload.showError" class="alert alert-info">
+            <div class="row">
+                <div class="col-md-12">
+                    {{config.layout.form.selectedFiles}}:
+                    <ul>
+                        <li *ngFor="let file of upload.selectedFiles">
+                            <strong>{{file.name}} ({{ (file.size / 1024 / 1024) | number: '1.0-2'}} MB)</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row" *ngIf="upload.status === 'pending'">
+                <div class="col-md-12 pt-2">
+                    <button type="submit" class="btn btn-success btn-sm" style="margin-right: 15px" [disabled]="upload.uploading" (click)="onUpload()" *ngIf="upload.errors.length == 0">
+                        <i class="fa fa-upload fa-sm"></i>
+                        {{config.layout.form.buttons.upload}}
+                    </button>
+                    <button type="submit" class="btn btn-secondary btn-sm" (click)="deselectFiles()">
+                        <i class="fa fa-remove fa-sm"></i>
+                        {{config.layout.form.buttons.cancel}}
+                    </button>
+                </div>
+            </div>
+            <div class="row" *ngIf="upload.status === 'progress' && !upload.showError">
+                <div class="col-md-12">
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" [style.width.%]="upload.progress" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ upload.progress }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="upload.errors.length > 0" class="alert alert-danger">
+            <ul class="mb-0">
+                <li *ngFor="let error of upload.errors">
+                    <span *ngIf="error.errorType == 'INVALID_TYPE'">{{config.layout.msg.invalid_type}}</span>
+                    <span *ngIf="error.errorType == 'INVALID_SIZE'">{{config.layout.msg.invalid_size}}</span>
+                    <span *ngIf="error.errorType == 'INVALID_MAX_FILESIZE'">{{config.layout.msg.invalid_max_filesize}}</span>
+                </li>
+            </ul>
+        </div>
+        <div *ngIf="upload.showSuccess && upload.progress === 100 && !upload.showError" [@simpleFadeAnimation]="'in'" class="alert alert-success">
+            {{ config.layout.msg.success }}.
+        </div>
+        <div *ngIf="upload.showError" class="alert alert-danger">
+            {{ config.layout.msg.error }}.
+        </div>
+        <div *ngIf="(upload.showError || (upload.progress === 100)) && ( !upload.uploadMaxFilecount || upload.countAlreadyUploaded < upload.uploadMaxFilecount) && !upload.uploading" class="pb-3">
+            <button type="button" class="btn btn-info btn-sm" (click)="deselectFiles()">{{config.layout.form.buttons.new}}</button>
+        </div>
+    </div>
+</div>
+

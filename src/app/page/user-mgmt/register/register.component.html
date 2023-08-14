@@ -1,0 +1,45 @@
+<div class="container">
+    <div class="pt-5 pb-5">
+        <h1 class="mb-3">{{'FW.REGISTER.TITLE' | translate}}</h1>
+        <span class="info-text pt-3" [innerHTML]="translateService.instant('FW.REGISTER.INFO')"></span>
+    </div>
+    <div class="mt-3">
+        <app-register-form>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-register-field [key]="'username'"></app-register-field>
+                    <app-register-password [key]="'password'"></app-register-password>
+                    <app-register-password-confirm [key]="'password_confirm'" [keyPasswordField]="'password'"></app-register-password-confirm>
+                    <app-register-field [key]="'email'"></app-register-field>
+                    <app-register-field [key]="'language'"></app-register-field>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <app-register-field [key]="'firstname'"></app-register-field>
+                        </div>
+                        <div class="col-md-6">
+                            <app-register-field [key]="'lastname'"></app-register-field>
+                        </div>
+                    </div>
+                    <app-register-field [key]="'postcode'"></app-register-field>
+                    <app-register-field [key]="'CID'"></app-register-field>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <app-register-field [key]="'realname_visible'"></app-register-field>
+                            <app-register-field [key]="'email_visible'"></app-register-field>
+                        </div>
+                        <div class="col-md-6">
+                            <app-register-field [key]="'address_visible'"></app-register-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-4">
+                <app-register-button [type]="'confirm'"></app-register-button>
+                <app-register-button [type]="'cancel'" class="ps-1"></app-register-button>
+            </div>
+        </app-register-form>
+    </div>
+</div>
+

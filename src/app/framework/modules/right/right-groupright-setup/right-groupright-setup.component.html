@@ -1,0 +1,137 @@
+<app-toolbar [title]="'FW.RIGHT.USERTYPE_RIGHT_TITLE'|translate">
+</app-toolbar>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="row">
+                <div class="col">
+                    <label>{{'FW.USER.USERTYPE'|translate}}</label>
+                    <select
+                            (change)="getAllRights()"
+                            [(ngModel)]="view.data.selectedUsertype"
+                            [disabled]="view.setting.formViewMode === FormViewMode.EDIT"
+                            class="form-select form-select-sm rounded admin-client-info font-weight-bold">
+                        <option *ngFor="let usertype of view.data.usertypeList" [ngValue]="usertype">
+                            {{usertype}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>{{'FW.RIGHT.TYPE'|translate}}</label>
+                    <select
+                            (change)="getAllRights()"
+                            [(ngModel)]="view.data.selectedRightType"
+                            class="form-select form-select-sm rounded admin-client-info font-weight-bold">
+                        <option *ngFor="let rightType of view.data.rightTypeList" [ngValue]="rightType">
+                            {{rightType}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>{{'FW.RIGHT.GROUP'|translate}}</label>
+                    <select
+                            (change)="getAllRights()"
+                            [(ngModel)]="view.data.selectedRightGroup"
+                            class="form-select form-select-sm rounded admin-client-info font-weight-bold">
+                        <option *ngFor="let rightGroup of view.data.rightGroupList" [ngValue]="rightGroup.RGID">
+                            {{rightGroup.RGID}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>Recht Suchen</label>
+                    <input [(ngModel)]="view.data.selectedRightFilter" (ngModelChange)="getAllRights()" type="text" class="form-control form-control-sm font-weight-bold">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <div class="row ">
+                <div class="col">
+                    <div *ngFor="let rightGroup of view.data.rightList">
+                        <div class="row pb-1">
+                            <div (click)="toggleContent(rightGroup)" class="col">
+                                <i *ngIf="!rightGroup.open" class="far fa-plus-square content-toggle"></i>
+                                <i *ngIf="rightGroup.open" class="far fa-minus-square content-toggle"></i>
+                                {{rightGroup.RGID}}
+                            </div>
+
+                        </div>
+                        <div *ngIf="rightGroup.open" class="fw-right-group mb-3">
+                            <table class="table table-sm  table-assigned-rights" [class.table-hover]="view.setting.formViewMode == FormViewMode.EDIT">
+                                <tbody>
+                                <tr *ngFor="let right of rightGroup.rights | keyvalue" class="" (click)="toggleCheckbox(right)">
+                                    <td *ngIf="!right.value['allowPermanent'] && !right.value['allowFromAlias']" class="d-none">
+                                        <input type="checkbox" [(ngModel)]="right.value['assigned']" [disabled]="view.setting.formViewMode !== FormViewMode.EDIT">
+                                    </td>
+                                    <td *ngIf="right.value['allowPermanent']" class="fw-right-group__allow-permanent d-none">
+                                        <input type="checkbox" [disabled]="'true'" checked>
+                                    </td>
+                                    <td [class.fw-right-group__allow-permanent]="right.value['allowPermanent']"
+                                        [class.fw-right-group__assigned]="right.value['assigned'] && right.value['type'] != 'ALIAS'"
+                                        [class.fw-right-group__assigned-alias]="right.value['assigned'] && right.value['type'] == 'ALIAS'"
+                                        [class.fw-right-group__allow-from-alias]="right.value['allowFromAlias']" class="text-nowrap">
+                                        {{right.value.type}}<span>-{{right.value.module|titlecase}}</span>
+                                    </td>
+                                    <td [class.fw-right-group__allow-permanent]="right.value['allowPermanent']"
+                                        [class.fw-right-group__assigned]="right.value['assigned'] && right.value['type'] != 'ALIAS'"
+                                        [class.fw-right-group__assigned-alias]="right.value['assigned'] && right.value['type'] == 'ALIAS'"
+                                        [class.fw-right-group__allow-from-alias]="right.value['allowFromAlias']">
+                                        {{right.value.name}}
+                                    </td>
+                                    <td [class.fw-right-group__allow-permanent]="right.value['allowPermanent']"
+                                        [class.fw-right-group__assigned]="right.value['assigned'] && right.value['type'] != 'ALIAS'"
+                                        [class.fw-right-group__assigned-alias]="right.value['assigned'] && right.value['type'] == 'ALIAS'"
+                                        [class.fw-right-group__allow-from-alias]="right.value['allowFromAlias']">
+                                        <span *ngIf="right.value.type === 'API'">{{right.value['class']}}/{{right.value.method}}</span>
+                                    </td>
+                                    <td [class.fw-right-group__allow-permanent]="right.value['allowPermanent']"
+                                        [class.fw-right-group__assigned]="right.value['assigned'] && right.value['type'] != 'ALIAS'"
+                                        [class.fw-right-group__assigned-alias]="right.value['assigned'] && right.value['type'] == 'ALIAS'"
+                                        [class.fw-right-group__allow-from-alias]="right.value['allowFromAlias']">
+                                        <div class="fw-right-group__rightinfo">
+                                            <span *ngIf="right.value['allowPermanent']">[ <i class="fas fa-lock"></i> Permanent Allowed ]</span>
+                                            <span *ngIf="right.value['aliasBase']">[ <i class="fas fa-link"></i> {{right.value['aliasBase']}} ] </span>
+                                        </div>
+                                    </td>
+                                    <td [class.fw-right-group__allow-permanent]="right.value['allowPermanent']"
+                                        [class.fw-right-group__assigned]="right.value['assigned'] && right.value['type'] != 'ALIAS'"
+                                        [class.fw-right-group__assigned-alias]="right.value['assigned'] && right.value['type'] == 'ALIAS'"
+                                        [class.fw-right-group__allow-from-alias]="right.value['allowFromAlias']">
+                                        {{right.value.description}}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <div class="row">
+                        <div class="col" *ngIf="view.setting.formViewMode !== FormViewMode.EDIT">
+                            <ul class="list-group">
+                                <li class="btn btn-sm btn-outline-dark mt-1" (click)="maximizeAllRightGroups()"><i class="fa-solid fa-folder-open"></i> {{'FW.RIGHT.OPEN_ALL_ITEMS' | translate}}</li>
+                                <li class="btn btn-sm btn-outline-dark mt-1" (click)="minimizeAllRightGroups()"><i class="fa-solid fa-folder"></i> {{'FW.RIGHT.CLOSE_ALL_ITEMS' | translate}}</li>
+                                <li class="btn btn-sm btn-success mt-1" (click)="openEditMode()"><i class="fa fa-edit"></i> {{'FW.BUTTON.EDIT' | translate}}</li>
+                            </ul>
+                        </div>
+                        <div class="col" *ngIf="view.setting.formViewMode === FormViewMode.EDIT">
+                            <ul class="list-group">
+                                <li class="btn btn-sm btn-outline-dark mt-1" (click)="maximizeAllRightGroups()"><i class="fa-solid fa-folder-open"></i> {{'FW.RIGHT.OPEN_ALL_ITEMS' | translate}}</li>
+                                <li class="btn btn-sm btn-outline-dark mt-1" (click)="minimizeAllRightGroups()"><i class="fa-solid fa-folder"></i> {{'FW.RIGHT.CLOSE_ALL_ITEMS' | translate}}</li>
+                                <li class="btn btn-sm btn-dark mt-1" (click)="cancelEditMode()"><i class="fa fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</li>
+                                <li class="btn btn-sm btn-success mt-1" (click)="updateRights()"><i class="fa fa-check"></i> {{'FW.BUTTON.SAVE' | translate}}</li>
+                                <br>
+                                <li class="btn btn-sm btn-success mt-1" (click)="assignAll()"><i class="fas fa-folder-plus"></i> {{'FW.RIGHT.ASSIGN_ALL' | translate}}</li>
+                                <li class="btn btn-sm btn-danger mt-1" (click)="unassignAll()"><i class="fas fa-folder-minus"></i> {{'FW.RIGHT.UNASSIGN_ALL' | translate}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

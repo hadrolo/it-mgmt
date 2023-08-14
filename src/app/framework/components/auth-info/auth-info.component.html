@@ -1,0 +1,10 @@
+<div class="info" *ngIf="visible">
+    <div class="user-info">
+        <h4>User</h4>
+        <pre>{{ userService.currentUser | json }}</pre>
+    </div>
+    <div class="jwt-info">
+        <h4>Token <small class="font-italic">({{ settingsService?.frameworkSettings?.auth?.jwtKeyName }})</small></h4>
+        <pre>{{ jwtData | json }}</pre>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+<div class="fw-favorite">
+    <ul>
+        <li *ngFor="let favorite of favorites"><a href="" (click)="go($event, favorite.path)">{{favorite.name}}</a></li>
+    </ul>
+</div>

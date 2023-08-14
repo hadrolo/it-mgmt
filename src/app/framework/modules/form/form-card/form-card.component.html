@@ -1,0 +1,44 @@
+<div class="card">
+    <div class="card-header" [class.bg-dark]="config.viewMode !== FormViewMode.DELETE" [class.bg-danger]="config.viewMode === FormViewMode.DELETE">
+        <h4 class="mb-0">
+            <ng-container *ngIf="config.viewMode === FormViewMode.VIEW"> {{ config.titleView }}</ng-container>
+            <ng-container *ngIf="config.viewMode === FormViewMode.INSERT"> {{ config.titleInsert }}</ng-container>
+            <ng-container *ngIf="config.viewMode === FormViewMode.EDIT"> {{ config.titleEdit }}</ng-container>
+            <ng-container *ngIf="config.viewMode === FormViewMode.DELETE"> {{ config.titleDelete }}</ng-container>
+        </h4>
+    </div>
+    <div class="card-body">
+        <app-form-form [config]="config"></app-form-form>
+    </div>
+    <div class="card-footer d-flex">
+        <div class="align-self-start">
+            <app-form-button [config]="config" [key]="FormButtonType.EDIT"></app-form-button>
+            <app-form-button [config]="config" [key]="FormButtonType.SET_DELETE" class="ml-1"></app-form-button>
+        </div>
+        <div class="ml-auto">
+            <app-form-button [config]="config" [key]="FormButtonType.CANCEL_VIEW"></app-form-button>
+        </div>
+
+        <div class="align-self-start">
+            <app-form-button [config]="config" [key]="FormButtonType.INSERT"></app-form-button>
+        </div>
+        <div class="ml-auto">
+            <app-form-button [config]="config" [key]="FormButtonType.CANCEL_INSERT"></app-form-button>
+        </div>
+
+        <div class="align-self-start">
+            <app-form-button [config]="config" [key]="FormButtonType.UPDATE"></app-form-button>
+            <app-form-button [config]="config" [key]="FormButtonType.CANCEL_EDIT" class="ml-1"></app-form-button>
+        </div>
+        <div class="ml-auto">
+
+        </div>
+
+        <div class="align-self-start">
+            <app-form-button [config]="config" [key]="FormButtonType.DELETE"></app-form-button>
+        </div>
+        <div class="ml-auto">
+            <app-form-button [config]="config" [key]="FormButtonType.CANCEL_DELETE"></app-form-button>
+        </div>
+    </div>
+</div>

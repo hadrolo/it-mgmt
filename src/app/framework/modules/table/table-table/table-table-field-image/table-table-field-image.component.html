@@ -1,0 +1,18 @@
+<div class="d-flex"
+     [class.fw-div-center]="tableField.alignment === TableFieldAlignment.CENTER"
+     [class.fw-div-right]="tableField.alignment === TableFieldAlignment.RIGHT">
+    <div *ngIf="imageConfig" class="pe-1 cImage">
+        <img
+                *ngIf="imageConfig.image"
+                [src]="settingsService.frameworkSettings.table.imagePath + imageConfig.image"
+                [style.height]="imageConfig.height"
+                [style.width]="imageConfig.width" />
+        <i class="fa"
+           *ngIf="imageConfig.icon"
+           [ngClass]="imageConfig.icon"
+           [style.color]="imageConfig.color"
+           [style.width]="imageConfig.width"
+           [style.height]="imageConfig.height"></i>
+    </div>
+    <ng-content></ng-content>
+</div>

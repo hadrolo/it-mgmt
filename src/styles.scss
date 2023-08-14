@@ -1,0 +1,199 @@
+@import "@angular/material/prebuilt-themes/deeppurple-amber.css";
+/*@import "~@ng-select/ng-select/themes/default.theme.css";*/
+//@import "material-overlay2.css";
+@import 'app/framework/framework.scss';
+
+$bg-color: #e7e7e7;
+$text-default-color: #0c0c0c;
+$text-light-gray: rgba(58, 58, 58, 0.5);
+$link_active: #efefef;
+$background_hover: #dedede;
+
+html, body {
+  height: 100% !important;
+  background-color: #e7e7e7;
+}
+
+h1 {
+  font-size: 20px;
+  padding-bottom: 8px;
+}
+
+.ck-editor__editable_inline {
+  min-height: 300px;
+}
+
+.ckeditor_disabled {
+  padding: 15px;
+  min-height: 38px !important;
+  border: 1px solid #CED4DA;
+  background: #f1f1f1;
+  border-radius: 5px;
+}
+
+
+
+.language-switch {
+  font-size: 14px !important;
+
+  .dropdown-toggle {
+    padding: 0 8px;
+    &:hover{
+      border-radius: 5px;
+      background-color: $background_hover;
+    }
+  }
+}
+
+/*
+// BOOTSTRAP OVERLAY -----------------------------------------------------------------------
+.nav-tabs {
+  .nav-link {
+    color: #333333;
+    margin-right: 1px;
+    background-color: #ececec !important;
+    border-left: 1px solid #d7d7d7;
+    border-top: 1px solid #d7d7d7;
+    border-right: 1px solid #d7d7d7;
+  }
+
+  .nav-link:hover {
+    margin-right: 1px;
+    background-color: #F5F5F5 !important;
+    border-left: 1px solid #d7d7d7;
+    border-top: 1px solid #d7d7d7;
+    border-right: 1px solid #d7d7d7;
+  }
+
+  .nav-link.active {
+    background-color: #ffffff !important;
+  }
+}
+
+.form-control:disabled {
+  background-color: #f1f1f1 !important;
+}
+.form-select:disabled{
+  background-color: #f1f1f1 !important;
+}
+*/
+
+
+// MATERIAL OVERLAY --------------------------------------------------------------------------
+.mat-toolbar {
+  background-color: $bg-color !important;
+  h1 {
+    font-size: 26px;
+    font-weight: 500;
+  }
+}
+
+mat-form-field {
+  width: 100% !important;
+}
+
+.mdc-text-field {
+  background-color: white !important;
+}
+
+.mdc-text-field--disabled {
+  background-color: #efefef !important;
+
+  mat-label {
+    color: #868686 !important;
+  }
+
+  input {
+    color: #1d1d1d !important;
+  }
+
+  .mat-mdc-select-value {
+    color: #1d1d1d !important;
+  }
+}
+
+.mdc-text-field--disabled.mdc-text-field--filled {
+  background-color: #e7e7e7 !important;
+}
+
+// BUTTON OVERLAY //
+.mat-sidenav-content {
+  background-color: $bg-color !important;
+  .mat-toolbar {
+    margin: 0 !important;
+  }
+}
+
+button[mat-icon-button] {
+  $large-size-button: 80px;
+  $large-size-icon: 48px;
+
+  &.icon-button-large {
+    width: $large-size-button;
+    height: $large-size-button;
+    line-height: $large-size-button;
+
+    .mat-icon {
+      font-size: $large-size-icon;
+      width: $large-size-icon;
+      height: $large-size-icon;
+      line-height: $large-size-icon;
+    }
+
+    .mat-button-ripple {
+      font-size: inherit;
+      width: inherit;
+      height: inherit;
+      line-height: inherit;
+    }
+  }
+
+  $small-size-button: 24px;
+  $small-size-icon: 18px;
+
+  &.icon-button-small {
+    width: $small-size-button;
+    height: $small-size-button;
+    line-height: $small-size-button;
+    padding: 2px 2px;
+
+    .mat-icon {
+      font-size: $small-size-icon;
+      width: $small-size-icon;
+      height: $small-size-icon;
+      line-height: $small-size-icon;
+    }
+
+    .mat-button-ripple {
+      font-size: inherit;
+      width: inherit;
+      height: inherit;
+      line-height: inherit;
+    }
+
+    .mat-mdc-button-touch-target {
+      position: absolute;
+      top: 50%;
+      height: $small-size-button;
+      left: 50%;
+      width: $small-size-button;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+//Toolbar Overlay
+$toolbar-overlay: 58px;
+.mat-toolbar {
+  min-height: $toolbar-overlay;
+  height: $toolbar-overlay;
+}
+
+.mat-toolbar-row {
+  min-height: $toolbar-overlay;
+  height: $toolbar-overlay;
+}
+
+.mat-sidenav-content {
+  background-color: #f1f1f1;
+}

@@ -1,0 +1,205 @@
+<div class="row pb-3">
+    <div class="col-auto">
+        <button type="button" class="btn btn-dark ml-1" (click)="openRouterLink('dashboard')"><i class="fas fa-backward"></i> Zurück zum Rechte Desktop</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body fw-card-body">
+        <div class="d-flex">
+            <div class="mr-auto">
+                <h1>Rechte an Benutzertypen zuweisen</h1>
+            </div>
+        </div>
+        <div class="d-flex pt-3">
+            <div class="mr-auto">
+                <select
+                    class="form-control fw-table-usertype-select"
+                    autocomplete="off"
+                    [(ngModel)]="view.selected.usertype"
+                    (change)="changeUsertype()">
+                    <option *ngFor="let ut of view.data.usertypes" [ngValue]="ut">
+                        <ng-container *ngIf="!settingsService.frameworkSettings.auth.translateUsertype">{{ut}}</ng-container>
+                        <ng-container *ngIf="settingsService.frameworkSettings.auth.translateUsertype">{{ut | translate}}</ng-container>
+                    </option>
+                </select>
+            </div>
+            <div class="align-bottom">
+                <button (click)="openInsertForm()" [disabled]="!view.selected.usertype" type="button" class="btn btn-sm btn-success"><i class="fas fa-plus"></i> Neu</button>
+                <button (click)="openCopyRightsForm()" [disabled]="!view.selected.usertype" type="button" class="btn btn-sm btn-success ml-1"><i class="fas fa-copy"></i> Rechte kopieren</button>
+                <button (click)="openInsertAllForm()" [disabled]="!view.selected.usertype" type="button" class="btn btn-sm btn-success ml-1"><i class="fas fa-folder-plus"></i> Alle einfügen</button>
+                <button (click)="openDeleteAllForm()" [disabled]="!view.selected.usertype" type="button" class="btn btn-sm btn-danger ml-1"><i class="fas fa-folder-minus"></i> Alle löschen</button>
+            </div>
+        </div>
+        <div class="row pt-3">
+            <div class="col">
+                <div class="table-responsive">
+                    <table *ngIf="view.data.rightsAssigned" class="table table-hover table-sm fw-table-assigned-rights">
+                        <thead>
+                        <tr>
+                            <th>Gruppe</th>
+                            <th>Berechtigung</th>
+                            <th>Beschreibung</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr *ngFor="let ra of view.data.rightsAssigned" (click)="openDeleteModal(ra)">
+                            <td>{{ra.group_name}}</td>
+                            <td>{{ra.name}}</td>
+                            <td>
+                                {{ra.description}}
+                                <!--<button type="button" class="btn btn-danger btn-sm fw-btn-xs" (click)="openDeleteModal(ra)">{{'FW.BUTTON.DELETE' | translate}}</button>-->
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="right-modal" tabindex="-1" role="dialog" aria-labelledby="modal-right-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div
+                [class.bg-success]="view.formType === FormType.INSERT || view.formType === FormType.COPY || view.formType === FormType.INSERT_ALL"
+                [class.bg-danger]="view.formType === FormType.DELETE || view.formType === FormType.DELETE_ALL"
+                class="modal-header state">
+                <h4 class="modal-title text-white"><i class="fa fa-warning"></i> {{view.formTitle}}</h4>
+            </div>
+            <div class="modal-body">
+
+
+                <table *ngIf="view.formType === FormType.INSERT">
+                    <tbody>
+                    <tr>
+                        <td>Benutzertyp</td>
+                        <td class="pl-2">
+                            <strong>
+                                <ng-container *ngIf="!settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype | translate}}</ng-container>
+                                <ng-container *ngIf="settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype | translate}}</ng-container>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Rechte Gruppe</td>
+                        <td class="pl-2">
+                            <select
+                                *ngIf="view.data.rightGroupsUnassigned"
+                                class="form-control form-control-sm"
+                                autocomplete="off"
+                                [(ngModel)]="view.selected.RGID"
+                                (change)="changeUserGroup()">
+                                <option value="">bitte wählen</option>
+                                <option *ngFor="let rg of view.data.rightGroupsUnassigned" [ngValue]="rg.RGID">
+                                    {{rg.group_name}}
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr *ngIf="view.data.rightsUnassigned && view.data.rightsUnassigned.length > 0">
+                        <td>Recht</td>
+                        <td class="pl-2">
+                            <select
+                                class="form-control form-control-sm"
+                                autocomplete="off"
+                                [(ngModel)]="view.selected.right">
+                                <option value="">bitte wählen</option>
+                                <option *ngFor="let ru of view.data.rightsUnassigned" [ngValue]="ru">
+                                    {{ru.name}}
+                                </option>
+                            </select>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+                <table *ngIf="view.formType === FormType.DELETE && view.selected.right">
+                    <tbody>
+                    <tr>
+                        <td>Benutzertyp</td>
+                        <td class="pl-2">
+                            <strong>
+                                <ng-container *ngIf="!settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype | translate}}</ng-container>
+                                <ng-container *ngIf="settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype | translate}}</ng-container>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Rechte Gruppe</td>
+                        <td class="pl-2"><strong>{{view.selected.right.group_name}}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Recht</td>
+                        <td class="pl-2"><strong>{{view.selected.right.name}}</strong></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+
+                <div *ngIf="view.formType === FormType.COPY" class="row">
+                    <div class="col">
+                        <div class="row">
+                            <div class="col">
+                                <strong>
+                                    <ng-container *ngIf="!settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype}}</ng-container>
+                                    <ng-container *ngIf="settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype | translate}}</ng-container>
+                                </strong> kopieren nach
+                            </div>
+                        </div>
+                        <div *ngIf="view.data.copyUsertypes" class="row pt-1">
+                            <div class="col">
+                                <select
+                                    class="form-control"
+                                    autocomplete="off"
+                                    [(ngModel)]="view.selected.usertypeCopy"
+                                    (change)="changeUsertype()">
+                                    <option *ngFor="let cut of view.data.copyUsertypes" [ngValue]="cut">
+                                        <ng-container *ngIf="!settingsService.frameworkSettings.auth.translateUsertype">{{cut}}</ng-container>
+                                        <ng-container *ngIf="settingsService.frameworkSettings.auth.translateUsertype">{{cut | translate}}</ng-container>
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div *ngIf="view.formType === FormType.INSERT_ALL" class="row">
+                    <div class="col">
+                        Wollen Sie alle Berechtigungen in die Benutzergruppe<br>
+                        <strong>
+                            <ng-container *ngIf="!settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype}}</ng-container>
+                            <ng-container *ngIf="settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype | translate}}</ng-container>
+                        </strong> einfügen?
+                    </div>
+                </div>
+
+
+                <div *ngIf="view.formType === FormType.DELETE_ALL" class="row">
+                    <div class="col">
+                        Wollen Sie alle Berechtigungen der Benutzergruppe<br>
+                        <strong>
+                            <ng-container *ngIf="!settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype}}</ng-container>
+                            <ng-container *ngIf="settingsService.frameworkSettings.auth.translateUsertype">{{view.selected.usertype | translate}}</ng-container>
+                        </strong> löschen?
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-dismiss="modal"><i class="fas fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</button>
+                <button *ngIf="view.formType === FormType.INSERT" (click)="insert()" type="button" class="btn btn-success"><i class="fas fa-plus"></i> Insert</button>
+                <button *ngIf="view.formType === FormType.COPY" (click)="copy()" type="button" class="btn btn-success"><i class="fas fa-copy"></i> Rechte kopieren</button>
+                <button *ngIf="view.formType === FormType.INSERT_ALL" (click)="insertAll()" type="button" class="btn btn-success"><i class="fas fa-folder-plus"></i> Alle einfügen</button>
+                <button *ngIf="view.formType === FormType.DELETE_ALL" (click)="deleteAll()" type="button" class="btn btn-danger"><i class="fas fa-folder-minus"></i> Alle löschen</button>
+                <button *ngIf="view.formType === FormType.DELETE" (click)="delete()" type="button" class="btn btn-danger"><i class="fas fa-trash"></i> {{'FW.BUTTON.DELETE' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,7 @@
+<pagination-controls
+        class="fw-table-pagination ps-0"
+        [id]="data.config.paginConfig.id"
+        (pageChange)="tableService.tableList.next({event: $event, table: data, id: data.config._id})"
+        previousLabel="{{data.config.paginConfig.prevLabel}}"
+        nextLabel="{{data.config.paginConfig.nextLabel}}">
+</pagination-controls>

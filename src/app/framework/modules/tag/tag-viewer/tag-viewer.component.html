@@ -1,0 +1,7 @@
+<div class="fw-tags">
+    <div class="text-muted" *ngIf="tags.length == 0">Keine Tags gefunden</div>
+
+    <span class="badge fw-tag fw-tag-viewer" *ngFor="let tag of tags" (click)="tagClicked.emit(tag)">
+        {{ tag.name }}
+    </span>
+</div>

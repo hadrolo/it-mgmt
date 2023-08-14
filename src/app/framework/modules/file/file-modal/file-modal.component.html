@@ -1,0 +1,172 @@
+<!-- ToDo: Buttons anpassen wenn handy mode (ngx-device-detector)   -->
+<!--
+
+(swipeleft)="goNextImage()"
+(swiperight)="goPrevImage()"
+(pinch)="hammerTime($event)"
+(pinchin)="hammerTime($event)"
+(pinchout)="hammerTime($event)"
+(pinchstart)="hammerTime($event)"
+(pinchend)="hammerTime($event)"
+-->
+
+<div *ngIf="viewImageModal" class="imageModal"
+     [ngStyle]="{'background-image': 'url(' + result.openFile.imageData + ')', 'background-size': imageWidth + 'px ' + imageHeight + 'px', 'background-position': backgroundImagePosition}"
+     [ngClass]="{'bgDefault': imageClass == 'bgDefault', 'bgVertical': imageClass == 'bgVertical', 'bgHorizontal': imageClass == 'bgHorizontal'}">
+    <div class="content">
+        <div *ngIf="result.openFile" class="w-100 h-100">
+            <div class="d-flex justify-content-between h-100">
+                <div class="nav">
+                    <div *ngIf="files.length > 1" class="rounded-right nav-button nav-arrow-left"
+                         (click)="goPrevImage()"
+                         [ngClass]="navigation.first === navigation.focus ? 'nav-inactive' : 'nav-arrow'">
+                        <i class="fa fa-angle-left fa-4x"></i>
+                    </div>
+                </div>
+                <!--                <div *ngIf="viewZoomNavigator" class="p-2 atext-center">
+                                    <input [(ngModel)]="zoom" type="range" [min]="viewZoomNavigatorMinValue" [max]="viewZoomNavigatorMaxValue" step="1.0" (ngModelChange)="changeZoom()">
+                                </div>-->
+                <div *ngIf="viewFileInfo" class="p-2 align-self-end">
+                    <div class="fileInfo rounded">
+                        <div class="fileInfo-header" (click)="toggleFileInfo()">
+                            <span *ngIf="!hideFileinfo"><i class="fa fa-angle-down fa-2x"></i></span>
+                            <span *ngIf="hideFileinfo"><i class="fa fa-angle-up fa-2x"></i></span>
+                        </div>
+                        <div *ngIf="!hideFileinfo" class="fileInfo-content" [@slideInOut]="'in'">
+                            <table>
+                                <tr *ngFor="let fi of settingsService.frameworkSettings.file.fileViewerFileInfo.rows">
+                                    <td>{{fi.valueTrans | translate}}</td>
+                                    <td>
+                                        <strong>{{fi.field == 'size' ? (result.openFile[fi.field] | fileSize) : result.openFile[fi.field]}}</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                            <button type="button" class="btn btn-secondary btn-block btn-sm mt-1"
+                                    (click)="openInfoModal()">{{'FW.FILE.INFO_HEADER' | translate}}</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav">
+                    <div *ngIf="files.length > 1" class="rounded-left nav-button nav-arrow-right"
+                         (click)="goNextImage()"
+                         [ngClass]="navigation.last === navigation.focus ? 'nav-inactive' : 'nav-arrow'">
+                        <i class="fa fa-angle-right fa-4x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="image-close" (click)="closeFileModal()">
+        <i class="fa fa-times fa-3x"></i>
+    </div>
+    <div *ngIf="viewFlipImage && !loading" class="image-flip text-center">
+        <i class="fa fa-undo fa-2x image-flip-link" (click)="rotateImage(90)"> </i> <i
+            class="fa fa-picture-o fa-2x ps-3 pe-3" style="color:rgba(255, 255, 255, 0.5); cursor: default"></i> <i
+            class="fa fa-undo fa-2x image-flip-link" style="transform: scaleX(-1)" (click)="rotateImage(-90)"> </i>
+    </div>
+    <div *ngIf="loading" class="image-flip text-center">
+        <i class="fa fa-cog fa-spin fa-2x" style="color: rgba(255, 255, 255, 0.5);"></i>
+    </div>
+</div>
+
+<ng-template #modalInfo>
+    <div mat-dialog-content class="modal-form modal-form--m">
+        <div class="modal-form__title">
+            <i class="fa fa-database"></i> {{'FW.FILE.INFO_HEADER' | translate}}
+        </div>
+        <div class="modal-form__content">
+            <div *ngIf="result.openFile" class="modal-body">
+                <div class="row">
+                    <div class="col-md-8 pt-3">
+                        <table>
+                            <tbody>
+                            <tr *ngFor="let fi of settingsService.frameworkSettings.file.fileViewerFileInfo.rows">
+                                <td>{{fi.valueTrans | translate}}</td>
+                                <td>
+                                    <strong>{{fi.field == 'size' ? (result.openFile[fi.field] | fileSize) : result.openFile[fi.field]}}</strong>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <img [src]="result.openFile.imageData" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex modal-form__button">
+                <div class="me-auto">
+                    <button type="button" class="btn btn-secondary" mat-dialog-close>{{'FW.FORM.CLOSE' | translate}}</button>
+                </div>
+                <div>
+                    <!--<button type="button" class="btn btn-success" (click)="editFile()" mat-dialog-close>{{'FW.BUTTON.EDIT' | translate}}</button>-->
+                    <button type="button" class="btn btn-success ms-1" (click)="downloadFile()" mat-dialog-close>{{'FW.BUTTON.DOWNLOAD' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+<!--
+<div class="modal fade" id="info-file-modal_{{randomID}}" tabindex="-1" role="dialog"
+     aria-labelledby="modal-info-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" *ngIf="viewMode == fwFormViewMode.VIEW">
+            <div class="modal-header state bg-info text-white">
+                <h4 class="modal-title">{{'FW.FILE.INFO_HEADER' | translate}}</h4>
+            </div>
+            <div *ngIf="result.openFile" class="modal-body">
+                <div class="row">
+                    <div class="col-md-8 pt-3">
+                        <table>
+                            <tbody>
+                            <tr *ngFor="let fi of settingsService.frameworkSettings.file.fileViewerFileInfo.rows">
+                                <td>{{fi.valueTrans | translate}}</td>
+                                <td>
+                                    <strong>{{fi.field == 'size' ? (result.openFile[fi.field] | fileSize) : result.openFile[fi.field]}}</strong>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <img [src]="result.openFile.imageData" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary"
+                        (click)="editFile()">{{'FW.BUTTON.EDIT' | translate}}</button>
+                <button type="button" class="btn btn-primary"
+                        (click)="downloadFile()">{{'FW.BUTTON.DOWNLOAD' | translate}}</button>
+                <button type="button" class="btn btn-secondary"
+                        data-dismiss="modal">{{'FW.FORM.CLOSE' | translate}}</button>
+            </div>
+        </div>
+
+        <div class="modal-content" *ngIf="viewMode == fwFormViewMode.EDIT">
+            <div class="modal-header state bg-info text-white">
+                <h4 class="modal-title">{{'FW.FILE.INFO_HEADER' | translate}}</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form" #editForm="ngForm">
+                    <ng-container *ngFor="let fi of settingsService.frameworkSettings.file.fileViewerFileInfo.rows">
+                        <div *ngIf="fi.editable == true">
+                            <label>{{fi.valueTrans | translate}}</label>
+                            <input type="text" class="form-control" name="{{fi.field}}" autocomplete="off"
+                                   [(ngModel)]="result.openFile[fi.field]" required>
+                        </div>
+                    </ng-container>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" [disabled]="editForm.invalid"
+                        (click)="updateFile()">{{ 'FW.BUTTON.UPDATE' | translate}}</button>
+                <button type="button" class="btn btn-secondary"
+                        (click)="cancelEditFile()">{{ 'FW.BUTTON.CANCEL' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>
+-->

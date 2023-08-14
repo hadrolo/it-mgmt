@@ -1,0 +1,50 @@
+<mat-toolbar style="background-color: #f1f1f1">
+    <mat-toolbar-row style="justify-content: space-between">
+        <div class="d-flex align-items-center">
+            <div *ngIf="pageService.layout.isScreenSmall || !pageService.sidenavOpen" class="">
+                <button type="button" mat-icon-button (click)="pageService.openSidebar.next(null)">
+                    <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+                </button>
+            </div>
+            <div class="text-align"><h1 class="p-0 m-0">{{title}}</h1></div>
+        </div>
+        <span>
+        <div class="row">
+            <div class="col pe-0">
+                <ng-content></ng-content>
+                <button
+                        type="button"
+                        mat-icon-button
+                        *ngIf="pageService.layout.isFullscreen && !pageService.layout.isScreenSmall"
+                        [matTooltip]="translateService.instant('FW.TOOLTIP.EXIT_FULLSCREEN')"
+                        (click)="pageService.exitFullscreen()">
+                    <mat-icon aria-label="Side nav toggle icon">fullscreen_exit</mat-icon>
+                </button>
+                <button
+                        type="button"
+                        mat-icon-button
+                        *ngIf="!pageService.layout.isFullscreen && !pageService.layout.isScreenSmall"
+                        [matTooltip]="translateService.instant('FW.TOOLTIP.ENTER_FULLSCREEN')"
+                        (click)="pageService.enterFullscreen()">
+                    <mat-icon aria-label="Side nav toggle icon">fullscreen</mat-icon>
+                </button>
+            </div>
+            <div class="col" style="margin-left: 0 !important;">
+                <div class="language-switch" [matTooltip]="translateService.instant('FW.TOOLTIP.LANGUAGE_SWITCH')">
+                    <app-language-switch [showFlags]="true" [showText]="true" [showIso3]="false"></app-language-switch>
+                </div>
+            </div>
+            <div class="col" style="padding-left: 0 !important;">
+                <button
+                        type="button"
+                        mat-icon-button
+                        *ngIf="!pageService.layout.isFullscreen && !pageService.layout.isScreenSmall"
+                        [matTooltip]="translateService.instant('FW.TOOLTIP.LOGOUT')"
+                        (click)="userService.logout().subscribe()">
+                    <mat-icon aria-label="Side nav toggle icon">logout</mat-icon>
+                </button>
+            </div>
+        </div>
+        </span>
+    </mat-toolbar-row>
+</mat-toolbar>

@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteRule ^api/libs / [R=permanent,L]
+RewriteRule ^api/classes / [R=permanent,L]
+RewriteRule ^api/service / [R=permanent,L]
+RewriteRule ^data / [R=permanent,L]

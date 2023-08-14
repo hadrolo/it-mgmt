@@ -1,0 +1,81 @@
+<input style="display: none" type="file" (change)="selectFiles($event)" #fileInput [accept]="uploadAccept" [multiple]="uploadSelectMultiple">
+<div *ngIf="(selectedFiles == null || (uploadedCount == '0')) && ( !uploadMaxFileCount || countAlreadyUploaded < uploadMaxFileCount )" class="row pb-3">
+    <div class="ps-3 pe-3">
+        <ng-container *ngIf="showDragAndDrop">
+            <div class="fw-file-upload-drop-zone" appDnd (fileDropped)="onFileDropped($event)" [ngClass]="{'fw-file-upload-disabled': uploadDisabled}"><p>{{'FW.FILE.DROP_FILES_HERE' | translate}}</p>{{'FW.FILE.OR' | translate}}
+                <button type="button" class="btn btn-info me-2" (click)="fileInput.click()" [disabled]="uploadDisabled">
+                    <i class="fa fa-mouse-pointer fa-sm"></i>
+                    {{'FW.FILE.SELECT_FILES' | translate}} <span *ngIf="uploadMaxFilesize > 0">({{(uploadMaxFilesize) | number: '1.0-2'}} MB)</span>
+                </button>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="!showDragAndDrop">
+            <button type="button" class="btn btn-info me-2" (click)="fileInput.click()" [disabled]="uploadDisabled">
+                <i class="fa fa-mouse-pointer fa-sm"></i>
+                {{'FW.FILE.SELECT_FILES' | translate}} <span *ngIf="uploadMaxFilesize > 0">({{(uploadMaxFilesize) | number: '1.0-2'}} MB)</span>
+            </button>
+        </ng-container>
+    </div>
+</div>
+
+<ng-container *ngIf="selectedFiles != null">
+    <div *ngIf="upload.status !== 'finished' && !showError" class="alert alert-info mb-3">
+        {{activeFiles}} {{'FW.FILE.SELECTED_FILES' | translate}}:
+        <form class="form" #uploadForm="ngForm">
+            <table class="table table-sm table-borderless table-hover mb-0 w-auto">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>{{'FW.FILE.NAME' | translate }}</th>
+                    <th>{{'FW.FILE.SIZE' | translate }}</th>
+                    <th *ngIf="activeFiles > 1"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let file of selectedFiles; let i = index" [hidden]="file['deleted']">
+                    <td><img *ngIf="file.type.match('image.*')" [src]="file['src']" style="height: 30px"/></td>
+                    <td><input type="text" class="form-control form-control-sm" name="name_{{i}}" [(ngModel)]="file['display_name']" required/></td>
+                    <td>{{ (file.size / 1024 / 1024) | number: '1.0-2'}} MB</td>
+                    <td *ngIf="activeFiles > 1">
+                        <button type="button" class="btn btn-danger btn-sm" (click)="removeSelectedFile(file)"><i class="fas fa-times"></i></button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+        <div class="pt-2" *ngIf="upload.status === 'pending'">
+            <button type="submit" class="btn btn-success btn-sm me-2" [disabled]="uploading || uploadForm.invalid" (click)="onUpload()" *ngIf="errors.length == 0">
+                <i class="fa fa-upload fa-sm"></i>
+                {{'FW.FILE.UPLOAD' | translate}}
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="deselectFiles()">
+                <i class="fa fa-remove fa-sm"></i>
+                {{'FW.BUTTON.CANCEL' | translate}}
+            </button>
+        </div>
+        <ng-container *ngIf="upload.status === 'progress' && !showError">
+            <div class="progress" style="height: 20px;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" [style.width.%]="upload.progress" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ upload.progress }}%</div>
+            </div>
+        </ng-container>
+    </div>
+    <div *ngIf="errors.length > 0" class="alert alert-danger">
+        <ul class="mb-0">
+            <li *ngFor="let error of errors">
+                <span *ngIf="error.errorType == 'INVALID_TYPE'" [innerHTML]="'FW.FILE.ERROR_TYPE' | translate:{filename: error.filename, type: error.type, acceptString: acceptString}"></span>
+                <span *ngIf="error.errorType == 'INVALID_SIZE'" [innerHTML]="'FW.FILE.ERROR_SIZE' | translate:{filename: error.filename, size: (error.size / (1024 * 1024)) | number: '1.0-2', maxSize: (uploadMaxSingleFilesize) | number: '1.0-2'}"></span>
+                <span *ngIf="error.errorType == 'INVALID_MAX_FILESIZE'"
+                      [innerHTML]="'FW.FILE.ERROR_MAX_FILESIZE' | translate:{maxFilesizeUpload: (error.maxFilesizeUpload / (1024 * 1024)) | number: '1.0-2', maxFilesizeAllowed: (error.maxFilesizeAllowed) | number: '1.0-2'}"></span>
+            </li>
+        </ul>
+    </div>
+    <div *ngIf="showSuccess && upload.progress === 100 && !showError" [@simpleFadeAnimation]="'in'" class="alert alert-success">
+        {{'FW.FILE.SUCCESS' | translate}}.
+    </div>
+    <div *ngIf="showError" class="alert alert-danger">
+        {{'FW.FILE.ERROR' | translate}}.
+    </div>
+    <div *ngIf="(showError || (upload.progress === 100)) && ( !uploadMaxFileCount || countAlreadyUploaded < uploadMaxFileCount) && !uploading" class="pb-3">
+        <button type="button" class="btn btn-info btn-sm" (click)="deselectFiles()">{{'FW.FILE.NEW' | translate}}</button>
+    </div>
+</ng-container>

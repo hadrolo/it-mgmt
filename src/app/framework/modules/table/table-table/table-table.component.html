@@ -1,0 +1,166 @@
+<div class="table-responsive">
+    <table class="table table-sm table-hover smaller">
+        <thead>
+        <tr *ngIf="data.config.dataConfig.columnFilter.active">
+            <ng-container *ngFor="let tf of data.config.dataConfig.tableFields">
+                <th
+                        *ngIf="tf.visible"
+                        [class.text-center]="tf.alignment === TableFieldAlignment.CENTER"
+                        [class.text-end]="tf.alignment === TableFieldAlignment.RIGHT">
+
+                    <input *ngIf="data.config.dataConfig.columnFilter.fields[tf.key] && data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.INPUT"
+                           (keyup)="tableService.changeColumnFilterValue.next(data)"
+                           [(ngModel)]="data.config.dataConfig.columnFilter.fields[tf.key].value"
+                           class="form-control form-control-sm"
+                           type="text"
+                           autocomplete="off"
+                           [class.fw-table-field-filtered]="data.config.dataConfig.columnFilter.fields[tf.key].value != ''">
+
+                    <select
+                            *ngIf="data.result.selects && (
+                                data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.LOOKUP ||
+                                data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.SUBQUERY_COUNT ||
+                                data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.SUBQUERY_CONCAT)"
+                            class="form-select form-select-sm"
+                            autocomplete="off"
+                            [(ngModel)]="data.config.dataConfig.columnFilter.fields[tf.key].value"
+                            (change)="tableService.changeColumnFilterValue.next(data)"
+                            [class.fw-table-field-filtered]="data.config.dataConfig.columnFilter.fields[tf.key].value != ''">
+                        <option value="">{{ data.config.dataConfig.columnFilter.dropDownDefault}}</option>
+                        <option *ngFor="let item of data.result.selects[tf.key]" [ngValue]="item[tf.key]">
+                            <ng-container *ngIf="!tf.translate">
+                                {{item[tf.key]}}
+                            </ng-container>
+                            <ng-container *ngIf="tf.translate">
+                                {{(tf.translateValuePrefix ? (tf.translateValuePrefix + '.' + item[tf.key]) : item[tf.key]) | translate}}
+                            </ng-container>
+                        </option>
+                    </select>
+
+                    <select *ngIf="data.result.selects && data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.ENUM"
+                            class="form-select form-select-sm"
+                            autocomplete="off"
+                            [(ngModel)]="data.config.dataConfig.columnFilter.fields[tf.key].value"
+                            (change)="tableService.changeColumnFilterValue.next(data)"
+                            [class.fw-table-field-filtered]="data.config.dataConfig.columnFilter.fields[tf.key].value != ''">
+                        <option value="">{{ data.config.dataConfig.columnFilter.dropDownDefault}}</option>
+                        <option *ngFor="let item of data.result.selects[tf.key]" [ngValue]="item">
+                            {{item}}
+                        </option>
+                    </select>
+
+                    <select *ngIf="data.result.selects && data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.BOOLEAN"
+                            class="form-select form-select-sm"
+                            autocomplete="off"
+                            [(ngModel)]="data.config.dataConfig.columnFilter.fields[tf.key].value"
+                            (change)="tableService.changeColumnFilterValue.next(data)"
+                            [class.fw-table-field-filtered]="data.config.dataConfig.columnFilter.fields[tf.key].value != ''">
+                        <option value="">{{ data.config.dataConfig.columnFilter.dropDownDefault}}</option>
+                        <option *ngFor="let item of data.result.selects[tf.key]" [ngValue]="item">
+                            <ng-container *ngIf="item == '0'">{{ data.config.dataConfig.columnFilter.falseValue}}</ng-container>
+                            <ng-container *ngIf="item == '1'">{{ data.config.dataConfig.columnFilter.trueValue}}</ng-container>
+                        </option>
+                    </select>
+
+                    <select *ngIf="data.result.selects && (data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.GROUP ||
+                                data.config.dataConfig.columnFilter.fields[tf.key]?.type === TableColumnFilterType.SUBQUERY_GROUP)"
+                            class="form-select form-select-sm"
+                            autocomplete="off"
+                            [(ngModel)]="data.config.dataConfig.columnFilter.fields[tf.key].value"
+                            (change)="tableService.changeColumnFilterValue.next(data)"
+                            [class.fw-table-field-filtered]="data.config.dataConfig.columnFilter.fields[tf.key].value != ''">
+                        <option value="">{{ data.config.dataConfig.columnFilter.dropDownDefault}}</option>
+                        <option *ngFor="let item of data.result.selects[tf.key]" [ngValue]="item">
+                            <ng-container *ngIf="!tf.translate">
+                                {{item}}
+                            </ng-container>
+                            <ng-container *ngIf="tf.translate">
+                                {{(tf.translateValuePrefix ? (tf.translateValuePrefix + '.' + item) : item) | translate}}
+                            </ng-container>
+                        </option>
+                    </select>
+
+                </th>
+            </ng-container>
+        </tr>
+        <tr>
+            <ng-container *ngFor="let tf of data.config.dataConfig.tableFields">
+                <th *ngIf="tf.sortable && tf.visible"
+                    (click)="tableService.changeSort.next({field: tf, data: data})"
+                    style="cursor: pointer"
+                    [ngClass]="{'asc' : data.config.dataConfig.order === tf.key && data.config.dataConfig.reverse === false, 'desc' : data.config.dataConfig.order === tf.key && data.config.dataConfig.reverse === true}"
+                    [class.fw-table-column-sorted-header]="data.config.dataConfig.order === tf.key">
+                    <div class="d-flex"
+                         [class.fw-div-center]="tf.alignment === TableFieldAlignment.CENTER"
+                         [class.fw-div-right]="tf.alignment === TableFieldAlignment.RIGHT">
+                        <div *ngIf="data.config.dataConfig.order === tf.key" class="ps-1">
+                            <i class="fa"
+                               [ngClass]="{'fa-arrow-down': data.config.dataConfig.reverse === false, 'fa-arrow-up': data.config.dataConfig.reverse === true}"
+                               [matTooltip]="data.config.dataConfig.reverse ? translateService.instant('FW.TABLE.SORT_UP') : translateService.instant('FW.TABLE.SORT_DOWN')"></i>
+                        </div>
+                    </div>
+                </th>
+                <th *ngIf="!tf.sortable && tf.visible" class="fw-table-filed-noSort"
+                    [class.text-center]="tf.alignment === TableFieldAlignment.CENTER"
+                    [class.text-end]="tf.alignment === TableFieldAlignment.RIGHT">{{tf.title}}</th>
+            </ng-container>
+        </tr>
+        </thead>
+        <tbody *ngIf="data.result?.table">
+        <!--            ToDo:  *ngFor=" ...| paginate: config.paginConfig"-->
+        <tr *ngFor="let row of data.result.table | paginate: data.config.paginConfig"
+            [class.fw-table-row-focused]="rowFocus === row[data.config.dataConfig.tableIndexName]"
+            [style.color]="row.colorActive ? row.color : ''"
+            (click)="openDataset(row[data.config.dataConfig.tableIndexName])">
+
+            <ng-container *ngFor="let tf of data.config.dataConfig.tableFields">
+                <td
+                        *ngIf="tf.visible && (!tf.fileViewer && !tf.fileViewerFID)"
+                        [class.fw-table-column-sorted]="data.config.dataConfig.order === tf.key">
+                        <span [class.text-nowrap]="tf.nowrap">
+                            <ng-container [ngSwitch]="tf._DB_type_name">
+                                <ng-container *ngSwitchCase="'tinyint'">
+                                    <app-table-table-field-image [dataConfig]="data.config.dataConfig" [tableField]="tf" [row]="row">
+                                        {{row[tf.key] == '1' ? data.config.dataConfig.columnFilter.trueValue : data.config.dataConfig.columnFilter.falseValue}}
+                                    </app-table-table-field-image>
+                                </ng-container>
+                                <ng-container *ngSwitchDefault>
+                                    <app-table-table-field-image [dataConfig]="data.config.dataConfig" [tableField]="tf" [row]="row">
+                                        <ng-container *ngIf="!tf.translate">{{row[tf.key]}}</ng-container>
+                                        <ng-container *ngIf="tf.translate && !tf.translateValuePrefix">{{row[tf.key] | translate}}</ng-container>
+                                        <ng-container *ngIf="tf.translateValuePrefix">{{tf['translateValuePrefix'] + '.' + row[tf.key] | translate}}</ng-container>
+                                    </app-table-table-field-image>
+                                </ng-container>
+                            </ng-container>
+                        </span>
+                </td>
+
+                <td *ngIf="tf.fileViewer">
+
+                </td>
+
+                <td *ngIf="tf.fileViewerFID">
+                    <app-file-viewer-single [selFid]="row[tf.fileViewerFID.FID]" [imageWidth]="tf.fileViewerFID.width" [imageHeight]="tf.fileViewerFID.height"
+                                            [viewThumbnail]="tf.fileViewerFID.viewThumbnail"></app-file-viewer-single>
+                </td>
+            </ng-container>
+        </tr>
+        </tbody>
+        <tfoot *ngIf="showFooter">
+        <tr>
+            <td
+                    *ngFor="let tf of data.config.dataConfig.tableFields"
+                    [class.text-center]="tf.alignment === TableFieldAlignment.CENTER"
+                    [class.text-end]="tf.alignment === TableFieldAlignment.RIGHT">
+                <span *ngIf="tf.footerSum" class="footer-value">{{tf._footerSumValue | number: '1.0-2'}}</span>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+</div>
+
+
+<app-file-modal *ngIf="data.config.fileViewerConfig"
+                [viewFlipImage]="data.config.fileViewerConfig.viewFlipImage"
+                [viewFileInfo]="data.config.fileViewerConfig.viewFileInfo"
+></app-file-modal>

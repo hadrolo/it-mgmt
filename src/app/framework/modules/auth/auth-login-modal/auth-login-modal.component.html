@@ -1,0 +1,80 @@
+<div class="modal fade" id="login-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" *ngIf="view.setting.viewMode == fwLoginModalViewMode.LOGIN">
+            <div class="modal-header state bg-dark text-white">
+                <h4 class="modal-title"><i class="fa fa-sign-in-alt"></i> {{'FW.LOGIN.LOGIN' | translate}}</h4>
+            </div>
+            <div class="modal-body">
+                <form (submit)="login()">
+                    <input
+                            [(ngModel)]="view.data.username"
+                            [disabled]="view.setting.loginInProgress"
+                            type="text"
+                            class="form-control"
+                            name="username"
+                            placeholder="{{settingsService.frameworkSettings.auth.loginField | translate}}"
+                            autocomplete="off" required>
+                    <input
+                            [(ngModel)]="view.data.password"
+                            [disabled]="view.setting.loginInProgress"
+                            type="password"
+                            class="form-control"
+                            name="password"
+                            placeholder="{{'FW.LOGIN.PASSWORD' | translate}}"
+                            autocomplete="off" required>
+                    <button [disabled]="view.setting.loginInProgress" type="submit" class="btn btn-primary btn-block">{{'FW.LOGIN.LOGIN' | translate}}</button>
+                    <button
+                            [disabled]="view.setting.loginInProgress"
+                            *ngIf="settingsService.frameworkSettings.auth.passwordReset"
+                            (click)="setView(fwLoginModalViewMode.RESET_PW)"
+                            type="button" class="btn btn-secondary btn-block">{{'FW.LOGIN.FORGOT' | translate}}</button>
+                </form>
+                <ngx-invisible-recaptcha
+                        *ngIf="settingsService.frameworkSettings.production && settingsService.frameworkSettings.auth.googleRecaptcha"
+                        #captchaElem
+                        [siteKey]="settingsService.frameworkSettings.auth.googleRecaptchaSiteKey"
+                        (success)="loginFunction()"
+                        [useGlobalDomain]="false"
+                        [hl]="userService.currentUser.language"
+                        [theme]="view.setting.recaptcha.theme"
+                        [type]="view.setting.recaptcha.type"
+                        [badge]="view.setting.recaptcha.badge"
+                        [ngModel]="view.setting.recaptcha.recaptcha"
+                        [ngModelOptions]="{ standalone: true }">
+                </ngx-invisible-recaptcha>
+            </div>
+        </div>
+
+        <div class="modal-content" [hidden]="view.setting.viewMode != fwLoginModalViewMode.ERROR">
+            <div class="modal-header state bg-danger text-white">
+                <h4 class="modal-title"><i class="fa fa-warning"></i> {{'FW.LOGIN.ERROR' | translate}}</h4>
+            </div>
+            <div class="modal-body">
+                {{view.data.deniedMessage}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" #errorDismissButton>{{ 'FW.BUTTON.OK' | translate}}</button>
+            </div>
+        </div>
+
+        <div class="modal-content" *ngIf="view.setting.viewMode == fwLoginModalViewMode.RESET_PW">
+            <div class="modal-header state bg-danger text-white">
+                <h4 class="modal-title"><i class="fa fa-warning"></i> {{settingsService.frameworkSettings.auth.passwordReset.modalTitle | translate}}</h4>
+            </div>
+            <div class="modal-body">
+                {{this.settingsService.frameworkSettings.auth.passwordReset.modalText | translate}}
+                <input type="email" class="form-control" required email
+                       #fieldEmailInput="ngModel"
+                       [(ngModel)]="view.data.email"
+                       [placeholder]="settingsService.frameworkSettings.auth.passwordReset.modalPlaceholder | translate"
+                       (keyup.enter)="!fieldEmailInput.errors?.email ? resetPasswordNow() : ''"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" [disabled]="fieldEmailInput.invalid || fieldEmailInput.errors?.email"
+                        (click)="resetPasswordNow()"> {{ this.settingsService.frameworkSettings.auth.passwordReset.buttonConfirm | translate}}</button>
+                <button type="button" class="btn btn-secondary"
+                        (click)="setView(fwLoginModalViewMode.LOGIN)"> {{ this.settingsService.frameworkSettings.auth.passwordReset.buttonCancel | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

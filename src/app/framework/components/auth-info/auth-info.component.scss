@@ -1,0 +1,21 @@
+.info {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 10000;
+
+  .user-info {
+    background: gold;
+    padding: 10px;
+  }
+
+  .jwt-info {
+    background: silver;
+    padding: 10px;
+  }
+
+  pre {
+    margin-bottom: 0;
+  }
+}
+

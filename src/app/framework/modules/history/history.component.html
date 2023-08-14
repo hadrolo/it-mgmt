@@ -1,0 +1,90 @@
+<div class="accordion fw-history" id="historyAccordion">
+    <div *ngFor="let row of history" class="accordion-item">
+        <h2 class="accordion-header" [id]="'heading' + row.id">
+            <button class="accordion-button bg-light" type="button" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + row.id" style="height: 20px">
+                <div class="pull-left float-start">
+                    <i *ngIf="row.type === 'insert'" class="fas fa-plus"></i>
+                    <i *ngIf="row.type === 'update'" class="fas fa-edit"></i>
+                    {{row.created}} - {{row.userinfo1}}
+                    <ng-container *ngIf="row.userinfo2"> {{row.userinfo2}}</ng-container>
+                    <ng-container *ngIf="row.userinfo3"> {{row.userinfo3}}</ng-container>
+                    <ng-container *ngIf="row.userinfo4"> {{row.userinfo4}}</ng-container>
+                    <ng-container *ngIf="row.userinfo5"> {{row.userinfo5}}</ng-container>
+                </div>
+            </button>
+        </h2>
+        <div id="collapse{{row.id}}" [class.show]="row.id === 0" class="accordion-collapse collapse" [attr.aria-labelledby]="'heading' + row.id" data-bs-parent="#historyAccordion">
+            <div class="accordion-body">
+                <table>
+                    <tbody>
+                    <tr *ngFor="let field of row.dataArray">
+                        <td><p class="pe-2">{{field.key}}</p></td>
+                        <ng-container *ngIf="row.type === 'insert'">
+                            <td *ngIf="field.value && field.value !== ''"><p class="newValue ps-2" [innerHTML]="field.value"></p></td>
+                            <td *ngIf="field.value === ''"><p class="newValue ps-2">EMPTY</p></td>
+                            <td *ngIf="!field.value"><p class="newValue ps-2">NULL</p></td>
+                        </ng-container>
+                        <ng-container *ngIf="row.type === 'update' && (field.parentValue !== field.value)">
+                            <td *ngIf="field.parentValue && field.parentValue !== ''"><p class="newValue ps-2" [innerHTML]="field.parentValue"></p></td>
+                            <td *ngIf="!field.parentValue"><p class="newValue ps-2">NULL</p></td>
+                            <td><p><i class="fas fa-arrow-right"></i></p></td>
+                            <td *ngIf="field.value && field.value !== ''"><p class="newValue ps-2" [innerHTML]="field.value"></p></td>
+                            <td *ngIf="!field.value"><p class="newValue ps-2">NULL</p></td>
+                        </ng-container>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--
+<div id="accordion" class="fw-history">
+    <ng-container *ngFor="let row of history">
+        <div class="card">
+            <div class="card-header" id="hading{{row.id}}" data-bs-toggle="collapse" [attr.data-bs-target]="'#collapse' + row.id" aria-expanded="true" [attr.controls]="'#collapse' + row.id">
+                <div class="pull-left float-start small">
+                    <i *ngIf="row.type === 'insert'" class="fas fa-plus"></i>
+                    <i *ngIf="row.type === 'update'" class="fas fa-edit"></i>
+                    {{row.created}} - {{row.userinfo1}}
+                    <ng-container *ngIf="row.userinfo2"> {{row.userinfo2}}</ng-container>
+                    <ng-container *ngIf="row.userinfo3"> {{row.userinfo3}}</ng-container>
+                    <ng-container *ngIf="row.userinfo4"> {{row.userinfo4}}</ng-container>
+                    <ng-container *ngIf="row.userinfo5"> {{row.userinfo5}}</ng-container>
+                </div>
+            </div>
+            <div id="collapse{{row.id}}" class="collapse" [class.show]="row.id === 0" [attr.aria-labelledby]="'#collapse' + row.id" data-parent="#accordion">
+                <div class="card-body" style="overflow-x: auto">
+                    <table>
+                        <tbody>
+                        <tr *ngFor="let field of row.dataArray">
+                            <td><p class="pe-2">{{field.key}}</p></td>
+
+                            <ng-container *ngIf="row.type === 'insert'">
+                                <td *ngIf="field.value && field.value !== ''"><p class="newValue ps-2" [innerHTML]="field.value"></p></td>
+                                <td *ngIf="field.value === ''"><p class="newValue ps-2">EMPTY</p></td>
+                                <td *ngIf="!field.value"><p class="newValue ps-2">NULL</p></td>
+                            </ng-container>
+
+                            <ng-container *ngIf="row.type === 'update' && (field.parentValue !== field.value)">
+
+                                <td *ngIf="field.parentValue && field.parentValue !== ''"><p class="newValue ps-2" [innerHTML]="field.parentValue"></p></td>
+                                <td *ngIf="!field.parentValue"><p class="newValue ps-2">NULL</p></td>
+
+                                <td><p><i class="fas fa-arrow-right"></i></p></td>
+
+                                <td *ngIf="field.value && field.value !== ''"><p class="newValue ps-2" [innerHTML]="field.value"></p></td>
+                                <td *ngIf="!field.value"><p class="newValue ps-2">NULL</p></td>
+
+                            </ng-container>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>
+-->

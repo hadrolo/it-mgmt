@@ -1,0 +1,52 @@
+<app-toolbar [title]="'FW.RIGHT.RIGHT_GROUP_TITLE'|translate">
+    <!--    <button
+                type="button"
+                mat-icon-button
+                *ngIf="rightService.allowed('Dashboard/openSettings')"
+                [matTooltip]="translateService.instant('FW.TOOLTIP.DASHBOARD_SETTINGS')"
+                (click)="openDashboardSettings()">
+            <mat-icon aria-label="Side nav toggle icon">settings</mat-icon>
+        </button>-->
+</app-toolbar>
+
+<div *ngIf="table.config" class="container-fluid pt-2">
+    <app-table [data]="table">
+        <div class="row ">
+            <div class="col pt-1" style="min-width: 80px">
+                <app-table-search-field [data]="table"></app-table-search-field>
+            </div>
+            <div class="col-auto text-end">
+                <div class="row">
+                    <div class="col-auto text-end pt-2">
+                        <app-table-index [data]="table"></app-table-index>
+                    </div>
+                    <div class="col-auto text-end pt-1">
+                        <app-table-insert-button [data]="table"></app-table-insert-button>
+                    </div>
+                    <div class="col-auto text-end pt-1">
+                        <app-table-filter-button [data]="table"></app-table-filter-button>
+                    </div>
+                    <div class="col-auto text-end pt-1">
+                        <app-table-row-switch [data]="table"></app-table-row-switch>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card fw-table mt-3">
+            <div class="card-body">
+                <app-table-table *ngIf="table.result.table" [data]="table"></app-table-table>
+            </div>
+        </div>
+        <div class="row pt-3">
+            <div class="col-sm-6">
+                <app-table-pagination [data]="table"></app-table-pagination>
+            </div>
+            <div class="col-sm-6 text-end">
+                <app-table-row-count [data]="table"></app-table-row-count>
+            </div>
+        </div>
+    </app-table>
+</div>
+
+<app-form *ngIf="!table.config.openDatasetRouterLink && table.config.formConfig" [config]="table.config.formConfig" (status)="tableService.reloadTable.next(table)"></app-form>
+

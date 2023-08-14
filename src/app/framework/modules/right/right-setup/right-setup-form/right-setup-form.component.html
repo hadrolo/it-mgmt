@@ -1,0 +1,140 @@
+<app-toolbar [title]="'FW.RIGHT.RIGHT_TITLE'|translate">
+</app-toolbar>
+
+<div class="container-fluid pt-2 fw-right">
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <form [formGroup]="rightForm">
+                        <h1>{{view.setting.htmlTitle}}</h1>
+                        <div class="row">
+                            <div class="col">
+                                <label>Modul</label>
+                                <select class="form-select" formControlName="module" autocomplete="off" (change)="prepareForm()">
+                                    <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                    <option *ngFor="let module of view.data.moduleList" [ngValue]="module">{{ module | titlecase}}</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label>Recht Typ</label>
+                                <select class="form-select" formControlName="type" autocomplete="off" (change)="prepareForm()">
+                                    <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                    <option *ngFor="let type of view.data.typeList" [ngValue]="type">{{ type | titlecase}}</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label>Recht Gruppe</label>
+                                <select class="form-select" formControlName="rightGroup" autocomplete="off">
+                                    <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                    <option *ngFor="let rightGroup of view.data.rightGroupList" [ngValue]="rightGroup.RGID">{{ rightGroup.RGID}}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label>Name</label>
+                                <input class="form-control validation-field" type="text" formControlName="name" autocomplete="off">
+                                <small class="text-danger" *ngIf="rightForm.controls.name.touched">
+                                    <span class="text-danger" *ngIf="rightForm.controls.name.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+                                </small>
+                            </div>
+                            <div class="col">
+                                <label>i18n</label>
+                                <input class="form-control validation-field" type="text" formControlName="i18n" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label>Class</label>
+                                <input class="form-control validation-field" type="text" formControlName="class" autocomplete="off">
+                                <small class="text-danger" *ngIf="rightForm.controls.class.touched">
+                                    <span class="text-danger" *ngIf="rightForm.controls.class.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+                                </small>
+                            </div>
+                            <div class="col">
+                                <label>Method</label>
+                                <input class="form-control validation-field" type="text" formControlName="method" autocomplete="off">
+                                <small class="text-danger" *ngIf="rightForm.controls.method.touched">
+                                    <span class="text-danger" *ngIf="rightForm.controls.method.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+                                </small>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <label>Beschreibung</label>
+                                <textarea class="form-control" rows="3" id="lastElement" formControlName="description" autocomplete="off"></textarea>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="d-flex mt-3">
+                        <div class="flex-grow-1">
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.VIEW || view.setting.formViewMode === FormViewMode.INSERT"
+                                    (click)="closeForm()"
+                                    type="button"
+                                    class="btn btn-secondary me-1"
+                                    data-dismiss="modal"><i class="fas fa-arrow-left"></i> {{'FW.BUTTON.BACK' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.EDIT"
+                                    (click)="cancelEditMode()"
+                                    type="button"
+                                    class="btn btn-secondary me-1"
+                                    data-dismiss="modal"><i class="fas fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.VIEW"
+                                    (click)="openEditForm()"
+                                    type="button"
+                                    class="btn btn-success"
+                                    data-dismiss="modal"><i class="fas fa-edit"></i> {{'FW.BUTTON.EDIT' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.INSERT"
+                                    (click)="insertRight()"
+                                    [disabled]="rightForm.invalid"
+                                    type="button" class="btn btn-success" data-dismiss="modal"><i class="fas fa-plus"></i> {{'FW.BUTTON.SAVE' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.EDIT"
+                                    (click)="updateRight()"
+                                    [disabled]="rightForm.invalid"
+                                    type="button"
+                                    class="btn btn-success"
+                                    data-dismiss="modal"><i class="fas fa-check"></i> {{'FW.BUTTON.UPDATE' | translate}}</button>
+                        </div>
+                        <div *ngIf="view.setting.formViewMode === FormViewMode.VIEW">
+                            <button
+                                    data-toggle="modal"
+                                    data-target="#del-modal ms-1"
+                                    type="button"
+                                    class="btn btn-danger w-100p">{{'FW.FORM.DELETE' | translate}}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6" *ngIf="view.setting.formViewMode !== FormViewMode.INSERT && rightForm.value && rightForm.value.type == 'ALIAS'">
+            <app-right-setup-alias [RID]="view.data.currentRID" [viewMode]="view.setting.formViewMode"></app-right-setup-alias>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="del-modal" tabindex="-1" role="dialog" aria-labelledby="modal-del-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header state bg-danger text-white">
+                <h4 class="modal-title" id="modal-del-label"><i class="fa fa-warning"></i> Einzelprüfung löschen</h4>
+            </div>
+            <div *ngIf="view.data.right" class="modal-body">
+                {{'FW.FORM.DELETE_TXT1' | translate}}
+                <div class="pt-3 pb-3">
+                    Name: <strong>{{view.data.right.name}}</strong><br>
+                    <ng-container *ngIf="view.data.right.description">Beschreibung: <strong>{{view.data.right.description}}</strong><br></ng-container>
+                </div>
+                {{'FW.FORM.DELETE_TXT2' | translate}}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="deleteRight()">{{'FW.FORM.DELETE' | translate}}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{'FW.FORM.CANCEL' | translate}}</button>
+            </div>
+        </div>
+    </div>
+</div>

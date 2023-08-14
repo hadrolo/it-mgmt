@@ -1,0 +1,23 @@
+<ng-template #template>
+<!--    <div class="modal-header">
+        <h4 class="modal-title pull-left">{{'FW.FORCE_LOGOUT.HEADER' | translate}}</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>-->
+    <div class="modal-body text-center">
+        <div class="text-center">
+            {{'FW.FORCE_LOGOUT.BODY' | translate: {time: userService.forcedLogout.lastActivityTime} }}
+            <span class="countdown">{{userService.forcedLogout.logoutCountDown}}</span>
+        </div>
+        <div class="row pt-3">
+            <div class="col text-center">
+                <button type="button" class="btn btn-dark" (click)="extendSession()">{{'FW.FORCE_LOGOUT.EXPAND_BUTTON' | translate}}</button>
+            </div>
+            <div class="col text-center">
+                <button type="button" class="btn btn-dark" (click)="logout()">{{'FW.BUTTON.LOGOUT' | translate}}</button>
+            </div>
+        </div>
+
+    </div>
+</ng-template>

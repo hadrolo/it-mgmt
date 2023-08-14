@@ -1,0 +1,236 @@
+<app-toolbar [title]="'FW.USER.USER_EDIT_TITLE'|translate"></app-toolbar>
+
+<div class="container-fluid pt-2">
+    <div class="card">
+        <div class="card-body">
+            <form [formGroup]="userForm" class="form">
+                <div class="row">
+                    <div class="col">
+
+                        <label>{{'USER.USERNAME' | translate}}</label>
+                        <input class="form-control form-control-sm" type="text" formControlName="username" minlength="4" #username (keyup)="checkUsernameExist()" autocomplete="off">
+                        <small class="text-danger" *ngIf="userForm.controls.username.touched">
+                            <span class="text-danger" *ngIf="userForm.controls.username.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</span>
+                            <span class="text-danger" *ngIf="userForm.controls.username.errors?.minLength">{{'FW.USER.USERNAME_LENGTH' | translate}}</span>
+                            <span class="text-danger" *ngIf="view.setting.userExist">{{'FW.USER.USERNAME_ALREADY_EXISTS' | translate}}</span>
+                        </small>
+
+                        <div *ngIf="view.setting.showPasswordUpdate === true">
+                            <label>{{'USER.PASSWORD' | translate}}</label>
+                            <input class="form-control form-control-sm" type="password" formControlName="password" minlength="6" autocomplete="off">
+                            <small class="text-danger" *ngIf="userForm.controls.password.touched && userForm.controls.password.errors?.required">{{'FW.FORM.INPUT_REQUIRED' | translate}}</small>
+                            <small class="text-danger" *ngIf="userForm.controls.password.errors?.minLength">{{'FW.USER.PASSWORD_LENGTH' | translate}}</small>
+                            <div class="pt-1">
+                                <input class="form-control form-control-sm" type="password" formControlName="confirmPassword" autocomplete="off">
+                                <small class="text-danger" *ngIf="userForm.get('confirmPassword').errors?.['nomatch']">{{'FW.USER.PASSWORD_DOES_NOT_MATCH' | translate}}</small>
+                            </div>
+                        </div>
+                        <div *ngIf="view.setting.formViewMode === FormViewMode.VIEW && view.setting.showPasswordUpdate === false">
+                            <button
+                                    (click)="enablePasswortUpdate()"
+                                    [disabled]="!view.setting.allowEdit"
+                                    class="btn btn-secondary btn-sm mr-2 pb-2" type="submit"><i class="fa fa-key"></i> {{'FW.USER.CHANGE_PASSWORD' | translate}}</button>
+                        </div>
+
+
+                        <div class="row pt-2">
+                            <div class="col-md-6">
+                                <label>{{'FW.USER.FIRSTNAME' | translate}}</label>
+                                <input class="form-control form-control-sm" type="text" formControlName="firstname" autocomplete="off">
+                            </div>
+                            <div class="col-md-6">
+                                <label>{{'FW.USER.LASTNAME' | translate}}</label>
+                                <input class="form-control form-control-sm" type="text" formControlName="lastname" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col-md-3">
+                                <label>{{'FW.USER.POSTCODE' | translate}}</label>
+                                <input class="form-control form-control-sm" type="text" formControlName="postcode" autocomplete="off">
+                            </div>
+                            <div class="col-md-9">
+                                <label>{{'FW.USER.COUNTRY' | translate}}</label>
+                                <select class="form-select form-select-sm validation-field" formControlName="country" autocomplete="off">
+                                    <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                    <option *ngFor="let country of view.data.countryList" [ngValue]="country">
+                                        {{ country.country }}
+                                    </option>
+                                </select>
+                                <small class="text-danger" *ngIf="userForm.controls.country.touched">
+                                    <span class="text-danger" *ngIf="userForm.controls.country.errors?.required">{{'FORM.SELECT_REQUIRED' | translate}}</span>
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col">
+                                <label>{{'FW.USER.EMAIL' | translate}}</label>
+                                <input (focusout)="checkEmailExist()" class="form-control form-control-sm" type="text" formControlName="email" autocomplete="off">
+                                <small class="text-danger" *ngIf="userForm.controls.email.errors?.email">{{'FW.FORM.INVALID_EMAIL' | translate}}</small>
+                                <small class="text-danger" *ngIf="view.setting.emailExist">{{'FW.USER.EMAIL_ALREADY_EXISTS' | translate}}</small>
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col">
+                                <div *ngIf="userService.currentUser.public_id !== view.data.currentPublicId &&
+                                (userService.currentUser.usertype === userType.SYSADMIN||userService.currentUser.usertype === userType.ADMIN)" class="row">
+                                    <div class="col">
+                                        <label>{{'FW.USER.USERTYPE' | translate}}</label>
+                                        <select class="form-select form-select-sm validation-field" formControlName="usertype" name="active" autocomplete="off">
+                                            <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                            <option *ngFor="let usertype of view.data.userTypeList" [ngValue]="usertype">
+                                                {{ ('FW.USER_ROLE.' + usertype.toUpperCase()) | translate }}
+                                            </option>
+                                        </select>
+                                        <small class="text-danger" *ngIf="userForm.controls.usertype.touched">
+                                            <span class="text-danger" *ngIf="userForm.controls.usertype.errors?.required">{{'FW.FORM.SELECT_REQUIRED' | translate}}</span>
+                                        </small>
+                                    </div>
+                                    <div class="col">
+                                        <label>{{'FW.USER.LOGIN_ACTIVE' | translate}}</label>
+                                        <select class="form-select form-select-sm validation-field" formControlName="active" name="active" autocomplete="off">
+                                            <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                            <option *ngFor="let yn of view.data.ynList" [ngValue]="yn">
+                                                {{ yn.name | translate }}
+                                            </option>
+                                        </select>
+                                        <small class="text-danger" *ngIf="userForm.controls.active.touched">
+                                            <span class="text-danger" *ngIf="userForm.controls.active.errors?.required">{{'FW.FORM.SELECT_REQUIRED' | translate}}</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row pt-2">
+                                    <div class="col">
+                                        <label>{{'FW.USER.LANGUAGE' | translate}}</label>
+                                        <select class="form-select form-select-sm validation-field" formControlName="language" name="active" autocomplete="off">
+                                            <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                            <option *ngFor="let language of view.data.languageList" [ngValue]="language">
+                                                {{ ('FW.LANGUAGE.' + language.toUpperCase()) | translate }}
+                                            </option>
+                                        </select>
+                                        <small class="text-danger" *ngIf="userForm.controls.language.touched">
+                                            <span class="text-danger" *ngIf="userForm.controls.language.errors?.required">{{'FW.FORM.SELECT_REQUIRED' | translate}}</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col-md-12">
+                                <label>{{'FW.USER.INFO' | translate}}</label>
+                                <textarea class="form-control form-control-sm" rows="4" formControlName="info" autocomplete="off"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-3">
+                    <div class="col">
+                        <div class="mr-2">
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.VIEW && !view.setting.showPasswordUpdate"
+                                    (click)="closeUserForm()"
+                                    class="btn btn-secondary me-2"
+                                    type="submit"><i class="fa fa-arrow-left"></i> {{'FW.BUTTON.BACK' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.INSERT"
+                                    (click)="closeUserForm()"
+                                    class="btn btn-secondary me-2"
+                                    type="submit"><i class="fa fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.EDIT || (view.setting.showPasswordUpdate  && view.setting.formViewMode !== FormViewMode.INSERT)"
+                                    (click)="switchFormViewMode(FormViewMode.VIEW)"
+                                    class="btn btn-secondary me-2"
+                                    type="submit"><i class="fa fa-times"></i> {{'FW.BUTTON.CANCEL' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.VIEW && !view.setting.showPasswordUpdate && view.setting.allowEdit"
+                                    (click)="switchFormViewMode(FormViewMode.EDIT)"
+                                    class="btn btn-success me-2"
+                                    type="submit"><i class="fas fa-edit"></i> {{'FW.BUTTON.EDIT' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.INSERT"
+                                    [disabled]="userForm.invalid"
+                                    (click)="insertUser()"
+                                    class="btn btn-success me-2"
+                                    type="submit"><i class="fas fa-check"></i> {{'FW.BUTTON.SAVE' | translate}}</button>
+                            <button
+                                    *ngIf="view.setting.formViewMode === FormViewMode.EDIT || (view.setting.showPasswordUpdate && view.setting.formViewMode !== FormViewMode.INSERT)"
+                                    [disabled]="userForm.invalid"
+                                    (click)="updateUser()"
+                                    class="btn btn-success me-2"
+                                    type="submit"><i class="fas fa-check"></i> {{'FW.BUTTON.SAVE' | translate}}</button>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <button
+                                *ngIf="((userService.currentUser?.usertype === userType.SYSADMIN
+                                && view.data.currentPublicId !== userService.currentUser.UID
+                                && view.setting.formViewMode === FormViewMode.INSERT === false)
+                                || (userService.currentUser?.usertype === userType.ADMIN
+                                && view.data.user?.usertype!== userType.ADMIN
+                                && view.data.user?.usertype!== userType.SYSADMIN)) && view.setting.formViewMode !== FormViewMode.EDIT"
+                                [disabled]="view.data.user?.UID === userService.currentUser?.UID"
+                                (click)="openDeleteModal()"
+                                class="btn btn-danger pb-2"
+                                type="submit"><i class="fa fa-trash"></i> {{'FW.BUTTON.DELETE' | translate}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<ng-template *ngIf="view.data.user" #modalDelete>
+    <div mat-dialog-content class="modal-delete" style="max-width: 500px;">
+        <div class="modal-delete__title">
+            <i class="fa fa-warning"></i> {{'FW.USER.DELETE_HEADER' | translate}}
+        </div>
+        <div class="modal-delete__content">
+            <table>
+                <tbody>
+                <tr>
+                    <td>{{'FW.USER.USERNAME' | translate}}</td>
+                    <td><strong class="pl-2">{{view.data.user.username}}</strong></td>
+                </tr>
+                <tr>
+                    <td>{{'FW.USER.USERTYPE' | translate}}</td>
+                    <td><strong class="pl-2">{{view.data.user.usertype}}</strong></td>
+                </tr>
+                <tr>
+                    <td>{{'FW.USER.EMAIL' | translate}}</td>
+                    <td><strong class="pl-2">{{view.data.user.email}}</strong></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="row h-100 pt-3">
+                <div class="col del-field__message pe-0">
+                    {{'FW.FORM.DEL_YES_SURE_MESSAGE' | translate}}
+                </div>
+                <div class="col-auto my-auto ps-0 pe-0 del-field__arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="col-auto my-auto ps-0">
+                    <input class="form-control form-control-sm text-center" type="text" style="max-width: 100px" [(ngModel)]="view.setting.deleteConfirmation" autocomplete="off">
+                </div>
+            </div>
+        </div>
+        <div class="modal-delete__buttons pt-3">
+            <button
+                    [disabled]="view.setting.deleteConfirmation !== 'ja sicher' && view.setting.deleteConfirmation !== 'yes sure'"
+                    (click)="deleteUser()"
+                    type="button"
+                    class="btn btn-danger"
+                    data-dismiss="modal"
+                    mat-dialog-close>{{'FW.BUTTON.DELETE' | translate}}</button>
+            <button type="button" class="ms-2 btn btn-secondary" mat-dialog-close>{{'FW.BUTTON.CANCEL' | translate}}</button>
+
+        </div>
+    </div>
+</ng-template>

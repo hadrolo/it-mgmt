@@ -1,0 +1,7 @@
+<ul class="validation-info-list">
+    <ng-container *ngFor="let field of config.formFields | keyvalue">
+        <li *ngIf="field.value._model && field.value._model.invalid && (field.value._model.dirty || field.value._model.touched)">
+            {{field.value.validationInfo }}
+        </li>
+    </ng-container>
+</ul>

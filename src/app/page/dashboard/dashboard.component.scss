@@ -1,0 +1,57 @@
+.inline-block > div {
+  display: inline-block;
+}
+
+.widget{
+  margin-bottom: 20px;
+  width: 155px;
+  padding: 5px;
+  background-color: #fff;
+  text-align: center;
+}
+.widgetLink{
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: #212121;
+  margin-bottom: 20px;
+  min-width: 155px;
+  height: 100px !important;
+  // padding: 5px;
+  // background-color: #fafafa;
+  background-color: #fff;
+  cursor: pointer;
+  text-align: center;
+  i{
+    color: #a9a9a9;
+  }
+}
+.widgetLink:hover{
+  color: #000;
+  background-color: #b7bbbe;
+  i{
+    color: #212121;
+  }
+}
+
+.card{
+  background-color: rgba(255,255,255,0.6);
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-size: 1em;
+}
+
+.card-title{
+  font-size: 1.1em;
+}
+
+.card-chart{
+  canvas{
+    max-height: 330px;
+  }
+}
+
+.txtlink {
+  cursor: pointer;
+}
+
+.txtlink:hover {
+  background-color: #efefef;
+}

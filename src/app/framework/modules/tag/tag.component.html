@@ -1,0 +1,14 @@
+<div class="fw-tags">
+    <div class="text-muted" *ngIf="tags.length == 0">Keine Tags erstellt</div>
+
+    <span class="badge fw-tag" *ngFor="let tag of tags">
+        {{ tag.name }}<i class="fas fa-times fw-tag-delete-icon" (click)="deleteTag(tag)" *ngIf="config.editable"></i>
+    </span>
+
+    <input type="text" class="form-control form-control-sm fw-tags-input" placeholder="Neuer Tag"
+           *ngIf="config.editable"
+           [(ngModel)]="newTag.name"
+           (keyup.enter)="addTag()"
+           [disabled]="saving"
+    />
+</div>

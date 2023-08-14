@@ -1,0 +1,8 @@
+<img
+    *ngIf="imageData"
+    [src]="imageData"
+    class="img-fluid rounded"
+    [style.max-width]="maxWidth ? maxWidth + 'px' : null"
+    [style.max-height]="maxHeight ? maxHeight + 'px' : null"
+    [ngStyle]="{'width': imageWidth !== null ? imageWidth : 'auto', 'height': imageHeight !== null ? imageHeight : 'auto'}"
+    (click)="openModal()">

@@ -1,0 +1,78 @@
+<form (submit)="login()" class="pt-3">
+    <input
+            type="text"
+            [(ngModel)]="loginData.username"
+            [disabled]="loginInProgress"
+            class="form-control"
+            name="username"
+            placeholder="{{settingsService.frameworkSettings.auth.loginField | translate}}"
+            autocomplete="off" required>
+    <input
+            type="password"
+            [(ngModel)]="loginData.password"
+            [disabled]="loginInProgress"
+            class="form-control"
+            name="password"
+            placeholder="{{'FW.LOGIN.PASSWORD' | translate}}"
+            autocomplete="off" required>
+    <div class="row pt-3">
+        <div class="col">
+            <button [disabled]="loginInProgress" type="submit" class="btn btn-primary btn-block">{{'FW.LOGIN.LOGIN' | translate}}</button>
+        </div>
+        <div class="col-auto text-end">
+            <button [disabled]="loginInProgress" type="button" class="btn btn-secondary btn-block" *ngIf="settingsService.frameworkSettings.auth.passwordReset"
+                    (click)="forgotPassword()">{{'FW.LOGIN.FORGOT' | translate}}</button>
+        </div>
+    </div>
+</form>
+<ngx-invisible-recaptcha
+        *ngIf="settingsService.frameworkSettings.production && settingsService.frameworkSettings.auth.googleRecaptcha"
+        #captchaElem
+        [siteKey]="settingsService.frameworkSettings.auth.googleRecaptchaSiteKey"
+        (success)="loginFunction()"
+        [useGlobalDomain]="false"
+        [hl]="userService.currentUser.language"
+        [theme]="theme"
+        [type]="type"
+        [badge]="badge"
+        [ngModel]="recaptcha"
+        [ngModelOptions]="{ standalone: true }">
+</ngx-invisible-recaptcha>
+
+<ng-template #modalAccessDenied>
+    <div mat-dialog-content class="modal-form">
+        <div class="modal-form__title">
+            <i class="fa fa-warning text-danger"></i> {{'FW.LOGIN.ERROR' | translate}}
+        </div>
+        <div class="modal-form__content">
+            {{deniedMessage}}
+        </div>
+        <div class="modal-form__button text-end">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="fw-access-denied-button" mat-dialog-close>{{ 'FW.BUTTON.OK' | translate}}</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #modalPasswordReset>
+    <div mat-dialog-conten class="modal-form" t>
+        <div class="modal-form__title">
+            <i class="fa fa-warning text-danger"></i> {{settingsService.frameworkSettings.auth.passwordReset.modalTitle | translate}}
+        </div>
+        <div class="modal-form__content">
+            {{this.settingsService.frameworkSettings.auth.passwordReset.modalText | translate}}
+            <input type="text" class="form-control" [(ngModel)]="fieldCheck" [placeholder]="settingsService.frameworkSettings.auth.passwordReset.modalPlaceholder | translate" required
+                   #fieldCheckInput="ngModel" (keyup.enter)="!fieldCheckInput.invalid ? resetPasswordNow() : ''"/>
+        </div>
+        <div class="row modal-form__button">
+            <div class="col">
+                <button type="button"
+                        class="btn btn-primary"
+                        [disabled]="fieldCheckInput.invalid"
+                        (click)="resetPasswordNow()" mat-dialog-close> {{ this.settingsService.frameworkSettings.auth.passwordReset.buttonConfirm | translate}}</button>
+            </div>
+            <div class="col text-end">
+                <button type="button" class="btn btn-secondary" mat-dialog-close> {{ this.settingsService.frameworkSettings.auth.passwordReset.buttonCancel | translate}}</button>
+            </div>
+        </div>
+    </div>
+</ng-template>

@@ -1,0 +1,19 @@
+.bg {
+  /* The image used */
+  background-image: url("/assets/img/frau_blau.jpg");
+  //background-color: #999999;
+
+  /* Full height */
+  height: 100%;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.panel-transparent {
+  background: rgba(255, 255, 255, 0.7)!important;
+}
+
+

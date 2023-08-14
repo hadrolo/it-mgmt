@@ -1,0 +1,6 @@
+<div *ngIf="data.config.enableExportXLS" class="me-1">
+    <button type="button" class="btn btn-sm btn-dark"
+            [disabled]="exporting"
+            (click)="tableService.exportXls.next(data.config._id)"
+            [matTooltip]="'FW.TABLE.EXPORT' | translate"><i class="fa fa-download" aria-hidden="true"></i></button>
+</div>

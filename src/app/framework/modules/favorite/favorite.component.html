@@ -1,0 +1,16 @@
+<div [hidden]="!active">
+    <i class="fa-star" [class.fas]="favorite.FAVID" [class.far]="!favorite.FAVID" [ngStyle]="favorite.FAVID && {'color': activeColor}" [popover]="favoritePopover" #pop="bs-popover"></i>
+
+    <ng-template #favoritePopover>
+        <div class="favoriteContainer">
+            <h4>{{favorite.FAVID ? ('FW.FAVORITE.EDIT' | translate) : ('FW.FAVORITE.CREATE' | translate)}}</h4>
+            <form class="form" #favoriteForm="ngForm">
+                    <input type="text" class="form-control" name="name" autocomplete="off" [placeholder]="'FW.FAVORITE.ENTER_NAME' | translate" [(ngModel)]="favorite.name" required>
+            </form>
+            <button type="button" class="btn btn-primary btn-sm" [disabled]="favoriteForm.invalid" *ngIf="!favorite.FAVID" (click)="saveFavorite()">{{'FW.BUTTON.SAVE' | translate}}</button>
+            <button type="button" class="btn btn-primary btn-sm" [disabled]="favoriteForm.invalid" *ngIf="favorite.FAVID" (click)="updateFavorite()">{{'FW.BUTTON.UPDATE' | translate}}</button>
+            <button type="button" class="btn btn-primary btn-sm ms-2" *ngIf="favorite.FAVID" (click)="deleteFavorite()">{{'FW.BUTTON.DELETE' | translate}}</button>
+            <button type="button" class="btn btn-secondary btn-sm ms-2" (click)="pop.hide()">{{'FW.BUTTON.CANCEL' | translate}}</button>
+        </div>
+    </ng-template>
+</div>

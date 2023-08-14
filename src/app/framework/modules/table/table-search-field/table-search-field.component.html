@@ -1,0 +1,10 @@
+<input
+        [(ngModel)]="data.config.dataConfig.search"
+        class="form-control form-control-sm validation-field"
+        type="text"
+        autocomplete="off"
+        appDebounceKeyup
+        [debounceTime]="500"
+        (debounceKeyup)="tableService.reloadTable.next(data)"
+        [matTooltip]="'FW.TABLE.SEARCH' | translate"
+>

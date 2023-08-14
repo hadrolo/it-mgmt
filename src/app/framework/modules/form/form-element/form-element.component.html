@@ -1,0 +1,25 @@
+<div *ngIf="!config.formFields[key]" class="alert alert-danger">Field not found in config, typo?</div>
+
+<div *ngIf="config.formFields[key] && !((config.formFields[key]._value == '' || config.formFields[key]._value == null) && (config.viewMode == FormViewMode.VIEW || config.viewMode == FormViewMode.DELETE))">
+    <div class="d-flex">
+        <div *ngIf="config.formFields[key].style === FormInputStyle.TITLE_COUNT || config.formFields[key].style === FormInputStyle.TITLE" class="mr-auto fieldLabel">
+            {{config.formFields[key].title}}
+        </div>
+        <div *ngIf="config.formFields[key].style === FormInputStyle.TITLE_COUNT" class="fieldInfo">
+            <span
+                *ngIf="config.formFields[key]._DB_type_name == 'varchar' && config.viewMode != FormViewMode.VIEW && (!config.formFields[key].readOnly && !config.formFields[key]._disabled)">({{config.formFields[key]._value !== null ? config.formFields[key]._value?.length : '0'}}
+                /{{ config.formFields[key]._DB_type_constraints }} Zeichen)</span>
+        </div>
+    </div>
+
+    <app-form-element-text *ngIf="config.formFields[key]._DB_type_name == 'varchar'" [config]="config" [key]="key"></app-form-element-text>
+    <app-form-element-textarea *ngIf="config.formFields[key]._DB_type_name == 'text'" [config]="config" [key]="key"></app-form-element-textarea>
+    <app-form-element-select-enum *ngIf="config.formFields[key]._DB_type_name == 'enum'" [config]="config" [key]="key"></app-form-element-select-enum>
+    <app-form-element-select-data *ngIf="config.formFields[key]._DB_Key == 'MUL' && config.formFields[key]._DB_CONSTRAINT_TYPE == 'FOREIGN KEY'" [config]="config" [key]="key"></app-form-element-select-data>
+    <app-form-element-checkbox *ngIf="config.formFields[key]._DB_type_name == 'tinyint'" [config]="config" [key]="key"></app-form-element-checkbox>
+    <app-form-element-date *ngIf="config.formFields[key]._DB_type_name == 'date'" [config]="config" [key]="key"></app-form-element-date>
+    <app-form-element-datetime *ngIf="config.formFields[key]._DB_type_name == 'datetime' || config.formFields[key]._DB_type_name == 'timestamp'" [config]="config" [key]="key"></app-form-element-datetime>
+    <app-form-element-decimal *ngIf="config.formFields[key]._DB_type_name == 'decimal'" [config]="config" [key]="key"></app-form-element-decimal>
+    <app-form-element-integer *ngIf="config.formFields[key]._DB_type_name == 'int' && config.formFields[key]._DB_Key == ''" [config]="config" [key]="key"></app-form-element-integer>
+</div>
+

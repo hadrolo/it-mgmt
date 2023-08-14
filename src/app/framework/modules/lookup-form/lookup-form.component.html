@@ -1,0 +1,55 @@
+<ng-container *ngIf="result.selected">
+    <ng-container *ngIf="!config.multiSelect">
+        <div [class.selRow]="view === FormViewMode.EDIT" class="d-flex p-1 rounded">
+            <div class="flex-grow-1">
+                <input class="form-control form-control-sm validation-field" type="text" [value]="result.selected[config.clientFieldName]" disabled>
+            </div>
+            <div>
+                <button type="button" *ngIf="view === FormViewMode.EDIT" class="btn btn-sm btn-danger ms-1" (click)="delete()"><i class="fa fa-times"></i></button>
+            </div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="config.multiSelect && result.selected">
+        <div class="d-flex p-1" *ngFor="let res of result.selected">
+            <div class="flex-grow-1">
+                <input class="form-control form-control-sm validation-field" type="text" [value]="res[config.clientFieldName]" disabled>
+            </div>
+            <div *ngIf="view === FormViewMode.EDIT">
+                <button type="button" *ngIf="view === FormViewMode.EDIT" class="btn btn-sm btn-danger ms-1" (click)="delete(res[config.lookupTableIndexName])"><i class="fa fa-times"></i></button>
+            </div>
+        </div>
+    </ng-container>
+</ng-container>
+
+<ng-container *ngIf="!config.multiSelect">
+    <div *ngIf="view === FormViewMode.EDIT && !result.selected" class="d-flex p-1">
+        <div class="flex-grow-1">
+            <input class="form-control form-control-sm validation-field" type="text" [(ngModel)]="fieldValue" autocomplete="off" (keyup)="list()">
+        </div>
+        <div *ngIf="config.insertNew">
+            <button type="button" *ngIf="fieldValue.length > 1 && !searchResult" class="btn btn-sm btn-dark ms-1" (click)="insertNew()"><i class="fa fa-plus"></i></button>
+        </div>
+    </div>
+</ng-container>
+<ng-container *ngIf="config.multiSelect">
+    <div *ngIf="view === FormViewMode.EDIT" class="d-flex p-1">
+        <div class="flex-grow-1">
+            <input class="form-control form-control-sm validation-field" type="text" [(ngModel)]="fieldValue" autocomplete="off" (keyup)="list()">
+        </div>
+        <div *ngIf="config.insertNew">
+            <button type="button" *ngIf="fieldValue.length > 1 && !searchResult" class="btn btn-sm btn-dark ms-1" (click)="insertNew()"><i class="fa fa-plus"></i></button>
+        </div>
+    </div>
+</ng-container>
+
+
+<ng-container *ngIf="searchResult && result.list.length < 10">
+    <div *ngFor="let rl of result.list;" class="d-flex p-1 selRow rounded">
+        <div class="flex-grow-1">
+            <input class="form-control form-control-sm validation-field" type="text" [value]="rl[config.clientFieldName] + (config.clientFieldName2 ? ' - ' + rl[config.clientFieldName2]: '')" disabled>
+        </div>
+        <div>
+            <button type="button" *ngIf="fieldValue.length > 1" class="btn btn-sm btn-dark ms-1" (click)="set(rl[config.clientIndexName])"><i class="fa fa-plus"></i></button>
+        </div>
+    </div>
+</ng-container>

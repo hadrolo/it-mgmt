@@ -1,0 +1,47 @@
+<div [formGroup]="registerService.registerFormGroup" *ngIf="field">
+    <label>{{field.valueTrans | translate}}</label>
+    <ng-container *ngIf="field.type != 'lookup' && field.type != 'enum'">
+        <input class="form-control"
+               autocomplete="off"
+               [type]="field.type"
+               [formControlName]="field.field"
+               [placeholder]="field.valueTrans | translate"
+               (focusout)="checkExists()"
+               [required]="field.required">
+        <ul class="text-danger mt-1"
+            *ngIf="field.required && registerService.registerFormGroup.controls[field.field].touched
+            && (registerService.registerFormGroup.controls[field.field].errors?.required
+            || registerService.registerFormGroup.controls[field.field].errors?.email
+            || registerService.registerFormGroup.controls[field.field].errors?.exists)">
+            <li *ngIf="registerService.registerFormGroup.controls[field.field].errors?.required && field.type !== 'email'"><small>{{ 'FW.FORM_VALIDATION.INPUT_REQUIRED' | translate }}</small></li>
+            <li *ngIf="registerService.registerFormGroup.controls[field.field].errors?.email"><small>{{ 'FW.FORM_VALIDATION.INVALID_EMAIL' | translate }}</small></li>
+            <li *ngIf="registerService.registerFormGroup.controls[field.field].errors?.exists"><small>{{ (field.checkExistsLabel ? field.checkExistsLabel : 'FW.FORM_VALIDATION.FIELD_EXISTS') | translate }}</small></li>
+        </ul>
+    </ng-container>
+    <ng-container *ngIf="field.type == 'lookup'">
+        <select class="form-control" [formControlName]="field.field" [required]="field.required" autocomplete="off">
+            <option [ngValue]="''" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+            <option *ngFor="let item of field.items" [value]="item[field.field]">
+                {{ item.valueTrans }}
+            </option>
+        </select>
+        <ul class="text-danger mt-1"
+            *ngIf="field.required && registerService.registerFormGroup.controls[field.field].touched
+            && registerService.registerFormGroup.controls[field.field].errors?.required">
+            <li><small>{{ 'FW.FORM_VALIDATION.SELECT_REQUIRED' | translate }}</small></li>
+        </ul>
+    </ng-container>
+    <ng-container *ngIf="field.type == 'enum'">
+        <select class="form-control" [formControlName]="field.field" [required]="field.required" autocomplete="off">
+            <option [ngValue]="''" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+            <option *ngFor="let item of field.values" [value]="item.key">
+                {{ item.value | translate}}
+            </option>
+        </select>
+        <ul class="text-danger mt-1"
+            *ngIf="field.required && registerService.registerFormGroup.controls[field.field].touched
+            && registerService.registerFormGroup.controls[field.field].errors?.required">
+            <li><small>{{ 'FW.FORM_VALIDATION.SELECT_REQUIRED' | translate }}</small></li>
+        </ul>
+    </ng-container>
+</div>

@@ -1,0 +1,150 @@
+<app-table *ngIf="table.config" [data]="table"  (status)="handleStatus($event)">
+    <div class="row pt-3">
+        <div class="col pt-1" style="min-width: 80px">
+            <app-table-search-field [data]="table"></app-table-search-field>
+        </div>
+        <div class="col-auto text-end">
+            <div class="row">
+                <div class="col-auto text-end pt-2">
+                    <app-table-index [data]="table"></app-table-index>
+                </div>
+                <div class="col-auto text-end pt-1">
+                    <app-table-export-button [data]="table"></app-table-export-button>
+                </div>
+                <div class="col-auto text-end pt-1">
+                    <app-table-filter-button [data]="table"></app-table-filter-button>
+                </div>
+                <div class="col-auto text-end pt-1">
+                    <app-table-row-switch [data]="table"></app-table-row-switch>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card fw-table mt-3">
+        <div class="card-body">
+            <app-table-table *ngIf="table.result.table" [data]="table"></app-table-table>
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-sm-6">
+            <app-table-pagination [data]="table"></app-table-pagination>
+        </div>
+        <div class="col-sm-6 text-end">
+            <app-table-row-count [data]="table"></app-table-row-count>
+        </div>
+    </div>
+</app-table>
+
+
+<ng-template #modalLogEntry>
+    <div mat-dialog-content class="modal-form">
+<!--        <div class="modal-form__title">
+            <div class="row">
+                <div class="col">
+                    <i class="fa fa-database" aria-hidden="true"></i> {{'FW.LOGENTRY.ENTRY_TITLE' | translate}}
+                </div>
+                <div class="col-auto">
+                    <app-form-table-navigator
+                            [activePkKey]="currentPkValue"
+                            [tableName]="settingsService.frameworkSettings.log.logTableName"
+                            [style]="formTableNavigatorConfig"
+                            (newPkId)="goTo($event)">
+                    </app-form-table-navigator>
+                </div>
+            </div>
+        </div>-->
+        <div *ngIf="log" class="modal-form__content">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div>
+                        <span *ngIf="log.type == 'login'" style="color: forestgreen"><i class="fas fa-sign-in-alt fa-2x"></i></span>
+                        <span *ngIf="log.type == 'logout'" style="color: gray"><i class="fas fa-sign-out-alt fa-2x"></i></span>
+                        <span *ngIf="log.type == 'login-error'" style="color: tomato"><i class="fas fa-user-circle fa-2x"></i></span>
+
+                        <span *ngIf="log.type == 'info'" style="color: gray"><i class="fas fa-info-circle fa-2x"></i></span>
+                        <span *ngIf="log.type == 'error'" style="color: tomato"><i class="fas fa-exclamation-circle fa-2x"></i></span>
+                        <span *ngIf="log.type == 'exception'" style="color: tomato"><i class="fas fa-exclamation-circle fa-2x"></i></span>
+                        <span *ngIf="log.type == 'access-violation'" style="color: tomato"><i class="fas fa-exclamation-circle fa-2x"></i></span>
+
+                        <span *ngIf="log.type == 'insert'" style="color: royalblue"><i class="fas fa-database fa-2x"></i></span>
+                        <span *ngIf="log.type == 'update'" style="color: forestgreen"><i class="fas fa-database fa-2x"></i></span>
+                        <span *ngIf="log.type == 'delete'" style="color: darkorange"><i class="fas fa-database fa-2x"></i></span>
+
+                        <span *ngIf="log.type == 'insert-file'" style="color: royalblue"><i class="fas fa-file fa-2x"></i></span>
+                        <span *ngIf="log.type == 'delete-file'" style="color: tomato"><i class="fas fa-file fa-2x"></i></span>
+                        <span *ngIf="log.type == 'error-file'" style="color: darkorange"><i class="fas fa-file fa-2x"></i></span>
+                    </div>
+                    <div>
+                        <strong>{{log.created}}</strong><br>
+                        <small>{{log.username}}<span *ngIf="log.name"> ({{log.name}})</span></small>
+                    </div>
+                    <div>
+                        <small>
+                            <span *ngIf="log.c_component">Client Component: <strong>{{log.c_component}}</strong></span> <span
+                                *ngIf="log.c_method"> Client Methode: <strong>{{log.c_method}}</strong></span><span *ngIf="log.c_component || log.c_method"><br></span>
+                            <span *ngIf="log.s_controller">API Controller: <strong>{{log.s_controller}}</strong></span> <span
+                                *ngIf="log.s_action"> API Action: <strong>{{log.s_action}}</strong></span>
+                        </small>
+                        <div class="mt-1">
+                            <app-form-table-navigator
+                                    [activePkKey]="currentPkValue"
+                                    [tableName]="settingsService.frameworkSettings.log.logTableName"
+                                    [style]="formTableNavigatorConfig"
+                                    (newPkId)="goTo($event)">
+                            </app-form-table-navigator>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <div class="pt-1 pb-1">
+                        <div *ngIf="log.type==='insert'">
+                            <div class="pb-2">Tabelle: <strong>{{log.error.table}}</strong></div>
+                            <div class="">Index {{log.error.key.name}}=<strong>{{log.error.key.value}}</strong></div>
+                            <div *ngFor="let err of log.error.fields">
+                                {{err.field}} = <strong>{{err.value}}</strong>
+                            </div>
+                        </div>
+                        <div *ngIf="log.type==='update'">
+                            <div class="pb-2">Tabelle: <strong>{{log.error.table}}</strong></div>
+                            <div class="">Index {{log.error.key.name}}=<strong>{{log.error.key.value}}</strong></div>
+                            <div *ngFor="let err of log.error.fields">
+                                {{err.field}} = <strong>{{err.value}}</strong>
+                            </div>
+                        </div>
+                        <div *ngIf="log.type==='delete'">
+                            <div class="pb-2">Tabelle: <strong>{{log.error.table}}</strong></div>
+                            <div class="">Index {{log.error.key.name}}=<strong>{{log.error.key.value}}</strong></div>
+                        </div>
+                        <div *ngIf="log.type==='insert-image'">
+                            <div>Originalfile Name = <strong>{{log.text.origName}}</strong></div>
+                            <div>Originalfile Größe = <strong>{{log.text.generatedName}}</strong></div>
+                            <div>Originalfile Abmessung = <strong>{{log.text.origWidth}}x{{log.text.origHeight}} Pixel</strong></div>
+                            <hr>
+                            <div>Datenbankeintrag BNR = <strong>{{log.text.lastInsertId}}</strong></div>
+                            <div>Generierter Files:</div>
+                            <div *ngFor="let gf of log.text.genratedFiles"><strong>{{gf}}</strong></div>
+                        </div>
+                        <div *ngIf="log.type!=='insert' && log.type!=='update' && log.type!=='delete' && log.type!=='insert-image'">
+                            {{log.text}}
+                        </div>
+                    </div>
+                    <div>
+                        <small>
+                            <hr>
+                            {{log.ip}}<br>
+                            {{log.browser}}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="row modal-form__buttons">
+                <div class="d-flex align-items-center justify-content-center">
+                    <button type="button" class="btn btn-dark" mat-dialog-close><i class="fas fa-times"></i>  {{'FW.FORM.CANCEL' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+

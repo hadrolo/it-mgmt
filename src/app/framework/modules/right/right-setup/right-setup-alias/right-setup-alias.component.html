@@ -1,0 +1,76 @@
+<div class="card fw-right">
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <h1>Aliases</h1>
+            </div>
+        </div>
+        <div *ngIf="viewMode == FwFormViewMode.EDIT" class="row m-0 fw-right__alias-form rounded pt-2 pb-2 mb-3">
+            <div class="col">
+                <form [formGroup]="rightAssignForm">
+                    <div class="row">
+                        <div class="col-auto">
+                            <label>{{'FW.RIGHT.TYPE'|translate}}</label>
+                            <select class="form-select form-select-sm" formControlName="type" autocomplete="off" (change)="loadRightsAliases()">
+                                <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                <option *ngFor="let type of view.data.rightTypeList" [ngValue]="type">
+                                    {{type}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label>{{'FW.RIGHT.GROUP'|translate}}</label>
+                            <select class="form-select form-select-sm" formControlName="rightGroup" autocomplete="off" (change)="loadRightsAliases()">
+                                <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                <option *ngFor="let group of view.data.rightUnassignedGroupsList" [ngValue]="group">
+                                    {{group.RGID}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row pt-1">
+                        <div class="col">
+                            <label>{{'FW.RIGHT.RIGHT'|translate}}</label>
+                            <select class="form-select form-select-sm" formControlName="right" autocomplete="off" (change)="loadRightsAliases()">
+                                <option [ngValue]="null" selected style="display: none;">{{'FW.FORM.SELECT'| translate}}</option>
+                                <option *ngFor="let right of view.data.rightUnassignedList" [ngValue]="right">
+                                    {{right.name}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button
+                            (click)="assignRight()"
+                            [disabled]="rightAssignForm.invalid"
+                            type="button"
+                            class="btn btn-dark btn-sm mt-2"><i class="fas fa-plus"></i> {{ 'FW.BUTTON.ASSIGN' | translate}}</button>
+                </form>
+            </div>
+        </div>
+        <div class="row fw-right__alias-assigned">
+            <div class="col">
+                <span *ngIf="!view.data.rightAssignedList || view.data.rightAssignedList.length == 0" class="fw-right__alias-assigned-title">{{'FW.RIGHT.NOTHING_ASSIGNED_TITLE'|translate}}</span>
+                <ng-container *ngIf="view.data.rightAssignedList && view.data.rightAssignedList.length > 0">
+                    <span class="fw-right__alias-assigned-title">{{'FW.RIGHT.ASSIGNED_TITLE'|translate}}</span>
+                    <table class="table table-sm table-hover mb-0">
+                        <tbody>
+                        <tr *ngFor="let right of view.data.rightAssignedList">
+                            <td class="fw-right__alias-assigned-right align-middle"><i class="fa-solid fa-shield"></i> {{right.RGID}}/{{right.name}}</td>
+                            <td class="text-end">
+                            <span *ngIf="viewMode == FwFormViewMode.EDIT"
+                                  (click)="unassign(right)"
+                                  class="badge fw-button-xs--danger">
+                                <i class="fas fa-minus"></i>
+                            </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </ng-container>
+
+            </div>
+        </div>
+
+    </div>
+</div>

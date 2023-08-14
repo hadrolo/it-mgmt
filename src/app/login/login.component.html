@@ -1,0 +1,19 @@
+<div id="particles">
+    <div class="login p-3" [class.production-mode]="!devWarnings" [class.development-mode]="devWarnings">
+
+        <div class="row align-items-center">
+            <div class="col-auto"><img class="app-img" src="./assets/img/sih.png"></div>
+            <div class="col">
+                <div class="app-name">
+                    IT-Mgmt Login
+                </div>
+                <div class="app-version">
+                    App-Version: {{currentApplicationVersion}}
+                </div>
+            </div>
+        </div>
+        <div *ngIf="devWarnings" class="development-warning">{{'FW.LOGIN.DEV_WARNING' | translate}}</div>
+        <app-auth-login></app-auth-login>
+    </div>
+</div>
+

@@ -1,0 +1,17 @@
+<div class="row ps-1 pe-1 g-0 fw-table-index">
+    <div
+            [class.fw-table-alpha-filter]="data.config.dataConfig.alphaFilter === ''"
+            [class.fw-table-alpha-inactive]="data.config.dataConfig.alphaFilter != ''"
+            (click)="clearFilter()"
+            class="col fw-table-alpha-all rounded">
+        <span style="padding: 0 2px">{{data.config.dataFilterAllName}}</span>
+    </div>
+    <div *ngFor="let alpha of data.result?.alpha"
+         class="col rounded"
+         (click)="setFilter(alpha)"
+         [class.fw-table-alpha-active]="alpha['found']"
+         [class.fw-table-alpha-inactive]="!alpha['found']"
+         [class.fw-table-alpha-filter]="alpha['filtered']">
+        {{alpha['name']}}
+    </div>
+</div>

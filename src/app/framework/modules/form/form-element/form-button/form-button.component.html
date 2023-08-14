@@ -1,0 +1,12 @@
+<button
+    *ngIf="element.enabled && element._visible"
+    (click)="buttonClick()"
+    [class.btn-dark]="element.type === fwFormButtonType.EDIT && !element.className"
+    [class.btn-success]="(element.type === fwFormButtonType.INSERT || element.type === fwFormButtonType.UPDATE) && !element.className"
+    [class.btn-secondary]="(element.type === fwFormButtonType.CANCEL_VIEW || element.type === fwFormButtonType.CANCEL_EDIT || element.type === fwFormButtonType.CANCEL_DELETE || element.type == fwFormButtonType.CANCEL_INSERT) && !element.className"
+    [class.btn-danger]="(element.type === fwFormButtonType.DELETE || element.type === fwFormButtonType.SET_DELETE) && !element.className"
+    [ngClass]="element.className"
+    [disabled]="formService.formInvalid(config) && (element.type === fwFormButtonType.INSERT || element.type === fwFormButtonType.UPDATE)"
+    type="button"
+    class="btn"
+>{{element.name}}</button>

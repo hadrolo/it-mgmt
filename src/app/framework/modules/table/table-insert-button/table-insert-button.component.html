@@ -1,0 +1,7 @@
+<button
+        type="button"
+        class="btn btn-sm btn-success"
+        *ngIf="data.config.insertButton.enabled"
+        (click)="tableService.openDataset.next({openData: {viewMode: FormViewMode.INSERT, formName: data.config.formConfig?.formName}, id: data.config._id})"
+        [innerHTML]= "data.config.insertButton.i18n.length > 0 ? data.config.insertButton.innerHtml + ' ' + (data.config.insertButton.i18n|translate) : data.config.insertButton.innerHtml"
+>{{data.config.insertButton.i18n|translate}}</button>

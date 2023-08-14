@@ -1,0 +1,4 @@
+<div class="invalid"
+     *ngIf="config.formFields[key]._model && config.formFields[key]._model.invalid && (config.formFields[key]._model.dirty || config.formFields[key]._model.touched)">
+    {{config.formFields[key].validationInfo}}
+</div>

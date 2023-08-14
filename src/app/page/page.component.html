@@ -1,0 +1,95 @@
+<mat-sidenav-container class="" (swiperight)="sidenav.open()" (swipeleft)="sidenav.close()">
+    <mat-sidenav #sidenav
+                 (mouseleave)="closeSidenav()"
+                 [attr.role]="pageService.layout.isScreenSmall ? 'dialog' : 'navigation'"
+                 [mode]="pageService.layout.isScreenSmall ? 'over' : 'side'"
+                 [opened]="pageService.layout.isScreenSmall === false"
+                 (openedChange)="writeStatus()"
+                 class="sidebar" fixedInViewport>
+        <div class="text-center pt-4">
+            <img class="sidebar__app-logo-img" style="cursor: pointer" src="../../../assets/img/sih.png" routerLink="/dashboard">
+            <div class="pt-2 sidebar__app-name">IT-Mgmt</div>
+            <div [matTooltip]="translateService['FW.TOOLTIP.USERINFO']">
+                <div *ngIf="userService.currentUser" class="sidebar__username pt-4">
+                    <div>{{userService.currentUser.firstname}} {{userService.currentUser.lastname}}</div>
+                    <div class="sidebar__usertype">
+                        <ng-container *ngIf="userService.currentUser.universetype!=='sysadmin'">{{'USER_ROLE.' + userService.currentUser.usertype | translate}}</ng-container>
+                        <ng-container *ngIf="userService.currentUser.universetype==='sysadmin'">{{userService.currentUser.universetype}}</ng-container>
+                    </div>
+
+                    <div class="sidebar__link-icons pb-2">
+                        <button mat-icon-button [matTooltip]="translateService.instant('USER.USERPROFILE')" (click)="openUserProfile()" class="icon-button-small">
+                            <mat-icon>account_circle</mat-icon>
+                        </button>
+<!--                        <button mat-icon-button [matTooltip]="translateService.instant('SETTINGS.TITLE')" class="icon-button-small">
+                            <mat-icon>settings</mat-icon>
+                        </button>-->
+                        <button *ngIf="!pageService.layout.sidebarAutoHide" (click)="toogleSidebarAutoHide()" [matTooltip]="translateService.instant('BUTTON.DYNAMIC_MENU_ON')" mat-icon-button
+                                class="icon-button-small">
+                            <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button *ngIf="pageService.layout.sidebarAutoHide" (click)="toogleSidebarAutoHide()" [matTooltip]="translateService.instant('BUTTON.DYNAMIC_MENU_OFF')" mat-icon-button
+                                class="icon-button-small">
+                            <mat-icon>visibility_off</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <mat-nav-list class="p-0 m-0 sidebar-nav">
+            <mat-list-item routerLink="/dashboard" [routerLinkActive]="['sidebar-nav-item--active']">
+                <mat-icon class="sidebar-nav-item__icon">dashboard</mat-icon>
+                <span class="sidebar-nav-item__text">Dashboard</span>
+            </mat-list-item>
+            <mat-expansion-panel [class.mat-elevation-z0]="true" [expanded]="router.url === '/user-mgmt' || router.url === '/settings' || router.url === '/log'">
+                <mat-expansion-panel-header>
+                    <mat-icon class="sidebar-nav-item__icon">settings</mat-icon>
+                    Einstellungen
+                </mat-expansion-panel-header>
+                <mat-nav-list class="dropdown-items-overlay">
+                    <a mat-list-item routerLink="/userlist" [routerLinkActive]="['sidebar-nav-item--active']">
+                        <span class="sidebar-nav-item__text">{{'FW.USER.MGMT' | translate}}</span>
+                    </a>
+                    <a mat-list-item routerLink="/log" [routerLinkActive]="['sidebar-nav-item--active']">
+                        <span class="sidebar-nav-item__text">{{'DASHBOARD.LOG_TABLE' | translate}}</span>
+                    </a>
+<!--                    <a *ngIf="userService.currentUser.universetype === UniverseType.SYSADMIN" mat-list-item routerLink="/rights" [routerLinkActive]="['sidebar-nav-item&#45;&#45;active']">
+                        <span class="sidebar-nav-item__text">{{'FW.RIGHT.MGMT_TITLE' | translate}}</span>
+                    </a>-->
+                </mat-nav-list>
+            </mat-expansion-panel>
+            <!--*ngIf="rightService.allowed('Layout/openRights')"-->
+            <mat-expansion-panel
+                    *ngIf="rightService.rights?.['right']?.['openRights']"
+                    [class.mat-elevation-z0]="true"
+                    [expanded]="router.url === '/right/right-group-setup' || router.url === '/right/right-setup/list' || router.url === '/right/groupright-setup'">
+                <mat-expansion-panel-header>
+                    <mat-icon class="sidebar-nav-item__icon">admin_panel_settings</mat-icon>
+                    {{'FW.RIGHT.MGMT_TITLE' | translate}}
+                </mat-expansion-panel-header>
+                <mat-nav-list class="dropdown-items-overlay">
+                    <a mat-list-item routerLink="/right/right-group-setup" [routerLinkActive]="['sidebar-nav-item--active']">
+                        <span class="sidebar-nav-item__text">{{'FW.RIGHT.RIGHT_GROUP_TITLE' | translate}}</span>
+                    </a>
+                    <a mat-list-item routerLink="/right/right-setup/list" [routerLinkActive]="['sidebar-nav-item--active']">
+                        <span class="sidebar-nav-item__text">{{'FW.RIGHT.RIGHT_TITLE' | translate}}</span>
+                    </a>
+                    <a mat-list-item routerLink="/right/groupright-setup" [routerLinkActive]="['sidebar-nav-item--active']">
+                        <span class="sidebar-nav-item__text">{{'FW.RIGHT.USERTYPE_RIGHT_TITLE' | translate}}</span>
+                    </a>
+                    <!--                    <a *ngIf="userService.currentUser.universetype === UniverseType.SYSADMIN" mat-list-item routerLink="/rights" [routerLinkActive]="['sidebar-nav-item&#45;&#45;active']">
+                                            <span class="sidebar-nav-item__text">{{'FW.RIGHT.MGMT_TITLE' | translate}}</span>
+                                        </a>-->
+                </mat-nav-list>
+            </mat-expansion-panel>
+        </mat-nav-list>
+        <div class="text-center sidebar__app-version">
+            App-Version: {{currentApplicationVersion}}
+        </div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+
+<app-user-profile-standalone></app-user-profile-standalone>
