@@ -1,12 +1,15 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {DataService} from '../../../framework/services/data.service';
 import {OtService} from '../ot.service';
+import {MatDialog} from '@angular/material/dialog';
 
 export enum OtTreeViewMode{
     ALL_VIEW = 'ALL_VIEW',
     GROUP_INSERT = 'GROUP_INSERT',
     GROUP_EDIT = 'GROUP_EDIT',
-    GROUP_VIEW = 'GROUP_VIEW'
+    GROUP_DELETE = 'GROUP_DELETE',
+    POSITION_INSERT = 'POSITION_INSERT',
+    POSITION_EDIT = 'POSITION_INSERT'
 }
 
 interface OtTreeSetting {
@@ -30,6 +33,7 @@ interface OtTreeView {
     styleUrls: ['./ot-tree.component.scss']
 })
 export class OtTreeComponent implements OnInit, OnDestroy{
+
 
     setOtViewMode$;
     loadAllOt$;
@@ -79,8 +83,20 @@ export class OtTreeComponent implements OnInit, OnDestroy{
 
 
     openGroupForm(viewMode: OtTreeViewMode, id = null) {
-        console.log(id);
+        console.log(viewMode, id);
         this.view.setting.viewMode = viewMode;
         this.otService.openGroupForm.next({viewMode: viewMode, id: id});
+    }
+
+    openPositionForm(viewMode: OtTreeViewMode, id = null, $event) {
+        console.log(id);
+        $event.stopPropagation();
+        this.view.setting.viewMode = viewMode;
+        this.otService.openPositionForm.next({viewMode: viewMode, id: id});
+    }
+
+    deleteOtGroup(viewMode: OtTreeViewMode, id, $event) {
+        $event.stopPropagation();
+        this.openGroupForm(viewMode, id);
     }
 }

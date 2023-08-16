@@ -28,7 +28,6 @@ class Ot extends Controller
 
     public function insertGroup()
     {
-        debug($this->data, DEBUGTYPE_SPECIAL);
         $settings = [
             'field_list' => [
                 'OTTID' => $this->data->form->ottid,
@@ -47,6 +46,44 @@ class Ot extends Controller
             'logMethod' => $this->methodName
         ];
         $this->response = $this->db->insert($settings);
+    }
+
+    public function updateGroup()
+    {
+        $settings = [
+            'field_list' => [
+                'OTTID' => $this->data->form->ottid,
+                'level' => $this->data->form->level,
+                'groupname' => $this->data->form->groupname,
+                'grouplevel' => $this->data->form->grouplevel,
+                'description' => $this->data->form->description,
+                'create_UID' => $this->currentUID,
+            ],
+            'table' => 'ot_group',
+            'index_name' => 'OTGID',
+            'write_history' => false,
+            'output_update' => true,
+            'index_value' => $this->data->otgid,
+            'logUid' => $this->currentUID,
+            'logComponent' => $this->componentName,
+            'logMethod' => $this->methodName
+        ];
+        $this->response = $this->db->update($settings);
+    }
+
+    public function deleteGroup()
+    {
+        $settings = [
+            'table' => 'ot_group',
+            'index_name' => 'OTGID',
+            'index_value' => $this->data->otgid,
+            'write_history' => true,
+            'output_delete' => true,
+            'logUid' => $this->currentUID,
+            'logComponent' => $this->componentName,
+            'logMethod' => $this->methodName
+        ];
+        $this->response = $this->db->delete($settings);
     }
 
     public function insertType()

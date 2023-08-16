@@ -2,15 +2,22 @@
     <div class="ot-group">
         <div class="row">
             <div class="col-auto fw-bold">OT-Group</div>
-            <div *ngIf="view.setting.viewMode !== OtTreeViewMode.GROUP_INSERT && view.setting.viewMode !== OtTreeViewMode.GROUP_EDIT" class="col"><span (click)="openGroupForm(OtTreeViewMode.GROUP_INSERT)" class="badge fw-button-xs--success" ><i class="fa-solid fa-plus"></i></span></div>
-        </div>
-        <div class="ot-group__form">
-            <app-ot-group-form></app-ot-group-form>
+            <div *ngIf="view.setting.viewMode !== OtTreeViewMode.GROUP_INSERT && view.setting.viewMode !== OtTreeViewMode.GROUP_EDIT" class="col"><span
+                    (click)="openGroupForm(OtTreeViewMode.GROUP_INSERT)" class="badge fw-button-xs--success"><i class="fa-solid fa-plus"></i></span></div>
         </div>
         <div *ngFor="let group of view.data.ot.groups" class="row ot-group__row" (click)="openGroupForm(OtTreeViewMode.GROUP_EDIT, group['OTGID'])">
             <div class="col-auto ot-group__row-type">{{group['typename']}}</div>
+            <div class="col-auto ot-group__row-type">{{group['level']}}</div>
+            <div class="col-auto ot-group__row-type">{{group['grouplevel']}}</div>
             <div class="col-auto ot-group__row-name">{{group['groupname']}}</div>
-            <div class="col"></div>
+            <div class="col">
+                <span (click)="openPositionForm(OtTreeViewMode.GROUP_INSERT, null, $event)" class="badge fw-button-xs--success"><i class="fa-solid fa-plus"></i></span>
+                <span (click)="deleteOtGroup(OtTreeViewMode.GROUP_DELETE, group['OTGID'], $event)" class="ms-1 badge fw-button-xs--danger"><i class="fa-solid fa-times"></i></span>
+            </div>
         </div>
     </div>
 </div>
+
+<app-ot-group-form [otTreeViewMode]="view.setting.viewMode"></app-ot-group-form>
+<app-ot-position-form [otTreeViewMode]="view.setting.viewMode"></app-ot-position-form>
+

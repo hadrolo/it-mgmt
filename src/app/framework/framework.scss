@@ -10,6 +10,7 @@ $filtered-text-color: white;
 
 // Modals (Material) -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 .modal-delete {
+  padding: 15px;
   color: #707070 !important;
 
   &--sm {
@@ -76,6 +77,7 @@ $filtered-text-color: white;
 }
 
 .modal-form {
+  padding: 15px;
   color: #707070 !important;
 
   &--m {
@@ -96,7 +98,7 @@ $filtered-text-color: white;
   }
 
   &__content {
-    padding-top: 15px;
+    padding-top: 20px;
     font-size: 16px;
     font-weight: 400;
   }
@@ -430,12 +432,14 @@ $filtered-text-color: white;
     font-size: 12px;
   }
 
-  &__alias-assigned{
+  &__alias-assigned {
     color: #9d9d9d;
-    &-title{
+
+    &-title {
       font-weight: bold;
     }
-    &-right{
+
+    &-right {
       font-size: 12px !important;
       color: #9d9d9d;
     }
@@ -451,6 +455,7 @@ $filtered-text-color: white;
     }
   }
 }
+
 .fw-right-group {
   margin-top: 4px;
   color: #5b5b5b;
@@ -465,13 +470,13 @@ $filtered-text-color: white;
   }
 
   &__assigned-alias {
-/*    background-color: #e7f037 !important;*/
+    /*    background-color: #e7f037 !important;*/
     background-color: #81de93 !important;
   }
 
   &__allow-from-alias {
     background-color: #d1ffda !important;
-/*    background-color: #feffdb !important;*/
+    /*    background-color: #feffdb !important;*/
   }
 
   &__rightinfo {
@@ -480,7 +485,6 @@ $filtered-text-color: white;
     white-space: nowrap;
   }
 }
-
 
 
 // Butttons --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

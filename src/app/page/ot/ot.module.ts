@@ -7,6 +7,7 @@ import { OtGroupFormComponent } from './ot-group-form/ot-group-form.component';
 import { OtTypeComponent } from './ot-type/ot-type.component';
 import { OtTreeComponent } from './ot-tree/ot-tree.component';
 import {OtPositionFormComponent} from './ot-position-form/ot-position-form.component';
+import {MatDialogModule} from '@angular/material/dialog';
 
 const routes: Routes = [
     {
@@ -31,6 +32,7 @@ const routes: Routes = [
         FormsModule,
         ReactiveFormsModule,
         TranslateModule,
+        MatDialogModule,
     ]
 })
 export class OtModule {
