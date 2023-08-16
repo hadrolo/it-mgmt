@@ -1,14 +1,14 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {DataService} from '../../../../framework/services/data.service';
+import {DataService} from '../../../framework/services/data.service';
 import {UntypedFormBuilder, Validators} from '@angular/forms';
-import {OtViewMode} from '../ot-group.component';
-import {FwFormViewMode} from '../../../../framework/modules/form/form.interfaces';
-import {OtService} from '../../ot.service';
+import {FwFormViewMode} from '../../../framework/modules/form/form.interfaces';
+import {OtService} from '../ot.service';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
+import {OtTreeViewMode} from '../ot-tree/ot-tree.component';
 
 interface OtGroupSettings {
-    formViewMode: OtViewMode,
+    formViewMode: OtTreeViewMode,
     insertOtType: boolean,
     selectedOttid: string,
 }
@@ -34,10 +34,11 @@ interface OtGroupView {
 })
 export class OtGroupFormComponent implements OnInit, OnDestroy {
 
-    @Input() otViewMode: OtViewMode = null;
+    @Input() otViewMode: OtTreeViewMode = null;
 
     protected readonly FwFormViewMode = FwFormViewMode;
-    protected readonly OtViewMode = OtViewMode;
+    protected readonly OtViewMode = OtTreeViewMode;
+    protected readonly OtTreeViewMode = OtTreeViewMode;
     openGroupForm$;
 
     view: OtGroupView = {
@@ -83,7 +84,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
     prepareForm(): void {
         let fields = ['ottid', 'level', 'groupname', 'grouplevel', 'description'];
 
-        if (this.otViewMode === OtViewMode.GROUP_INSERT || OtViewMode.GROUP_EDIT) {
+        if (this.otViewMode === OtTreeViewMode.GROUP_INSERT || OtTreeViewMode.GROUP_EDIT) {
             fields.forEach(element => {
                 this.otGroupForm.controls[element].enable();
             });
@@ -103,7 +104,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    openForm(viewMode: OtViewMode = null, id: string = null) {
+    openForm(viewMode: OtTreeViewMode = null, id: string = null) {
         this.dataService.request('Ot/loadGroupFormData', {
             otgid: id
         }).subscribe(response => {
@@ -120,7 +121,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
             this.view.setting.formViewMode = viewMode;
             this.prepareForm();
 
-            if (viewMode == OtViewMode.GROUP_EDIT){
+            if (viewMode == OtTreeViewMode.GROUP_EDIT){
                 this.otGroupForm.controls.level.setValue(this.view.data.otGroup.level);
                 this.otGroupForm.controls.groupname.setValue(this.view.data.otGroup.groupname);
                 this.otGroupForm.controls.grouplevel.setValue(this.view.data.otGroup.grouplevel);
@@ -140,7 +141,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
         this.dataService.request('Ot/insertGroup', {
             form: this.otGroupForm.value
         }).subscribe((response: any) => {
-            this.otService.loadAllOt.next({otViewMode: OtViewMode.ALL_VIEW})
+            this.otService.loadAllOt.next({otViewMode: OtTreeViewMode.ALL_VIEW})
         });
     }
 
@@ -221,7 +222,9 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
                 otGroupnameLike: null,
             }
         }
-        this.otService.setOtViewMode.next(OtViewMode.ALL_VIEW);
+        this.otService.setOtViewMode.next(OtTreeViewMode.ALL_VIEW);
         this.otGroupForm.reset();
     }
+
+
 }

@@ -2,12 +2,12 @@
     <div class="ot-group">
         <div class="row">
             <div class="col-auto fw-bold">OT-Group</div>
-            <div *ngIf="view.setting.viewMode !== OtViewMode.GROUP_INSERT && view.setting.viewMode !== OtViewMode.GROUP_EDIT" class="col"><span (click)="openGroupForm(OtViewMode.GROUP_INSERT)" class="badge fw-button-xs--success" ><i class="fa-solid fa-plus"></i></span></div>
+            <div *ngIf="view.setting.viewMode !== OtTreeViewMode.GROUP_INSERT && view.setting.viewMode !== OtTreeViewMode.GROUP_EDIT" class="col"><span (click)="openGroupForm(OtTreeViewMode.GROUP_INSERT)" class="badge fw-button-xs--success" ><i class="fa-solid fa-plus"></i></span></div>
         </div>
         <div class="ot-group__form">
             <app-ot-group-form></app-ot-group-form>
         </div>
-        <div *ngFor="let group of view.data.ot.groups" class="row ot-group__row" (click)="openGroupForm(OtViewMode.GROUP_EDIT, group['OTGID'])">
+        <div *ngFor="let group of view.data.ot.groups" class="row ot-group__row" (click)="openGroupForm(OtTreeViewMode.GROUP_EDIT, group['OTGID'])">
             <div class="col-auto ot-group__row-type">{{group['typename']}}</div>
             <div class="col-auto ot-group__row-name">{{group['groupname']}}</div>
             <div class="col"></div>
