@@ -1,10 +1,10 @@
 <ng-template #modalOtGroupForm>
-    <div *ngIf="otTreeViewMode == OtTreeViewMode.GROUP_INSERT || otTreeViewMode == OtTreeViewMode.GROUP_EDIT" [formGroup]="otGroupForm" class="modal-form">
-        <div *ngIf="otTreeViewMode == OtTreeViewMode.GROUP_INSERT" class="modal-form__title">
+    <div *ngIf="treeViewMode == OtTreeViewMode.GROUP_INSERT || treeViewMode == OtTreeViewMode.GROUP_EDIT" [formGroup]="otGroupForm" class="modal-form">
+        <div *ngIf="treeViewMode == OtTreeViewMode.GROUP_INSERT" class="modal-form__title">
             <i class="fas fa-plus"></i> OT-Group erstellen
         </div>
-        <div *ngIf="otTreeViewMode == OtTreeViewMode.GROUP_EDIT" class="modal-form__title">
-            <i class="fas fa-plus"></i> OT-Group bearbeiten
+        <div *ngIf="treeViewMode == OtTreeViewMode.GROUP_EDIT" class="modal-form__title">
+            <i class="fas fa-edit"></i> OT-Group bearbeiten
         </div>
         <div class="modal-content">
             <div class="row">
@@ -59,7 +59,7 @@
                 <input (keyup)="checkGroupnameExist()" class="form-control validation-field" type="text" formControlName="groupname" autocomplete="off">
                 <div *ngIf="view.data.otGroupnameLike?.length > 0" class="ot-type-exist">
                     <div class="ot-type-exist__title">Name(n) gefunden:</div>
-                    <div class="d-flex ot-type-exist__entry" *ngFor="let group of view.data.otGroupnameLike" (click)="openForm(OtViewMode.GROUP_EDIT, group.OTGID)">
+                    <div class="d-flex ot-type-exist__entry" *ngFor="let group of view.data.otGroupnameLike" (click)="openForm(group.OTGID)">
                         <div class="pr-2">{{group.groupname}}</div>
                     </div>
                 </div>
@@ -87,13 +87,13 @@
             </div>
             <div *ngIf="!view.setting.insertOtType" class="col text-end">
                 <button
-                        *ngIf="otTreeViewMode == OtTreeViewMode.GROUP_INSERT"
+                        *ngIf="treeViewMode == OtTreeViewMode.GROUP_INSERT"
                         (click)="insertOtGroup()"
                         [disabled]="otGroupForm.invalid || view.data.otGroupnameExist?.length > 0"
                         type="button"
                         class="btn btn-success" mat-dialog-close><i class="fas fa-plus"></i> {{'FW.BUTTON.SAVE' | translate}}</button>
                 <button
-                        *ngIf="otTreeViewMode == OtTreeViewMode.GROUP_EDIT"
+                        *ngIf="treeViewMode == OtTreeViewMode.GROUP_EDIT"
                         (click)="updateOtGroup()"
                         [disabled]="otGroupForm.invalid || view.data.otGroupnameExist?.length > 0"
                         type="button"
@@ -101,7 +101,7 @@
             </div>
         </div>
     </div>
-    <div *ngIf="otTreeViewMode == OtTreeViewMode.GROUP_DELETE" class="modal-delete">
+    <div *ngIf="treeViewMode == OtTreeViewMode.GROUP_DELETE" class="modal-delete">
         <div class="modal-form__title">
             <i class="fas fa-plus"></i> OT-Group löschen
         </div>

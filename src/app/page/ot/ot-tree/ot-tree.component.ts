@@ -3,13 +3,20 @@ import {DataService} from '../../../framework/services/data.service';
 import {OtService} from '../ot.service';
 import {MatDialog} from '@angular/material/dialog';
 
-export enum OtTreeViewMode{
+export enum OtTreeViewMode {
     ALL_VIEW = 'ALL_VIEW',
     GROUP_INSERT = 'GROUP_INSERT',
     GROUP_EDIT = 'GROUP_EDIT',
     GROUP_DELETE = 'GROUP_DELETE',
+    POSITION_GROUP_INSERT = 'POSITION_GROUP_INSERT',
+    POSITION_GROUP_EDIT = 'POSITION_GROUP_EDIT',
+    POSITION_GROUP_DELETE = 'POSITION_GROUP_DELETE',
     POSITION_INSERT = 'POSITION_INSERT',
-    POSITION_EDIT = 'POSITION_INSERT'
+    POSITION_EDIT = 'POSITION_EDIT',
+    POSITION_DELETE = 'POSITION_DELETE',
+    FIELD_INSERT = 'FIELD_INSERT',
+    FIELD_EDIT = 'FIELD_EDIT',
+    FIELD_DELETE = 'FIELD_DELETE',
 }
 
 interface OtTreeSetting {
@@ -17,14 +24,12 @@ interface OtTreeSetting {
 }
 
 interface OtTreeData {
-    groups: [];
+    tree: [];
 }
 
 interface OtTreeView {
     setting: OtTreeSetting;
-    data: {
-        ot: OtTreeData;
-    }
+    data: OtTreeData;
 }
 
 @Component({
@@ -32,7 +37,7 @@ interface OtTreeView {
     templateUrl: './ot-tree.component.html',
     styleUrls: ['./ot-tree.component.scss']
 })
-export class OtTreeComponent implements OnInit, OnDestroy{
+export class OtTreeComponent implements OnInit, OnDestroy {
 
 
     setOtViewMode$;
@@ -42,9 +47,7 @@ export class OtTreeComponent implements OnInit, OnDestroy{
             viewMode: null,
         },
         data: {
-            ot: {
-                groups: [],
-            }
+                tree: [],
         }
     };
     protected readonly OtTreeViewMode = OtTreeViewMode;
@@ -59,6 +62,7 @@ export class OtTreeComponent implements OnInit, OnDestroy{
         this.setOtViewMode$ = this.otService.setOtViewMode.subscribe((otViewMode) => this.setOtViewMode(otViewMode));
         this.loadAllOt$ = this.otService.loadAllOt.subscribe((object) => this.loadAllOt(object.otViewMode));
         this.loadAllOt();
+        this.test();
     }
 
     ngOnDestroy(): void {
@@ -71,25 +75,37 @@ export class OtTreeComponent implements OnInit, OnDestroy{
     }
 
     loadAllOt(otViewMode: OtTreeViewMode = null) {
-        this.dataService.request('Ot/loadGroups', {}).subscribe(response => {
-            console.log(otViewMode);
-            console.log(response);
-            this.view.data.ot.groups = response.otGroups.data;
+        this.dataService.request('Ot/loadGroupsTree').subscribe(response => {
+            this.view.data.tree = response.tree;
+            console.log(this.view.data);
             if (otViewMode) {
                 this.view.setting.viewMode = otViewMode;
             }
         });
     }
 
+    test(){
+        this.dataService.request('Ot/createGroupLayer',
+            {
+                LAYER: 2
+            }).subscribe(response => {
+            console.log(response);
+        });
+    }
+
 
     openGroupForm(viewMode: OtTreeViewMode, id = null) {
-        console.log(viewMode, id);
         this.view.setting.viewMode = viewMode;
-        this.otService.openGroupForm.next({viewMode: viewMode, id: id});
+        this.otService.openGroupForm.next({id: id});
     }
 
     openPositionForm(viewMode: OtTreeViewMode, id = null, $event) {
-        console.log(id);
+        $event.stopPropagation();
+        this.view.setting.viewMode = viewMode;
+        this.otService.openPositionForm.next({viewMode: viewMode, id: id});
+    }
+
+    openPositionGroupForm(viewMode: OtTreeViewMode, id = null, $event) {
         $event.stopPropagation();
         this.view.setting.viewMode = viewMode;
         this.otService.openPositionForm.next({viewMode: viewMode, id: id});
@@ -99,4 +115,18 @@ export class OtTreeComponent implements OnInit, OnDestroy{
         $event.stopPropagation();
         this.openGroupForm(viewMode, id);
     }
+
+    openFieldForm(POSITION_INSERT: OtTreeViewMode, param2, $event: MouseEvent) {
+
+    }
+
+    deleteOtPosition(POSITION_DELETE: OtTreeViewMode, groupElement: never, $event: MouseEvent) {
+        
+    }
+
+    deleteOtField(FIELD_DELETE: OtTreeViewMode, groupElement: never, $event: MouseEvent) {
+        
+    }
+
+
 }

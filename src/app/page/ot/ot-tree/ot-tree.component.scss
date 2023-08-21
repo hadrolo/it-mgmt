@@ -18,3 +18,27 @@
     max-width: 600px !important;
   }
 }
+.ot-position {
+  &__row {
+    //margin: 5px 0 0 20px;
+
+    &:hover{
+      background-color: #e0e0e0;
+    }
+    &-name {
+      font-weight: bold;
+    }
+  }
+}
+.ot-field {
+  &__row {
+    //margin: 5px 0 0 10px;
+
+    &:hover{
+      background-color: #d0d0d0;
+    }
+    &-name {
+      font-weight: bold;
+    }
+  }
+}

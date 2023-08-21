@@ -35,7 +35,7 @@ interface OtGroupView {
 })
 export class OtGroupFormComponent implements OnInit, OnDestroy {
 
-    @Input() otTreeViewMode: OtTreeViewMode = null;
+    @Input() treeViewMode: OtTreeViewMode = null;
     @ViewChild('modalOtGroupForm') modalOtGroupForm: TemplateRef<any>;
 
     protected readonly OtViewMode = OtTreeViewMode;
@@ -77,7 +77,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.openGroupForm$ = this.otService.openGroupForm.subscribe((object) => this.openForm(object.viewMode, object.id));
+        this.openGroupForm$ = this.otService.openGroupForm.subscribe((object) => this.openForm(object.id));
     }
 
     ngOnDestroy(): void {
@@ -88,7 +88,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
         console.log('prepareForm');
         let fields = ['ottid', 'level', 'groupname', 'grouplevel', 'description'];
 
-        if (this.otTreeViewMode === OtTreeViewMode.GROUP_INSERT || OtTreeViewMode.GROUP_EDIT) {
+        if (this.treeViewMode === OtTreeViewMode.GROUP_INSERT || OtTreeViewMode.GROUP_EDIT) {
             fields.forEach(element => {
                 this.otGroupForm.controls[element].enable();
             });
@@ -108,7 +108,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    openForm(viewMode: OtTreeViewMode = null, id: string = null) {
+    openForm(id: string = null) {
 
         console.log('TEST');
         this.view.setting.selectedOtgid = id;
@@ -116,7 +116,7 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
         this.dataService.request('Ot/loadGroupFormData', {
             otgid: this.view.setting.selectedOtgid
         }).subscribe(response => {
-            console.log(viewMode, this.view.setting.selectedOtgid);
+/*            console.log(viewMode, this.view.setting.selectedOtgid);*/
             this.view.data = {
                 otGroup: response.otGroup?.data[0] ? response.otGroup.data[0] : null,
                 otGroupnameExist: null,
@@ -127,10 +127,10 @@ export class OtGroupFormComponent implements OnInit, OnDestroy {
 
             };
 
-            this.view.setting.formViewMode = viewMode;
+/*            this.view.setting.formViewMode = viewMode;*/
             this.prepareForm();
 
-            if (viewMode == OtTreeViewMode.GROUP_EDIT) {
+            if (this.treeViewMode == OtTreeViewMode.GROUP_EDIT) {
                 this.otGroupForm.controls.level.setValue(this.view.data.otGroup.level);
                 this.otGroupForm.controls.groupname.setValue(this.view.data.otGroup.groupname);
                 this.otGroupForm.controls.grouplevel.setValue(this.view.data.otGroup.grouplevel);

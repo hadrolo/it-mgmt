@@ -11,5 +11,6 @@ export class OtService {
   setOtViewMode: Subject<any> = new Subject();
   loadAllOt: Subject<any> = new Subject();
   openGroupForm: Subject<any> = new Subject();
+  openPositionGroupForm: Subject<any> = new Subject();
   openPositionForm: Subject<any> = new Subject();
 }
