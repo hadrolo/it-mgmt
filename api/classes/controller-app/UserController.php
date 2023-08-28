@@ -20,7 +20,7 @@ class User extends Controller
             active,
             postcode
             info
-            FROM users WHERE UID=:UID', ['UID' => $this->currentUID])['data'][0];
+            FROM users WHERE UID=:UID', ['UID' => $this->currentUser->uid])['data'][0];
 
         if (isset($this->data->getCountries) && $this->data->getCountries==1){
             $this->response->countrys = $this->db->query("SELECT CID, IF(:LANG = 'de' ,staat, staat_en) AS country FROM country", ['LANG' => $this->data->LANG])['data'];
@@ -72,7 +72,7 @@ class User extends Controller
             'index_name' => 'UID',
             'write_history' => true,
             'logIndexValue' => '',
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -96,9 +96,9 @@ class User extends Controller
                 'field_list' => $field_list,
                 'table' => 'users',
                 'index_name' => 'UID',
-                'index_value' => $this->currentUID,
+                'index_value' => $this->currentUser->uid,
                 'write_history' => true,
-                'logUid' => $this->currentUID,
+                'logUid' => $this->currentUser->uid,
                 'logComponent' => $this->componentName,
                 'logMethod' => $this->methodName
             ];
@@ -160,7 +160,7 @@ class User extends Controller
                 'index_name' => 'public_id',
                 'index_value' => $this->data->public_id,
                 'write_history' => true,
-                'logUid' => $this->currentUID,
+                'logUid' => $this->currentUser->uid,
                 'logComponent' => $this->componentName,
                 'logMethod' => $this->methodName
             ];
@@ -177,7 +177,7 @@ class User extends Controller
             'index_name' => 'public_id',
             'index_value' => $this->data->public_id,
             'write_history' => true,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];

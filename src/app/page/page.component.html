@@ -13,8 +13,8 @@
                 <div *ngIf="userService.currentUser" class="sidebar__username pt-4">
                     <div>{{userService.currentUser.firstname}} {{userService.currentUser.lastname}}</div>
                     <div class="sidebar__usertype">
-                        <ng-container *ngIf="userService.currentUser.universetype!=='sysadmin'">{{'USER_ROLE.' + userService.currentUser.usertype | translate}}</ng-container>
-                        <ng-container *ngIf="userService.currentUser.universetype==='sysadmin'">{{userService.currentUser.universetype}}</ng-container>
+                        <ng-container *ngIf="userService.currentUser.usertype!=='sysadmin'">{{'USER_ROLE.' + userService.currentUser.usertype | translate}}</ng-container>
+                        <ng-container *ngIf="userService.currentUser.usertype==='sysadmin'">{{userService.currentUser.usertype}}</ng-container>
                     </div>
 
                     <div class="sidebar__link-icons pb-2">
@@ -53,7 +53,7 @@
                     <a mat-list-item routerLink="/log" [routerLinkActive]="['sidebar-nav-item--active']">
                         <span class="sidebar-nav-item__text">{{'DASHBOARD.LOG_TABLE' | translate}}</span>
                     </a>
-<!--                    <a *ngIf="userService.currentUser.universetype === UniverseType.SYSADMIN" mat-list-item routerLink="/rights" [routerLinkActive]="['sidebar-nav-item&#45;&#45;active']">
+<!--                    <a *ngIf="userService.currentUser.universetype === UniverseType.SYSADMIN" mat-list-item routerLink="/rights" [routerLinkActive]="['sidebar-nav-item--active']">
                         <span class="sidebar-nav-item__text">{{'FW.RIGHT.MGMT_TITLE' | translate}}</span>
                     </a>-->
                 </mat-nav-list>
@@ -77,7 +77,7 @@
                     <a mat-list-item routerLink="/right/groupright-setup" [routerLinkActive]="['sidebar-nav-item--active']">
                         <span class="sidebar-nav-item__text">{{'FW.RIGHT.USERTYPE_RIGHT_TITLE' | translate}}</span>
                     </a>
-                    <!--                    <a *ngIf="userService.currentUser.universetype === UniverseType.SYSADMIN" mat-list-item routerLink="/rights" [routerLinkActive]="['sidebar-nav-item&#45;&#45;active']">
+                    <!--                    <a *ngIf="userService.currentUser.universetype === UniverseType.SYSADMIN" mat-list-item routerLink="/rights" [routerLinkActive]="['sidebar-nav-item--active']">
                                             <span class="sidebar-nav-item__text">{{'FW.RIGHT.MGMT_TITLE' | translate}}</span>
                                         </a>-->
                 </mat-nav-list>

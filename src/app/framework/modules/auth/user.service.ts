@@ -6,7 +6,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {Router} from '@angular/router';
 import {FwTokenType, JwtService} from './jwt.service';
 import {FwUser, FwUserType} from '../../settings';
-import {FwLoginType, FwMode, FwUniverseType, FwUserDisplayStyle, SettingsService} from '../../services/settings.service';
+import {FwLoginType, FwMode, FwUserDisplayStyle, SettingsService} from '../../services/settings.service';
 import * as moment from 'moment';
 import {AuthModalService} from './auth-modal/auth-modal.service';
 import jwt_decode from 'jwt-decode';
@@ -265,8 +265,7 @@ export class UserService {
             // console.log('Maintenance is active');
 
             // @ts-ignore
-            if (((this.settingsService.frameworkSettings.frameworkMode === FwMode.STANDALONE && this.currentUser.usertype !== FwUserType.SYSADMIN) ||
-                    (this.settingsService.frameworkSettings.frameworkMode === FwMode.UNIVERSE && this.currentUser.universetype !== FwUniverseType.SYSADMIN)) &&
+            if ((this.currentUser.usertype !== FwUserType.SYSADMIN) &&
                 !this.router.url.endsWith('login')) {
                 if (this.router.url !== '/error/maintenance') {
                     this.router.navigate(['/error/maintenance']);

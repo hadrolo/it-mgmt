@@ -6,6 +6,7 @@ import {LogService} from './log.service';
 import * as StackTrace from 'stacktrace-js';
 import {SettingsService} from './settings.service';
 import {TranslateService} from '@ngx-translate/core';
+import {UserService} from '../modules/auth/user.service';
 
 @Injectable({
     providedIn: 'root'
@@ -17,6 +18,7 @@ export class DataService {
         private logService: LogService,
         private translateService: TranslateService,
         private settingsService: SettingsService,
+        private userService: UserService,
     ) {
     }
 
@@ -41,6 +43,11 @@ export class DataService {
             })
             .pipe(
                 map((response: any) => {
+                    if(response?.overrideUserType){
+                        this.userService.currentUser.usertype = response?.overrideUserType;
+                    }
+
+
                     if (response?.errors) {
                         response.errors.forEach(error => {
                           // ToDo: !! Material !! ToasterService

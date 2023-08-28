@@ -1,8 +1,6 @@
 export const environment = {
     production: true,
     devWarnings: false,
-    apiUrlStandalone: 'api/api-standalone.php',
-    apiUrlUniverse: 'api/api-universe.php',
     username: '',
     password: '',
     universeUrl: 'http://universe.sih.cloud',

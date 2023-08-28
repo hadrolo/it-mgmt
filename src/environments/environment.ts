@@ -1,8 +1,6 @@
 export const environment = {
     production: false,
     devWarnings: true,
-    apiUrlStandalone: 'api/api-standalone.php',
-    apiUrlUniverse: 'api/api-universe.php',
     username: 'eddy',
     password: '!D3tl3f!',
     universeUrl: '',

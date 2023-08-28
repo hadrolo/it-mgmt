@@ -1,14 +1,8 @@
 import {Injectable} from '@angular/core';
-import {FwUserType} from '../settings';
+import {FwApiUrl, FwUserType} from '../settings';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {NavigationEnd, Router} from '@angular/router';
 import {Subject} from 'rxjs';
-
-export enum FwUniverseType {
-  SYSADMIN = 'sysadmin',
-  ADMIN = 'admin',
-  USER = 'user'
-}
 
 export enum FwUserDisplayStyle {
   NONE = 'none',
@@ -19,7 +13,8 @@ export enum FwUserDisplayStyle {
 
 export enum FwMode {
   UNIVERSE = 'universe',
-  STANDALONE = 'standalone'
+  STANDALONE = 'standalone',
+  SSO = 'sso'
 }
 
 export enum FwLoginType {
@@ -182,7 +177,7 @@ interface FwSettingsUser {
 
 export interface FwSettings {
   production: boolean;
-  apiUrl: string;
+  apiUrl: FwApiUrl;
   frameworkMode: FwMode;
   appID: string;
   appName: string;

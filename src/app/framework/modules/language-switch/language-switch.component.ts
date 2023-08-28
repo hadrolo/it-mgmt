@@ -25,7 +25,11 @@ export class LanguageSwitchComponent implements OnInit {
     }
 
     ngOnInit(): void {
+
+        console.log(this.userService.currentUser);
+        console.log(this.userService.currentUser.language);
         if (this.userService.currentUser.language) {
+
             this.translateService.use(this.userService.currentUser.language);
         }
         this.setSelectedLanguage();
@@ -34,7 +38,7 @@ export class LanguageSwitchComponent implements OnInit {
     set(language): void {
         this.dataService.request('framework.User/writeLanguage', {
             language,
-        }).subscribe(response => {
+        }).subscribe(_ => {
             this.userService.currentUser.language = language;
             this.translateService.use(language);
             this.setSelectedLanguage();

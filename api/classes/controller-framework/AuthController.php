@@ -8,9 +8,9 @@ require_once 'classes/TokenFactory.php';
 
 class Auth extends Controller {
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null) {
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
         $database = Database::create('DEFAULT');
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
     /**
@@ -184,7 +184,7 @@ class Auth extends Controller {
 
             $translations = Translation::getAll($this->data->language);
 
-            Mail::send($this->db, $this->currentUID, FRAMEWORK['EMAIL']['SMTP_USER'], APP_NAME, [$email], $translations->FW->PASSWORD_RESET->MAIL_SUBJECT,
+            Mail::send($this->db, $this->currentUser->uid, FRAMEWORK['EMAIL']['SMTP_USER'], APP_NAME, [$email], $translations->FW->PASSWORD_RESET->MAIL_SUBJECT,
                 "<p>" . $translations->FW->PASSWORD_RESET->MAIL_TEXT. "</p>" .
                 "<p><a href='" . URL . FRAMEWORK['AUTH']['PASSWORD_RESET']['ROUTERLINK'] . DIRECTORY_SEPARATOR . $hash . "'>" . $translations->FW->PASSWORD_RESET->MAIL_SUBJECT . "</a></p>"
             );
@@ -236,7 +236,7 @@ class Auth extends Controller {
             'index_name' => $this->data->config->tableIndexName,
             'write_history' => false,
             'output_insert' => false,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];

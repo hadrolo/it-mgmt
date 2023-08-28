@@ -2,9 +2,9 @@
 
 class Email extends Controller {
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null) {
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
         $database = Database::create(FRAMEWORK['EMAIL']['DB']);
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
     public function send() {
@@ -13,7 +13,7 @@ class Email extends Controller {
         $cc = (is_array($this->data->cc) ? $this->data->cc : isset($this->data->cc)) ? [$this->data->cc] : [];
         $bcc = (is_array($this->data->bcc) ? $this->data->bcc : isset($this->data->bcc)) ? [$this->data->bcc] : [];
 
-        $this->response->message = Mail::send($this->db, $this->currentUID, $this->data->from, $this->data->from, $recipients,
+        $this->response->message = Mail::send($this->db, $this->currentUser->uid, $this->data->from, $this->data->from, $recipients,
         $this->data->subject, $this->data->body, $this->data->mailType, $this->data->ical ?? null,
         $cc, $bcc, $this->data->attachments ?? [], $this->data->embeddedImages ?? [], $this->data->priority ?? 3);
     }

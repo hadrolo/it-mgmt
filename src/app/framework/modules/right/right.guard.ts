@@ -2,10 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot} from '@angular/router';
 import {Observable} from 'rxjs';
 import {UrlTree} from '@angular/router';
-import {universeConfig} from '../../settings';
-import {FwMode, SettingsService} from '../../services/settings.service';
 import {RightService} from './right.service';
-import {map} from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'

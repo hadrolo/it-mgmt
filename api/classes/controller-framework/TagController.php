@@ -2,9 +2,9 @@
 
 class Tag extends Controller {
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null) {
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
         $database = Database::create(FRAMEWORK['TAG']['DB']);
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
     public function listAll() {
@@ -36,7 +36,7 @@ class Tag extends Controller {
 
         if ($tag['count'] == 0) {
             $this->response->insert = $this->db->query("INSERT INTO " . FRAMEWORK['TAG']['TABLE_NAME'] . " (TAGGID, FK_ID, FK_name, create_UID) VALUES (?, ?, ?, ?)", [
-                $TAGGID, $this->data->FK_ID, $this->data->FK_name, $this->currentUID
+                $TAGGID, $this->data->FK_ID, $this->data->FK_name, $this->currentUser->uid
             ]);
         } else {
             $this->response->warnings[] = "Tag wurde bereits zugewiesen";

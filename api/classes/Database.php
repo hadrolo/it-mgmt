@@ -261,15 +261,13 @@ class Database
 
             if (FW_LOG_QUERIES) {
                 $bt = debug_backtrace();
-                debug(str_replace($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR, '', $bt[0]['file']) . ' (' . $bt[0]['line'] . ') - ' . $bt[1]['function'] . '()' . print_r($this->interpolateQuery(trim(preg_replace('/ {2,}/', '', $query)), $data), true));
+                debug(str_replace($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR, '', $bt[0]['file']) . ' (' . $bt[0]['line'] . ') - ' . isset($bt[1]) ? $bt[1]['function'] . '()' : '' . print_r($this->interpolateQuery(trim(preg_replace('/ {2,}/', '', $query)), $data), true));
             }
 
         } else {
             $out['error'] = $result['message'];
 
             if (is_null($this->errors)) $this->errors = [];
-
-            debug($result, DEBUGTYPE_SPECIAL);
 
             if ((isset($request_info['universetype']) && strtoupper($request_info['universetype']) == 'SYSADMIN') ||
                 (isset($request_info['usertype']) && strtoupper($request_info['usertype']) == 'SYSADMIN')) {

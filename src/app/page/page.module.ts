@@ -32,6 +32,8 @@ import {UserMgmtFormComponent} from './user-mgmt/user-mgmt-form/user-mgmt-form.c
 import {FileModule} from '../framework/modules/file/file.module';
 import { UserEditModalComponent } from './user-mgmt/user-edit-modal/user-edit-modal.component';
 import {UserProfileStandaloneModule} from '../framework/modules/user-profile-standalone/user-profile-standalone.module';
+import {MsalGuard} from '@azure/msal-angular';
+import {SsoGuard} from '../framework/modules/auth/sso.guard';
 
 
 
@@ -39,6 +41,7 @@ const routes: Routes = [
     {
         path: '',
         component: PageComponent,
+        canActivate: [SsoGuard],
         children: [
             {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
             {path: 'dashboard', component: DashboardComponent},

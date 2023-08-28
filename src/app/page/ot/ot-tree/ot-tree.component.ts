@@ -62,7 +62,7 @@ export class OtTreeComponent implements OnInit, OnDestroy {
         this.setOtViewMode$ = this.otService.setOtViewMode.subscribe((otViewMode) => this.setOtViewMode(otViewMode));
         this.loadAllOt$ = this.otService.loadAllOt.subscribe((object) => this.loadAllOt(object.otViewMode));
         this.loadAllOt();
-        this.test();
+        //this.test();
     }
 
     ngOnDestroy(): void {
@@ -77,7 +77,7 @@ export class OtTreeComponent implements OnInit, OnDestroy {
     loadAllOt(otViewMode: OtTreeViewMode = null) {
         this.dataService.request('Ot/loadGroupsTree').subscribe(response => {
             this.view.data.tree = response.tree;
-            console.log(this.view.data);
+            console.log(response);
             if (otViewMode) {
                 this.view.setting.viewMode = otViewMode;
             }

@@ -7,6 +7,11 @@ import {MatDialog} from '@angular/material/dialog';
 import {FwAuthentication} from '../../framework/modules/right/right.interfaces';
 import {SettingsService} from '../../framework/services/settings.service';
 import {SeoService} from '../../framework/services/seo.service';
+import {MsalService} from '@azure/msal-angular';
+import {HttpClient} from '@angular/common/http';
+import {SsoService} from '../../framework/modules/sso/sso.service';
+import {FwFormViewMode} from '../../framework/modules/form/form.interfaces';
+import {DataService} from '../../framework/services/data.service';
 
 interface DashboardSettingsConfig {
     selectedYear: string;
@@ -24,6 +29,7 @@ export class DashboardComponent implements OnInit{
         selectedYear: '',
         selectedYearRange: []
     }
+    public profile: any;
 
     constructor(
         public rightService: RightService,
@@ -33,14 +39,18 @@ export class DashboardComponent implements OnInit{
         public dialog: MatDialog,
         private settingsService: SettingsService,
         private seoService: SeoService,
+        private msalService: MsalService,
+        private ssoService: SsoService,
+        private dataService: DataService,
+        private settingService: SettingsService,
     ) {
     }
 
-    f/*wAuthentication = FwAuthentication;*/
-
 
     ngOnInit() {
-        this.seoService.setTitle(this.settingsService.frameworkSettings.appName + ' - ' + this.translateService.instant('MENU.DASHBOARD'));
+        //this.seoService.setTitle(this.settingsService.frameworkSettings.appName + ' - ' + this.translateService.instant('MENU.DASHBOARD'));
+/*        this.ssoService.setUser();*/
+        this.apiTest();
     }
 
     @ViewChild('modalDashboardSetting') modalDashboardSetting: TemplateRef<any>;
@@ -71,4 +81,24 @@ export class DashboardComponent implements OnInit{
         console.log(this.rightService.rights);
 
     }
+
+
+    logout(popup?: boolean) {
+        if (popup) {
+            this.msalService.logoutPopup({
+                mainWindowRedirectUri: "/"
+            });
+        } else {
+            this.msalService.logoutRedirect();
+        }
+    }
+
+    apiTest(): void {
+        this.dataService.request('Country/listAll', {
+            LANG: 'de'
+        }).subscribe((response: any) => {
+            console.log(response);
+        });
+    }
+
 }

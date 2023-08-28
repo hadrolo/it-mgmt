@@ -18,9 +18,8 @@ $path = end($parts);
 switch ($path) {
     case 'it-mgmt':
         define("DB", [
-            'DEFAULT' => ['HOST' => '127.0.0.1', 'USER' => 'universe-app', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'universe', 'PORT' => '33009'],
-            'UNIVERSE' => ['HOST' => '127.0.0.1', 'USER' => 'universe-app', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'universe', 'PORT' => '33009'],
-            'APP' => ['HOST' => 'localhost', 'USER' => 'universe-app', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'claim', 'PORT' => '33009']
+            'DEFAULT' => ['HOST' => 'localhost', 'USER' => 'root', 'PASS' => '!D3tl3f!', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
+            'APP' => ['HOST' => 'localhost', 'USER' => 'root', 'PASS' => '!D3tl3f!', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
         ]);
         define("ENVIRONMENT", "local");
         define("ASSET_ROOT", SERVER_ROOT . "src/assets/");
@@ -32,11 +31,9 @@ switch ($path) {
         break;
     default:
         define("DB", [
-            'DEFAULT' => ['HOST' => 'localhost', 'USER' => 'universe', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'universe'],
-            'UNIVERSE' => ['HOST' => 'localhost', 'USER' => 'universe', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'universe'],
-            'APP' => ['HOST' => 'localhost', 'USER' => 'claim', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'claim']
+            'DEFAULT' => ['HOST' => 'localhost', 'USER' => 'it-mgmt', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
+            'APP' => ['HOST' => 'localhost', 'USER' => 'it-mgmt', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
         ]);
-
         define("ENVIRONMENT", "production");
         define("ASSET_ROOT", SERVER_ROOT . "assets/");
         define("URL", "https://claims2.sih.cloud" . DIRECTORY_SEPARATOR);
@@ -51,16 +48,14 @@ switch ($path) {
 const FRAMEWORK = [
     'LOG' => [
         'DB' => 'DEFAULT',
-        'TABLE_NAME' => 'users_log',
+        'TABLE_NAME' => 'log',
     ],
     'AUTH' => [
-        'JWT_KEY' => 'c5c979afcb0be8867e740eba557c792f22de0c333d8807dfddb8de81b65beea3',
-        'ACCESS_TOKEN_TIME' => 300, // Sekunden
-        'REFRESH_TOKEN_TIME' => 3600, // Sekunden
-        'PASSWORD_RESET' => [
-            'FIELD_CHECK' => 'username',
-            'EXPIRATION_TIME' => 600, // Sekunden
-            'ROUTERLINK' => 'reset-password'
+        /* eha '6e180a3d-6716-4a2c-9155-fafdd329e479' */
+        'USERS' => [
+            'SYSADMIN' => ['6e180a3d-6716-4a2c-9155-fafdd329e479'],
+            'FIELD_STAFF' => [],
+            'ADMIN' => []
         ],
         'MODULES' => [
             'DEFAULT' => [
@@ -141,6 +136,18 @@ const FRAMEWORK = [
         'ENABLE_LOG' => true,
         'DB' => 'APP',
         'TABLE_NAME' => 'mail_log',
+    ],
+    'TAG' => [
+        'DB' => 'DEFAULT',
+        'TABLE_NAME' => 'sys_tag',
+        'TABLE_NAME_GROUP' => 'sys_tag_group'
+    ],
+    'CONTROLLER' => [
+        'RIGHTS_ENABLED' => true,
+        'DIRECTORIES' => [
+            'FRAMEWORK' => 'controller-framework',
+            'APP' => 'controller-app',
+        ]
     ]
 ];
 

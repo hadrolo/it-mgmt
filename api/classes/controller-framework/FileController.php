@@ -9,10 +9,10 @@
 class File extends Controller
 {
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null)
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null)
     {
         $database = Database::create(FRAMEWORK['FILE']['GLOBAL']['DB']);
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
 
         if ($this->data && (property_exists($this->data, 'upload_post'))) {
             $this->data->doctype = $this->data->upload_post['doctype'];
@@ -362,7 +362,7 @@ class File extends Controller
     public function deleteFileUid()
     {
         if (isset($this->data->FID)) {
-            $file = $this->db->query("SELECT path,fullname,name,doctype FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=? AND create_UID=?", [$this->data->FID, $this->currentUID])['data'][0];
+            $file = $this->db->query("SELECT path,fullname,name,doctype FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=? AND create_UID=?", [$this->data->FID, $this->currentUser->uid])['data'][0];
             $realpath = FRAMEWORK['FILE']['GLOBAL']['PATH'] . str_replace('/', DIRECTORY_SEPARATOR, $file['path']);
             $fullname = $realpath . $file['fullname'];
             debug($fullname, DEBUGTYPE_INFO);
@@ -590,12 +590,12 @@ class File extends Controller
                             'height' => $fileHeight,
                             'display_name' => $this->data->displayNames[$file_key],
                             'encrypted' => (FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? '1' : '0',
-                            'create_UID' => $this->currentUID
+                            'create_UID' => $this->currentUser->uid
                         ],
                         'table' => FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'],
                         'index_name' => 'FID',
                         'write_history' => false,
-                        'logUid' => $this->currentUID,
+                        'logUid' => $this->currentUser->uid,
                         'logComponent' => 'Upload.php',
                         'logMethod' => 'doUpload()'
                     ]
@@ -619,7 +619,7 @@ class File extends Controller
                     'doctype' => $this->data->doctype,
                     'db_path' => $doctype_path,
                     'encrypted' => (FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? '1' : '0',
-                    'UID' => $this->currentUID
+                    'UID' => $this->currentUser->uid
                 ];
 
                 $this->writeLog(
@@ -907,7 +907,7 @@ class File extends Controller
     private function writeLog(string $type, string $text, string $action): void
     {
         Log::write(
-            $this->currentUID,
+            $this->currentUser->uid,
             $type,
             $text,
             'FileUpload',

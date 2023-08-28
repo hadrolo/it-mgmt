@@ -3,17 +3,17 @@
 class Right extends Controller
 {
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null)
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null)
     {
         $database = new Database(DB['APP']['HOST'], DB['APP']['USER'], DB['APP']['PASS'], DB['APP']['DB_NAME'], DB['APP']['PORT']);
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
     public function loadCurrentRights()
     {
         $rights = $this->db->query("SELECT RGID, name FROM rights");
-        debug($this->db->query("SELECT usertype FROM users WHERE UID=:UID", ['UID' => $this->currentUID])['data'][0]['usertype'], DEBUGTYPE_SPECIAL);
-        if ($this->db->query("SELECT usertype FROM users WHERE UID=:UID", ['UID' => $this->currentUID])['data'][0]['usertype'] == 'SYSADMIN') {
+        debug($this->db->query("SELECT usertype FROM users WHERE UID=:UID", ['UID' => $this->currentUser->uid])['data'][0]['usertype'], DEBUGTYPE_SPECIAL);
+        if ($this->db->query("SELECT usertype FROM users WHERE UID=:UID", ['UID' => $this->currentUser->uid])['data'][0]['usertype'] == 'SYSADMIN') {
             foreach ($rights['data'] as $key => $value) {
                 $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
             }
@@ -39,7 +39,7 @@ class Right extends Controller
             LEFT JOIN M_users AS mu ON mu.usertype = ru.usertype
             WHERE mu.UID = :UID AND r.type != :TYPE
             ) t
-            GROUP BY name", ['UID' => $this->currentUID, 'TYPE' => 'ALIAS']);
+            GROUP BY name", ['UID' => $this->currentUser->uid, 'TYPE' => 'ALIAS']);
             } else {
                 $rightAllowed = $this->db->query("SELECT RGID, name FROM
             (SELECT
@@ -61,7 +61,7 @@ class Right extends Controller
             LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
             WHERE u.UID = :UID AND r.type != :TYPE
             ) t
-            GROUP BY name", ['UID' => $this->currentUID, 'TYPE' => 'ALIAS']);
+            GROUP BY name", ['UID' => $this->currentUser->uid, 'TYPE' => 'ALIAS']);
             }
 
             $this->response->rights = null;
@@ -128,7 +128,7 @@ class Right extends Controller
             'table' => 'rights_usertypes',
             'index_name' => 'RTID',
             'write_history' => true,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -141,7 +141,7 @@ class Right extends Controller
             'table' => 'rights_usertypes',
             'index_name' => 'RTID',
             'index_value' => $this->data->RTID,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -289,7 +289,7 @@ class Right extends Controller
             'table' => 'rights',
             'index_name' => 'RID',
             'write_history' => true,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -313,7 +313,7 @@ class Right extends Controller
             'index_name' => 'RID',
             'write_history' => true,
             'index_value' => $this->data->RID,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -326,7 +326,7 @@ class Right extends Controller
             'table' => 'rights_alias',
             'index_name' => 'RID_alias',
             'index_value' => $this->data->RID,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -336,7 +336,7 @@ class Right extends Controller
             'table' => 'rights_alias',
             'index_name' => 'RID_client',
             'index_value' => $this->data->RID,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -346,7 +346,7 @@ class Right extends Controller
             'table' => 'rights',
             'index_name' => 'RID',
             'index_value' => $this->data->RID,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -458,7 +458,7 @@ class Right extends Controller
             'table' => 'rights_usertypes',
             'index_name' => 'usertype',
             'index_value' => $this->data->usertype,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -477,7 +477,7 @@ class Right extends Controller
                     'table' => 'rights_usertypes',
                     'index_name' => 'RTID',
                     'write_history' => false,
-                    'logUid' => $this->currentUID,
+                    'logUid' => $this->currentUser->uid,
                     'logComponent' => $this->componentName,
                     'logMethod' => $this->methodName
                 ];

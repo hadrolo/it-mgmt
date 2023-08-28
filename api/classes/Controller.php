@@ -6,7 +6,7 @@ abstract class Controller
     protected $data;
     protected $componentName;
     protected $methodName;
-    protected $currentUID;
+    protected $currentUser;
     protected $public_id; // UNBEDINGT NOCH ÄNDERN !!!
     protected $response;
 
@@ -16,15 +16,15 @@ abstract class Controller
      * @param object|null $data
      * @param string|null $componentName
      * @param string|null $methodName
-     * @param int|null $currentUID
+     * @param object|null $currentUser
      */
-    public function __construct(Database $database = null, object $data = null, string $componentName = null, string $methodName = null, int $currentUID = null)
+    public function __construct(Database $database = null, object $data = null, string $componentName = null, string $methodName = null, object $currentUser = null)
     {
         $this->db = $database;
         $this->data = $data;
         $this->componentName = $componentName;
         $this->methodName = $methodName;
-        $this->currentUID = $currentUID;
+        $this->currentUser = $currentUser;
         $this->response = new stdClass();
     }
 

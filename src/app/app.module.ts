@@ -28,6 +28,8 @@ import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import {ToastrModule} from 'ngx-toastr';
 import {RegisterComponent} from './page/user-mgmt/register/register.component';
 import {RegisterModule} from './framework/modules/register/register.module';
+import {MsalInterceptor, MsalModule} from '@azure/msal-angular';
+import {BrowserCacheLocation, InteractionType, LogLevel, PublicClientApplication} from '@azure/msal-browser';
 
 registerLocaleData(localeDE);
 registerLocaleData(localeEN);
@@ -62,6 +64,37 @@ export class MyHammerConfig extends HammerGestureConfig {
         RegisterComponent,
     ],
     imports: [
+        MsalModule.forRoot(new PublicClientApplication({ // MSAL Configuration
+            auth: {
+                clientId: '824f703c-2fda-4ffc-9331-0363d5def700',
+                authority: 'https://login.microsoftonline.com/a3c8a9b3-bacf-408b-a980-568f04ab0847',
+                redirectUri: "/",
+                postLogoutRedirectUri: '/'
+            },
+            cache: {
+                cacheLocation: BrowserCacheLocation.LocalStorage,
+            },
+            system: {
+                loggerOptions: {
+                    loggerCallback: () => {
+                    }, // replace with "loggerCallback" to enable MSAL logging
+                    logLevel: LogLevel.Info,
+                    piiLoggingEnabled: false
+                }
+            }
+        }), {
+            interactionType: InteractionType.Redirect, // MSAL Guard Configuration
+            authRequest: {
+                scopes: ['user.read']
+            },
+            loginFailedRoute: '/login-failed'
+        }, {
+            interactionType: InteractionType.Redirect, // MSAL Interceptor Configuration
+            protectedResourceMap: new Map([
+                ['https://graph.microsoft.com/v1.0/me', ['user.read']],
+                ['api/api-sso.php', ['api://824f703c-2fda-4ffc-9331-0363d5def700/api.access']],
+            ])
+        }),
         HttpClientModule,
         BrowserModule,
         AppRoutingModule,
@@ -88,13 +121,18 @@ export class MyHammerConfig extends HammerGestureConfig {
         RegisterModule,
     ],
     providers: [
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: MsalInterceptor,
+            multi: true
+        },
         UserService,
-        AppSettings,
+/*        AppSettings,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,
             multi: true
-        },
+        },*/
         {provide: LOCALE_ID, useValue: 'de'},
     ],
     bootstrap: [AppComponent]

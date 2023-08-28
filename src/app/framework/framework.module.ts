@@ -15,6 +15,7 @@ import {YesNoPipe} from './pipes/yes-no.pipe';
 import {DebounceKeyupDirective} from './directives/debounce-keyup.directive';
 import {FwTranslatePipe} from './pipes/fw-translate.pipe';
 import {FormModule} from './modules/form/form.module';
+import { LoginFailedComponent } from './modules/sso/login-failed/login-failed.component';
 
 @NgModule({
     declarations: [
@@ -28,6 +29,7 @@ import {FormModule} from './modules/form/form.module';
         YesNoPipe,
         DebounceKeyupDirective,
         FwTranslatePipe,
+        LoginFailedComponent,
     ],
     imports: [
         CommonModule,

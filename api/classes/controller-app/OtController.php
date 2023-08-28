@@ -5,10 +5,35 @@
 class Ot extends Controller
 {
 
+    /*
+SELECT Layer='0',ot_group.* FROM ot_group
+UNION
+SELECT otg.* FROM ot_group otg
+LEFT JOIN ot_group_1 l1 ON l1.OTGID_1=otg.OTGID
+UNION
+SELECT * FROM ot_group_2
+     */
+
     private $errors;
+
+    public function countLayers()
+    {
+        return $this->db->query("
+            SELECT
+                TABLE_NAME,
+                SUBSTRING_INDEX(TABLE_NAME, '_', -1) AS layer
+            FROM
+               information_schema.TABLES
+            WHERE
+               TABLE_SCHEMA LIKE '" . DB['APP']['DB_NAME'] . "'    AND
+                TABLE_TYPE LIKE 'BASE TABLE' AND
+                TABLE_NAME LIKE 'ot_group_%'");
+    }
 
     public function createGroupLayer()
     {
+        $this->response->layers = $this->countLayers();
+
         if (isset($this->data->LAYER)) {
             if (preg_match('/^[0-9 ]+$/', $this->data->LAYER)) {
                 $tableName = 'ot_group_' . $this->data->LAYER;
@@ -75,33 +100,50 @@ class Ot extends Controller
                TABLE_SCHEMA LIKE '" . DB['APP']['DB_NAME'] . "'    AND
                 TABLE_TYPE LIKE 'BASE TABLE' AND
                 TABLE_NAME = :LAYER", ['LAYER' => $table_name])['count'] == 1;
-
     }
 
-    public
-    function loadGroupsTree()
+    public function loadGroupsTree()
     {
+
+        $layers = $this->countLayers();
+        $sql = "SELECT otg.* FROM ot_group otg";
+        if ($layers['count'] > 0) {
+            foreach ($layers['data'] as $table) {
+                debug('L' . $table['layer'] . ' ' . $table['TABLE_NAME'], DEBUGTYPE_SPECIAL);
+                if ($table['layer'] == "1") {
+                    $sql .= " LEFT JOIN ot_group_1 l1 ON l1.OTGID_1=otg.OTGID";
+                } else {
+                    $sql .= " LEFT JOIN ot_group_" . $table['layer'] . " l" . $table['layer'] . " ON l" . $table['layer'] . ".OTGID_" . $table['layer'] . "=l1.OTGID_".$table['layer']-1;
+                }
+            }
+        }
+        $this->response->layers = $layers;
+        $this->response->sql = $sql;
+
+        //$testTree = $this->db->query("");
+
+
         $treeBase = $this->db->query("SELECT 
-            otg.*,
-            ott.name as typename,
-            otp.OTPID AS OTPID,
-            otp.OTPGID AS OTPGID,
-            otpg.name AS otp_positiongroupname,
-            otp.ID AS otp_id,
-            otp.name AS otp_name,
-            otp.description AS otp_description,
-            otf.OTFID,
-            otf.ID AS otf_ID,
-            otf.name AS otf_name,
-            otf.type AS otf_type,
-            otf.formular AS otf_formular,
-            otf.description AS otf_description 
+            otg .*,
+            ott . name as typename,
+            otp . OTPID as OTPID,
+            otp . OTPGID as OTPGID,
+            otpg . name as otp_positiongroupname,
+            otp . ID as otp_id,
+            otp . name as otp_name,
+            otp . description as otp_description,
+            otf . OTFID,
+            otf . ID as otf_ID,
+            otf . name as otf_name,
+            otf . type as otf_type,
+            otf . formular as otf_formular,
+            otf . description as otf_description 
             FROM ot_group otg
-            LEFT JOIN ot_type ott ON ott.OTTID = otg.OTTID
-            LEFT JOIN ot_position otp ON otp.OTGID = otg.OTGID
-            LEFT JOIN ot_position_group otpg ON otpg.OTPGID = otp.OTPGID
-            LEFT JOIN ot_field otf ON otf.OTPID = otp.OTPID
-            ORDER BY otg.OTGID DESC, otg.level, otg.grouplevel, otp.ID DESC, otf.ID DESC")['data'];
+            LEFT JOIN ot_type ott ON ott . OTTID = otg . OTTID
+            LEFT JOIN ot_position otp ON otp . OTGID = otg . OTGID
+            LEFT JOIN ot_position_group otpg ON otpg . OTPGID = otp . OTPGID
+            LEFT JOIN ot_field otf ON otf . OTPID = otp . OTPID
+            ORDER BY otg . OTGID DESC, otg . level, otg . grouplevel, otp . ID DESC, otf . ID DESC")['data'];
 
         $tree = null;
         foreach ($treeBase as $element) {
@@ -155,7 +197,7 @@ class Ot extends Controller
     public function loadGroupFormData()
     {
         if (isset($this->data->otgid)) {
-            $this->response->otGroup = $this->db->query("SELECT * FROM ot_group WHERE OTGID=:OTGID", ['OTGID' => $this->data->otgid]);
+            $this->response->otGroup = $this->db->query("SELECT * FROM ot_group WHERE OTGID =:OTGID", ['OTGID' => $this->data->otgid]);
         }
         $this->loadTypesData();
     }
@@ -174,13 +216,13 @@ class Ot extends Controller
                 'groupname' => $this->data->form->groupname,
                 'grouplevel' => $this->data->form->grouplevel,
                 'description' => $this->data->form->description,
-                'create_UID' => $this->currentUID,
+                'create_UID' => $this->currentUser->uid,
             ],
             'table' => 'ot_group',
             'index_name' => 'OTGID',
             'write_history' => false,
             'output_insert' => true,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -196,14 +238,14 @@ class Ot extends Controller
                 'groupname' => $this->data->form->groupname,
                 'grouplevel' => $this->data->form->grouplevel,
                 'description' => $this->data->form->description,
-                'create_UID' => $this->currentUID,
+                'create_UID' => $this->currentUser->uid,
             ],
             'table' => 'ot_group',
             'index_name' => 'OTGID',
             'write_history' => false,
             'output_update' => true,
             'index_value' => $this->data->otgid,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -218,7 +260,7 @@ class Ot extends Controller
             'index_value' => $this->data->otgid,
             'write_history' => true,
             'output_delete' => true,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -230,13 +272,13 @@ class Ot extends Controller
         $settings = [
             'field_list' => [
                 'name' => $this->data->form->ottype,
-                'create_UID' => $this->currentUID,
+                'create_UID' => $this->currentUser->uid,
             ],
             'table' => 'ot_type',
             'index_name' => 'OTTID',
             'write_history' => false,
             'output_insert' => true,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -246,7 +288,7 @@ class Ot extends Controller
     public function checkTypeExist()
     {
         if (isset($this->data->name)) {
-            $this->response->otTypeExist = $this->db->query("SELECT * FROM ot_type WHERE name=:NAME", ['NAME' => $this->data->name]);
+            $this->response->otTypeExist = $this->db->query("SELECT * FROM ot_type WHERE name =:NAME", ['NAME' => $this->data->name]);
             $this->response->otTypeLike = $this->db->query("SELECT * FROM ot_type WHERE name LIKE :NAME", ['NAME' => '%' . $this->data->name . '%']);
         }
     }
@@ -254,7 +296,7 @@ class Ot extends Controller
     public function checkGroupnameExist()
     {
         if (isset($this->data->groupname)) {
-            $this->response->otGroupnameExist = $this->db->query("SELECT * FROM ot_group WHERE groupname=:GROUPNAME", ['GROUPNAME' => $this->data->groupname]);
+            $this->response->otGroupnameExist = $this->db->query("SELECT * FROM ot_group WHERE groupname =:GROUPNAME", ['GROUPNAME' => $this->data->groupname]);
             $this->response->otGroupnameLike = $this->db->query("SELECT * FROM ot_group WHERE groupname LIKE :GROUPNAME", ['GROUPNAME' => '%' . $this->data->groupname . '%']);
         }
     }
@@ -262,7 +304,7 @@ class Ot extends Controller
     public function loadPositionFormData()
     {
         if (isset($this->data->otgid)) {
-            $this->response->otGroup = $this->db->query("SELECT * FROM ot_position WHERE OTPID=:OTPID", ['OTPID' => $this->data->otpid]);
+            $this->response->otGroup = $this->db->query("SELECT * FROM ot_position WHERE OTPID =:OTPID", ['OTPID' => $this->data->otpid]);
         }
         //$this->loadCountries();
     }
@@ -282,11 +324,14 @@ class Ot extends Controller
         $this->response->clients = $this->db->query("SELECT * FROM clients ORDER BY name");
     }
 
-    private function writeError($message){
+    private function writeError($message)
+    {
         debug($message, DEBUGTYPE_ERROR);
         $this->errors[] = $message;
     }
-    private function writeResponse($message){
+
+    private function writeResponse($message)
+    {
         debug($message, DEBUGTYPE_SPECIAL);
     }
 

@@ -5,9 +5,9 @@ import {TranslateService} from '@ngx-translate/core';
 import {DataService} from '../../services/data.service';
 import {UserService} from '../auth/user.service';
 import {FormTranslateService, FwMessage} from '../../services/form-translate.service';
-import {FwUniverseType} from '../../services/settings.service';
 import {Subscription} from 'rxjs';
 import {MatDialog} from '@angular/material/dialog';
+import {FwUserType} from '../../settings';
 
 enum FwFormType {
     VIEW,
@@ -183,7 +183,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     }
 
     translateAppUsertype(): void {
-        if (this.userService.currentUser.universetype === FwUniverseType.SYSADMIN) {
+        if (this.userService.currentUser.usertype === FwUserType.SYSADMIN) {
             this.userForm.controls['app_usertype'].setValue(this.translateService.instant('FW.USER_ROLE.SYSADMIN'));
         } else {
             this.userForm.controls['app_usertype'].setValue(this.translateService.instant('USER_ROLE.' + this.userService.currentUser.usertype));

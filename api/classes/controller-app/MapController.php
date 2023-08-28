@@ -222,7 +222,7 @@ class Map extends Controller
         $data['SID'] = $this->data->riverMgmtData->SID ?? null;
         $data['PID'] = $this->data->riverMgmtData->PID ?? null;
         $data['STATUS'] = 'new';
-        $data['CREATE_UID'] = $this->currentUID;
+        $data['CREATE_UID'] = $this->currentUser->uid;
         $GVID = $this->db->query("INSERT INTO gps_version (CID, RID, SID, PID, status, create_UID) VALUES (:CID, :RID, :SID, :PID, :STATUS, :CREATE_UID)", $data)['lastID'];
 
 
@@ -264,7 +264,7 @@ class Map extends Controller
                 $data['DISTANCE'] = isset($distance) ? round($distance) : null;
                 $data['LAT'] = isset($point->lat) ? trim($point->lat) : null;
                 $data['LNG'] = isset($point->lng) ? trim($point->lng) : null;
-                $data['CREATE_UID'] = $this->currentUID;
+                $data['CREATE_UID'] = $this->currentUser->uid;
                 $data['POLYLINE_TAG'] = $polyline_tag;
                 $this->response->result = $this->db->query("INSERT INTO gps_data (GVID, CID, RID, SID, PID, type, polyline_tag, GTID, random_name, distance, lat, lng, create_UID)
                         VALUES (:GVID, :CID, :RID, :SID, :PID, :TYPE, :POLYLINE_TAG, :GTID, :RANDOM_NAME, :DISTANCE, :LAT, :LNG, :CREATE_UID)", $data);
@@ -286,7 +286,7 @@ class Map extends Controller
             $data['RANDOM_NAME'] = substr(hash('sha256', mt_rand()), 20);
             $data['LAT'] = isset($marker->lat) ? trim($marker->lat) : null;
             $data['LNG'] = isset($marker->lng) ? trim($marker->lng) : null;
-            $data['CREATE_UID'] = $this->currentUID;
+            $data['CREATE_UID'] = $this->currentUser->uid;
             $this->response->result = $this->db->query("INSERT INTO gps_data (GVID, CID, RID, SID, PID, type, GTID, random_name, lat, lng, create_UID)
                         VALUES (:GVID, :CID, :RID, :SID, :PID, :TYPE, :GTID, :RANDOM_NAME, :LAT, :LNG, :CREATE_UID)", $data);
         }
@@ -307,10 +307,10 @@ class Map extends Controller
             'index_name' => 'GVID',
             'index_value' => $this->data->GVID,
             'check_field' => 'create_UID',
-            'check_id' => $this->currentUID,
+            'check_id' => $this->currentUser->uid,
             'write_history' => true,
             'output_delete' => false,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -321,10 +321,10 @@ class Map extends Controller
             'index_name' => 'GVID',
             'index_value' => $this->data->GVID,
             'check_field' => 'create_UID',
-            'check_id' => $this->currentUID,
+            'check_id' => $this->currentUser->uid,
             'write_history' => true,
             'output_delete' => false,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];
@@ -482,7 +482,7 @@ class Map extends Controller
             'index_name' => 'GVID',
             'index_value' => $this->data->GVID,
             'write_history' => true,
-            'logUid' => $this->currentUID,
+            'logUid' => $this->currentUser->uid,
             'logComponent' => $this->componentName,
             'logMethod' => $this->methodName
         ];

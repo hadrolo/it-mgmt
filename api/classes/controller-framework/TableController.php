@@ -11,7 +11,7 @@ class Table extends Controller {
 
     private $dbName;
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null) {
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
         if (strpos($data->config->dataConfig->tableName, '.') !== false) {
             $parts = explode('.', $data->config->dataConfig->tableName);
             $db = strtoupper($parts[0]);
@@ -21,7 +21,7 @@ class Table extends Controller {
         }
         $this->dbName = DB[$db]['DB_NAME'];
         $database = Database::create($db);
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
     private function cellColor($sheet, $cells, $color) {

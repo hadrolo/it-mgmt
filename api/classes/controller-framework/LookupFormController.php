@@ -2,9 +2,9 @@
 
 class LookupForm extends Controller {
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null) {
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
         $database = Database::create('DEFAULT');
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
     public function ListAll() {
@@ -29,7 +29,7 @@ class LookupForm extends Controller {
                 'table' => $this->data->config->clientTable,
                 'index_name' => $this->data->config->clientIndexName,
                 'write_history' => true,
-                'logUid' => $this->currentUID,
+                'logUid' => $this->currentUser->uid,
                 'logComponent' => $this->data->logComponent,
                 'logMethod' => $this->data->logMethod
             ];

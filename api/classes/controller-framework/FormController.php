@@ -4,7 +4,7 @@ class Form extends Controller {
 
     private $dbName;
 
-    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUID = null) {
+    public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
         if (strpos($data->config->tableName, '.') !== false) {
             $parts = explode('.', $data->config->tableName);
             $db = strtoupper($parts[0]);
@@ -14,7 +14,7 @@ class Form extends Controller {
         }
         $this->dbName = DB[$db]['DB_NAME'];
         $database = Database::create($db);
-        parent::__construct($database, $data, $componentName, $methodName, $currentUID);
+        parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
     public function getFormInfo() {
@@ -125,7 +125,7 @@ class Form extends Controller {
                 'table' => $this->data->config->tableName,
                 'index_name' => $this->data->config->tableIndexName,
                 'write_history' => true,
-                'logUid' => $this->currentUID,
+                'logUid' => $this->currentUser->uid,
                 'logComponent' => $this->componentName,
                 'logMethod' => $this->methodName
             ]
@@ -150,7 +150,7 @@ class Form extends Controller {
                     'index_name' => $this->data->config->tableIndexName,
                     'index_value' => $this->data->config->pkValue,
                     'write_history' => true,
-                    'logUid' => $this->currentUID,
+                    'logUid' => $this->currentUser->uid,
                     'logComponent' => $this->componentName,
                     'logMethod' => $this->methodName
                 ]
@@ -168,7 +168,7 @@ class Form extends Controller {
                     'index_name' => $this->data->config->tableIndexName,
                     'index_value' => $this->data->config->pkValue,
                     'write_history' => true,
-                    'logUid' => $this->currentUID,
+                    'logUid' => $this->currentUser->uid,
                     'logComponent' => $this->componentName,
                     'logMethod' => $this->methodName
                 ]

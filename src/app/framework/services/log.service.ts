@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {UserService} from '../modules/auth/user.service';
 import {SettingsService} from './settings.service';
+import {FwUserType} from '../settings';
 
 export enum FwLogType {
     ERROR = 'error',
@@ -31,7 +32,7 @@ export class LogService {
     write(type: FwLogType, message: string, component: string = null, method: string = null): void {
         const currentUser = this.userService.currentUser;
 
-        if (currentUser.universetype === 'sysadmin' && [FwLogType.EXCEPTION, FwLogType.ERROR].indexOf(type) > -1) {
+        if (currentUser.usertype === FwUserType.SYSADMIN && [FwLogType.EXCEPTION, FwLogType.ERROR].indexOf(type) > -1) {
           // ToDo: !! Material !! ToasterService
           //  this.toastrService.error(message, type);
         }
@@ -48,7 +49,7 @@ export class LogService {
             componentName: 'LogService.ts',
             methodName: 'write()'
         }).subscribe((response: any) => {
-            if (response.errors && currentUser.universetype === 'sysadmin') {
+            if (response.errors && currentUser.usertype === FwUserType.SYSADMIN) {
               // ToDo: !! Material !! ToasterService
               //  this.toastrService.error('Could not write log', 'Log');
             }

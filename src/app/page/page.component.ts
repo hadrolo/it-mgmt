@@ -5,9 +5,8 @@ import {environment} from '../../environments/environment';
 import {TranslateService} from '@ngx-translate/core';
 import {UserService} from '../framework/modules/auth/user.service';
 import {RightService} from '../framework/modules/right/right.service';
-import {FwTableExternalFilter} from '../framework/modules/table/table.interfaces';
 import {CryptoService} from '../framework/services/crypto.service';
-import {NavigationEnd, Router} from '@angular/router';
+import {Router} from '@angular/router';
 import {UserProfileService} from '../framework/modules/user-profile/user-profile.service';
 import {MatSidenav} from '@angular/material/sidenav';
 import {UserProfileStandaloneService} from '../framework/modules/user-profile-standalone/user-profile-standalone.service';
@@ -47,6 +46,7 @@ export class PageComponent implements OnInit, AfterContentInit, OnDestroy{
     }
 
     ngOnInit() {
+        console.log('PAGE');
     }
 
     ngAfterContentInit(): void {
