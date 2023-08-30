@@ -9,5 +9,6 @@ export class UserProfileService {
     constructor() {
     }
 
-    openUserprofile: Subject<any> = new Subject();
+    openUserProfileStandalone: Subject<any> = new Subject();
+    openUserprofileSso: Subject<any> = new Subject();
 }

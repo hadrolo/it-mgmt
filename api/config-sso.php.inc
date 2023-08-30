@@ -51,14 +51,18 @@ const FRAMEWORK = [
         'TABLE_NAME' => 'log',
     ],
     'AUTH' => [
-        /* eha '6e180a3d-6716-4a2c-9155-fafdd329e479' */
+        /* Hier kann die Azure User-Benutzergruppe zum testen mit der Benutzer OID überschrieben werden */
+        /*
+            eha '6e180a3d-6716-4a2c-9155-fafdd329e479'
+            aze 'b13a37d7-a651-4125-b5e6-02fcc3de03bc'
+        */
         'USERS' => [
             'SYSADMIN' => ['6e180a3d-6716-4a2c-9155-fafdd329e479'],
             'FIELD_STAFF' => [],
             'ADMIN' => []
         ],
         'MODULES' => [
-            'DEFAULT' => [
+/*            'DEFAULT' => [
                 'DB' => 'universe',
                 'TABLE_NAME' => 'users',
                 'FIELD_LOGIN' => 'username',
@@ -84,7 +88,32 @@ const FRAMEWORK = [
                         'PRODUCTION',
                         'INVOICING']
                 ]
-            ]
+            ]*/
+        ],
+        'PERMANENT_ALLOWED_API' => [
+            /* FRAMEWORK -------------------- */
+            'Token/newAnonymous',
+            'Token/refreshToken',
+            'Auth/isLoggedIn',
+            'Auth/login',
+            'Auth/register',
+            'Auth/registerLookup',
+            'Auth/checkRegistrationHash',
+            'Auth/checkHash',
+            'Storage/getAuto',
+            'Storage/getData',
+            'Storage/setData',
+            'Logfile/write',
+            'Country/listAll',
+            'Email/send',
+            'Table/groupAlpha',
+            'Table/getTableInfo',
+            'Table/listAll',
+            'Table/exportXLS',
+            'Right/loadCurrentRights',
+            /* APP ---------------------------*/
+            'User/getOwnUserProfile',
+            'User/updateOwnUser',
         ]
     ],
     'HISTORY' => [

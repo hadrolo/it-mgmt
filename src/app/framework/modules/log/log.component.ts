@@ -78,83 +78,45 @@ export class LogComponent implements OnInit, OnDestroy {
         let fields: { [key: string]: FwTableColumnFilterField };
         let tableJoins: FwTableJoin[];
 
-        if (this.settingsService.frameworkSettings.frameworkMode === FwMode.UNIVERSE) {
-            tableFields = [
-                {key: 'created', name: 'created', title: 'Created', sortable: true, searchable: true, nowrap: true},
-                {key: 'UID', name: 'UID', title: 'UID', sortable: true, searchable: true},
-                /*{key: 'usertype', table: this.settingsService.frameworkSettings.log.userTableName, name: 'usertype', title: 'Usertype', sortable: true, searchable: true, translateValuePrefix: 'USER_ROLE'},*/
-                {key: 'username', table: 'users', name: 'username', title: 'User', sortable: true, searchable: true},
-                {key: 'APPID', name: 'APPID', title: 'APPID', sortable: true, searchable: true},
-                {key: 'environment', name: 'environment', title: 'Environment', sortable: true, searchable: true},
-                {key: 'c_component', name: 'c_component', title: '(C) Component', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 'c_method', name: 'c_method', title: '(C) Method', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 's_controller', name: 's_controller', title: '(S) Controller', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 's_action', name: 's_action', title: '(S) Action', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 'type', name: 'type', title: 'Type', sortable: true, searchable: true},
-                {key: 'text', name: 'text', title: 'Text', sortable: false, searchable: true},
-                {
-                    key: this.settingsService.frameworkSettings.log.logTableIndexName,
-                    name: this.settingsService.frameworkSettings.log.logTableIndexName,
-                    title: 'ID',
-                    sortable: true,
-                    searchable: true,
-                    visible: false,
-                },
-            ];
-            fields = {
-                UID: {value: '', type: FwTableColumnFilterType.GROUP},
-                username: {value: ''},
-                APPID: {value: '', type: FwTableColumnFilterType.GROUP},
-                environment: {value: '', type: FwTableColumnFilterType.GROUP},
-                c_component: {value: '', type: FwTableColumnFilterType.GROUP},
-                c_method: {value: '', type: FwTableColumnFilterType.GROUP},
-                s_controller: {value: '', type: FwTableColumnFilterType.GROUP},
-                s_action: {value: '', type: FwTableColumnFilterType.GROUP},
-                type: {value: '', type: FwTableColumnFilterType.GROUP},
-                text: {value: ''},
-                created: {value: ''},
-            };
-            tableJoins = [
-                {left: this.settingsService.frameworkSettings.log.userTableName, right: this.settingsService.frameworkSettings.log.logTableName, key: 'UID'},
-            ];
-        } else {
-            tableFields = [
-                {key: 'created', name: 'created', title: 'Created', sortable: true, searchable: true},
-                {key: 'UID', name: 'UID', title: 'UID', sortable: true, searchable: true},
-                {key: 'username', table: this.settingsService.frameworkSettings.log.userTableName, name: 'username', title: 'User', sortable: true, searchable: true},
-                /*{key: 'usertype', table: this.settingsService.frameworkSettings.log.userTableName, name: 'usertype', title: 'Usertype', sortable: true, searchable: true, translateValuePrefix: 'USER_ROLE'},*/
-                {key: 'APPID', name: 'APPID', title: 'APPID', sortable: true, searchable: true},
-                {key: 'c_component', name: 'c_component', title: '(C) Component', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 'c_method', name: 'c_method', title: '(C) Method', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 's_controller', name: 's_controller', title: '(S) Controller', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 's_action', name: 's_action', title: '(S) Action', sortable: true, searchable: true, nowrapHeader: true},
-                {key: 'type', name: 'type', title: 'Type', sortable: true, searchable: true},
-                {key: 'text', name: 'text', title: 'Text', sortable: false, searchable: true},
-                {
-                    key: this.settingsService.frameworkSettings.log.logTableIndexName,
-                    name: this.settingsService.frameworkSettings.log.logTableIndexName,
-                    title: 'ID',
-                    sortable: true,
-                    searchable: true,
-                    visible: false,
-                },
-            ];
-            fields = {
-                UID: {value: '', type: FwTableColumnFilterType.GROUP},
-                username: {value: ''},
-                APPID: {value: '', type: FwTableColumnFilterType.GROUP},
-                c_component: {value: '', type: FwTableColumnFilterType.GROUP},
-                c_method: {value: '', type: FwTableColumnFilterType.GROUP},
-                s_controller: {value: '', type: FwTableColumnFilterType.GROUP},
-                s_action: {value: '', type: FwTableColumnFilterType.GROUP},
-                type: {value: '', type: FwTableColumnFilterType.GROUP},
-                text: {value: ''},
-                created: {value: ''},
-            };
-            tableJoins = [
-                {left: this.settingsService.frameworkSettings.log.userTableName, right: this.settingsService.frameworkSettings.log.logTableName, key: 'UID'}
-            ];
-        }
+
+        tableFields = [
+            {key: 'created', name: 'created', title: 'Created', sortable: true, searchable: true, nowrap: true},
+            {key: 'UID', name: 'UID', title: 'UID', sortable: true, searchable: true},
+            /*{key: 'usertype', table: this.settingsService.frameworkSettings.log.userTableName, name: 'usertype', title: 'Usertype', sortable: true, searchable: true, translateValuePrefix: 'USER_ROLE'},*/
+            {key: 'username', table: 'users', name: 'username', title: 'User', sortable: true, searchable: true},
+            {key: 'APPID', name: 'APPID', title: 'APPID', sortable: true, searchable: true},
+            {key: 'environment', name: 'environment', title: 'Environment', sortable: true, searchable: true},
+            {key: 'c_component', name: 'c_component', title: '(C) Component', sortable: true, searchable: true, nowrapHeader: true},
+            {key: 'c_method', name: 'c_method', title: '(C) Method', sortable: true, searchable: true, nowrapHeader: true},
+            {key: 's_controller', name: 's_controller', title: '(S) Controller', sortable: true, searchable: true, nowrapHeader: true},
+            {key: 's_action', name: 's_action', title: '(S) Action', sortable: true, searchable: true, nowrapHeader: true},
+            {key: 'type', name: 'type', title: 'Type', sortable: true, searchable: true},
+            {key: 'text', name: 'text', title: 'Text', sortable: false, searchable: true},
+            {
+                key: this.settingsService.frameworkSettings.log.logTableIndexName,
+                name: this.settingsService.frameworkSettings.log.logTableIndexName,
+                title: 'ID',
+                sortable: true,
+                searchable: true,
+                visible: false,
+            },
+        ];
+        fields = {
+            UID: {value: '', type: FwTableColumnFilterType.GROUP},
+            username: {value: ''},
+            APPID: {value: '', type: FwTableColumnFilterType.GROUP},
+            environment: {value: '', type: FwTableColumnFilterType.GROUP},
+            c_component: {value: '', type: FwTableColumnFilterType.GROUP},
+            c_method: {value: '', type: FwTableColumnFilterType.GROUP},
+            s_controller: {value: '', type: FwTableColumnFilterType.GROUP},
+            s_action: {value: '', type: FwTableColumnFilterType.GROUP},
+            type: {value: '', type: FwTableColumnFilterType.GROUP},
+            text: {value: ''},
+            created: {value: ''},
+        };
+        tableJoins = [
+            {left: this.settingsService.frameworkSettings.log.userTableName, right: this.settingsService.frameworkSettings.log.logTableName, key: 'UID'},
+        ];
 
         this.table.config = {
             title: 'Logtable',

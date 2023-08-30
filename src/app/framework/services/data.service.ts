@@ -25,6 +25,9 @@ export class DataService {
     request(action: string, dataObject: object = null): Observable<any> {
         const stackFrames = StackTrace.getSync();
 
+        console.log(action);
+        console.log(dataObject);
+
         let componentName = null;
         let methodName = null;
 

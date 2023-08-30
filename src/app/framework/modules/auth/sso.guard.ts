@@ -11,6 +11,7 @@ import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs/operators';
 import {FwStorageService} from '../../services/storage.service';
 import {TranslateService} from '@ngx-translate/core';
+import {RightService} from '../right/right.service';
 
 @Injectable({
     providedIn: 'root'
@@ -22,24 +23,24 @@ export class SsoGuard implements CanActivate {
         private msalService: MsalService,
         private userService: UserService,
         private storageService: FwStorageService,
-        private translateService: TranslateService,
+        private rightService: RightService,
     ) {
     }
 
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-
         this.settingsService.set(ssoConfig);
-
-
         let allAccounts = this.msalService.instance.getAllAccounts();
         if (allAccounts.length > 0) {
             let account = allAccounts[0];
             let roles = account.idTokenClaims.roles;
-            console.log(allAccounts);
-            console.log(roles);
+            let usertype = null;
+            if (roles[0] && roles[0].length > 2){
+                usertype = roles[0].toUpperCase().replace('-', '_');
+            } else {
+                console.error('No Usertype in Token');
+            }
 
             return this.http.get('https://graph.microsoft.com/v1.0/me').pipe(mergeMap(profile => {
-                console.log(profile);
                 this.userService.currentUser = {
                     UID: profile['id'],
                     CID: '',
@@ -49,15 +50,18 @@ export class SsoGuard implements CanActivate {
                     lastname: profile['surname'],
                     email: profile['mail'],
                     app_cid: '',
-                    usertype: roles[0],
+                    usertype: usertype,
                     loggedIn: true,
                     jobTitle: profile['jobTitle']
                 }
 
-                return this.storageService.getAuto('user', 'language', 'de').pipe(map(language => {
+                return this.storageService.getAuto('user', 'language', 'de').pipe(mergeMap(language => {
                     this.userService.currentUser.language = language;
-                    return true;
+                    return this.rightService.loadRights().pipe(map(_=>{
+                        return true;
+                    }));
                 }));
+
             }));
 
         } else {

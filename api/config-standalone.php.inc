@@ -85,6 +85,7 @@ const FRAMEWORK = [
             'Token/refreshToken',
             'Auth/isLoggedIn',
             'Auth/login',
+            'Auth/logout',
             'Auth/register',
             'Auth/registerLookup',
             'Auth/checkRegistrationHash',

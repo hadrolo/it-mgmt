@@ -64,7 +64,7 @@ export class MyHammerConfig extends HammerGestureConfig {
         RegisterComponent,
     ],
     imports: [
-        MsalModule.forRoot(new PublicClientApplication({ // MSAL Configuration
+/*        MsalModule.forRoot(new PublicClientApplication({ // MSAL Configuration
             auth: {
                 clientId: '824f703c-2fda-4ffc-9331-0363d5def700',
                 authority: 'https://login.microsoftonline.com/a3c8a9b3-bacf-408b-a980-568f04ab0847',
@@ -94,7 +94,7 @@ export class MyHammerConfig extends HammerGestureConfig {
                 ['https://graph.microsoft.com/v1.0/me', ['user.read']],
                 ['api/api-sso.php', ['api://824f703c-2fda-4ffc-9331-0363d5def700/api.access']],
             ])
-        }),
+        }),*/
         HttpClientModule,
         BrowserModule,
         AppRoutingModule,
@@ -121,18 +121,18 @@ export class MyHammerConfig extends HammerGestureConfig {
         RegisterModule,
     ],
     providers: [
-        {
+/*        {
             provide: HTTP_INTERCEPTORS,
             useClass: MsalInterceptor,
             multi: true
-        },
+        },*/
         UserService,
-/*        AppSettings,
+        AppSettings,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,
             multi: true
-        },*/
+        },
         {provide: LOCALE_ID, useValue: 'de'},
     ],
     bootstrap: [AppComponent]

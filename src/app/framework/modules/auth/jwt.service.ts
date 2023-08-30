@@ -77,6 +77,8 @@ export class JwtService {
      * @param tokenType The token type
      */
     getToken(item: FwTokenType): any {
+/*        console.log('getToken');
+        console.log(this.settingsService.frameworkSettings);*/
         let token;
         if (!this.settingsService.frameworkSettings.auth.jwtStorageCookie) {
             token = JSON.parse(localStorage.getItem(this.settingsService.frameworkSettings.auth.jwtKeyName));

@@ -11,73 +11,129 @@ class Right extends Controller
 
     public function loadCurrentRights()
     {
+        debug('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
         $rights = $this->db->query("SELECT RGID, name FROM rights");
-        debug($this->db->query("SELECT usertype FROM users WHERE UID=:UID", ['UID' => $this->currentUser->uid])['data'][0]['usertype'], DEBUGTYPE_SPECIAL);
-        if ($this->db->query("SELECT usertype FROM users WHERE UID=:UID", ['UID' => $this->currentUser->uid])['data'][0]['usertype'] == 'SYSADMIN') {
-            foreach ($rights['data'] as $key => $value) {
-                $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
-            }
-        } else {
-            if (isset(DB['UNIVERSE'])) {
-                $rightAllowed = $this->db->query("SELECT RGID, name FROM
-            (SELECT
-            r2.RGID,
-            r2.name
-            FROM rights AS r
-            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-            LEFT JOIN M_users AS mu ON mu.usertype = ru.usertype
-            LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
-            LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
-            WHERE mu.UID = :UID AND r.type = :TYPE
-            UNION ALL
-            SELECT
-            r.RGID,
-            r.name
-            FROM rights AS r
-            LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
-            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-            LEFT JOIN M_users AS mu ON mu.usertype = ru.usertype
-            WHERE mu.UID = :UID AND r.type != :TYPE
-            ) t
-            GROUP BY name", ['UID' => $this->currentUser->uid, 'TYPE' => 'ALIAS']);
+
+        if ($this->currentUser->fw_mode == 'SSO'){
+            // SSO-Mode ---------------------------------------------------------------------------------------------------------------------------------------------------
+            debug('SSO-Mode -----------------------------------------------X', DEBUGTYPE_INFO);
+            if ($this->currentUser->usertype == 'SYSADMIN'){
+                foreach ($rights['data'] as $value) {
+                    $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
+                }
             } else {
                 $rightAllowed = $this->db->query("SELECT RGID, name FROM
-            (SELECT
-            r2.RGID,
-            r2.name
-            FROM rights AS r
-            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-            LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
-            LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
-            LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
-            WHERE u.UID = :UID AND r.type = :TYPE
-            UNION ALL
-            SELECT
-            r.RGID,
-            r.name
-            FROM rights AS r
-            LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
-            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-            LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
-            WHERE u.UID = :UID AND r.type != :TYPE
-            ) t
-            GROUP BY name", ['UID' => $this->currentUser->uid, 'TYPE' => 'ALIAS']);
-            }
+                    (SELECT
+                    r2.RGID,
+                    r2.name
+                    FROM rights AS r
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
+                    LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
+                    WHERE ru.usertype = :USERTYPE AND r.type = :TYPE
+                    UNION ALL
+                    SELECT
+                    r.RGID,
+                    r.name
+                    FROM rights AS r
+                    LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    WHERE ru.usertype = :USERTYPE AND r.type != :TYPE
+                    ) t
+                    GROUP BY name", ['USERTYPE' => $this->currentUser->usertype, 'TYPE' => 'ALIAS']);
 
-            $this->response->rights = null;
-
-            foreach ($rights['data'] as $key => $value) {
-                $found = false;
-                foreach ($rightAllowed['data'] as $right) {
-                    if ($value['RGID'] == $right['RGID'] && $value['name'] == $right['name']) {
-                        $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
-                        $found = true;
-                    }
-                    if (!$found) {
-                        $this->response->rights[strtolower($value['RGID'])][$value['name']] = false;
+                $this->response->rights = null;
+                foreach ($rights['data'] as $key => $value) {
+                    $found = false;
+                    foreach ($rightAllowed['data'] as $right) {
+                        if ($value['RGID'] == $right['RGID'] && $value['name'] == $right['name']) {
+                            $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
+                            $found = true;
+                        }
+                        if (!$found) {
+                            $this->response->rights[strtolower($value['RGID'])][$value['name']] = false;
+                        }
                     }
                 }
             }
+        } elseif ($this->currentUser->fw_mode == 'STANDALONE') {
+            // Standalone-Mode --------------------------------------------------------------------------------------------------------------------------------------------
+            debug('Standalone-Mode --------------------------------------------X', DEBUGTYPE_INFO);
+            if (isset($this->currentUser->uid)){
+                if ($this->currentUser->usertype == 'SYSADMIN'){
+                    debug('SYSADMIN------------------------------------------');
+                    foreach ($rights['data'] as $value) {
+                        debug($value);
+                        $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
+                    }
+                } else {
+                    $rightAllowed = $this->db->query("SELECT RGID, name FROM
+                    (SELECT
+                    r2.RGID,
+                    r2.name
+                    FROM rights AS r
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
+                    LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
+                    WHERE u.UID = :UID AND r.type = :TYPE
+                    UNION ALL
+                    SELECT
+                    r.RGID,
+                    r.name
+                    FROM rights AS r
+                    LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    WHERE u.UID = :UID AND r.type != :TYPE
+                    ) t
+                    GROUP BY name", ['UID' => $this->currentUser->uid, 'TYPE' => 'ALIAS']);
+                }
+            } else {
+                $rightAllowed = $this->db->query("SELECT RGID, name FROM
+                    (SELECT
+                    r2.RGID,
+                    r2.name
+                    FROM rights AS r
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
+                    LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
+                    WHERE ru.usertype = :USERTYPE AND r.type = :TYPE
+                    UNION ALL
+                    SELECT
+                    r.RGID,
+                    r.name
+                    FROM rights AS r
+                    LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    WHERE ru.usertype = :USERTYPE AND r.type != :TYPE
+                    ) t
+                    GROUP BY name", ['USERTYPE' => $this->currentUser->usertype, 'TYPE' => 'ALIAS']);
+            }
+
+
+            if (isset($rightAllowed)){
+                $this->response->rights = null;
+                foreach ($rights['data'] as $key => $value) {
+                    $found = false;
+                    foreach ($rightAllowed['data'] as $right) {
+                        if ($value['RGID'] == $right['RGID'] && $value['name'] == $right['name']) {
+                            $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
+                            $found = true;
+                        }
+                        if (!$found) {
+                            $this->response->rights[strtolower($value['RGID'])][$value['name']] = false;
+                        }
+                    }
+                }
+            }
+
+        } else {
+            debug('No fw_mode in Token', DEBUGTYPE_INFO);
         }
     }
 

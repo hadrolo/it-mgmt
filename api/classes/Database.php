@@ -261,7 +261,7 @@ class Database
 
             if (FW_LOG_QUERIES) {
                 $bt = debug_backtrace();
-                debug(str_replace($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR, '', $bt[0]['file']) . ' (' . $bt[0]['line'] . ') - ' . isset($bt[1]) ? $bt[1]['function'] . '()' : '' . print_r($this->interpolateQuery(trim(preg_replace('/ {2,}/', '', $query)), $data), true));
+                debug(str_replace($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR, '', $bt[0]['file']) . ' (' . $bt[0]['line'] . ') - ' . (isset($bt[1]) ? $bt[1]['function'] . '()' : '') . print_r($this->interpolateQuery(trim(preg_replace('/ {2,}/', '', $query)), $data), true));
             }
 
         } else {

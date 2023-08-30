@@ -12,7 +12,6 @@ export enum FwUserDisplayStyle {
 }
 
 export enum FwMode {
-  UNIVERSE = 'universe',
   STANDALONE = 'standalone',
   SSO = 'sso'
 }
@@ -184,7 +183,7 @@ export interface FwSettings {
   // Route to navigate to when urlData decryption fails
   urlDataFallbackLink: string;
   cryptoKey: string;
-  auth: FwSettingsAuth;
+  auth?: FwSettingsAuth;
   user: FwSettingsUser;
   log: FwSettingsLog;
   file?: FwSettingsFile;
@@ -215,7 +214,7 @@ export class SettingsService {
   }
 
   set(settings: FwSettings): void {
-    // console.log('Framework settings changed to "' + settings.frameworkMode + '"');
+    console.log('Framework settings changed to "' + settings.frameworkMode + '"');
     this.frameworkSettings = settings;
   }
 

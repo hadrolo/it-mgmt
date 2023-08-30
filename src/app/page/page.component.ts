@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, HostListener, OnDestroy, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterContentInit, Component, HostListener, OnDestroy, ViewChild, ViewEncapsulation} from '@angular/core';
 import {PageService} from './page.service';
 import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {environment} from '../../environments/environment';
@@ -7,9 +7,9 @@ import {UserService} from '../framework/modules/auth/user.service';
 import {RightService} from '../framework/modules/right/right.service';
 import {CryptoService} from '../framework/services/crypto.service';
 import {Router} from '@angular/router';
-import {UserProfileService} from '../framework/modules/user-profile/user-profile.service';
 import {MatSidenav} from '@angular/material/sidenav';
-import {UserProfileStandaloneService} from '../framework/modules/user-profile-standalone/user-profile-standalone.service';
+import {UserProfileService} from '../framework/modules/user-profile/user-profile.service';
+import {FwMode, SettingsService} from '../framework/services/settings.service';
 
 
 @Component({
@@ -18,22 +18,23 @@ import {UserProfileStandaloneService} from '../framework/modules/user-profile-st
     styleUrls: ['./page.component.scss'],
     encapsulation: ViewEncapsulation.None,  // current alternative to ::ng-deep
 })
-export class PageComponent implements OnInit, AfterContentInit, OnDestroy{
+export class PageComponent implements AfterContentInit, OnDestroy{
 
     private msgservSidebarOpen: any;
     public currentApplicationVersion = environment.appVersion;
     private routerEnd$;
+    protected readonly FwMode = FwMode;
 
     constructor(
         private breakpointObserver: BreakpointObserver,
         public pageService: PageService,
         public translateService: TranslateService,
         public userService: UserService,
-
+        public settingService: SettingsService,
         public rightService: RightService,
         private cryptoService: CryptoService,
         public router: Router,
-        private userProfileStandaloneService: UserProfileStandaloneService,
+        private userProfileService: UserProfileService,
     ) {
     }
 
@@ -43,10 +44,6 @@ export class PageComponent implements OnInit, AfterContentInit, OnDestroy{
         if (this.pageService.layout.sidebarAutoHide && event.clientX < 8) {
             this.sidenav.open().then();
         }
-    }
-
-    ngOnInit() {
-        console.log('PAGE');
     }
 
     ngAfterContentInit(): void {
@@ -77,11 +74,19 @@ export class PageComponent implements OnInit, AfterContentInit, OnDestroy{
     }
 
     openUserProfile() {
-        this.userProfileStandaloneService.openUserProfileStandalone.next(true);
+        if (this.settingService.frameworkSettings.frameworkMode == FwMode.STANDALONE){
+            console.log('openUserProfileStandalone');
+            this.userProfileService.openUserProfileStandalone.next(true);
+        } else {
+            console.log('openUserprofileSso');
+            this.userProfileService.openUserprofileSso.next(true);
+        }
     }
 
     writeStatus() {
         this.pageService.sidenavOpen = this.sidenav.opened;
     }
+
+
 }
 

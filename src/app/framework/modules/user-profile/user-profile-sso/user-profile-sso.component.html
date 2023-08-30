@@ -1,0 +1,55 @@
+<ng-template #modalUserprofileSso>
+    <div mat-dialog-content>
+        <div class="modal-delete__title">
+            <i class="fa fa-circle-user text-success"></i> {{'FW.USER.PROFILE' | translate}}
+        </div>
+        <div class="row pt-3">
+            <div class="col">
+                <div class="d-flex">
+                    <div class="flex-grow-1 pe-2">
+                        <label>{{'USER.USERNAME' | translate}}</label>
+                        <input class="form-control form-control-sm" [value]="userService.currentUser.username" type="text"  disabled>
+                    </div>
+                    <div>
+                        <label>{{'USER.USERTYPE' | translate}}</label>
+                        <input class="form-control form-control-sm" [value]="userService.currentUser.usertype" type="text"  disabled>
+                    </div>
+                </div>
+
+
+                <div class="row pt-2">
+                    <div class="col-md-6">
+                        <label>{{'FW.USER.FIRSTNAME' | translate}}</label>
+                        <input class="form-control form-control-sm" [value]="userService.currentUser.firstname" type="text" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label>{{'FW.USER.LASTNAME' | translate}}</label>
+                        <input class="form-control form-control-sm" [value]="userService.currentUser.lastname" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row pt-2">
+                    <div class="col">
+                        <label>{{'FW.USER.EMAIL' | translate}}</label>
+                        <input class="form-control form-control-sm" [value]="userService.currentUser.email" type="text" disabled>
+                    </div>
+                </div>
+
+                <div class="row pt-2">
+                    <div class="col-md-12">
+                        <label>{{'FW.USER.INFO' | translate}}</label>
+                        <input class="form-control form-control-sm" [value]="userService.currentUser.jobTitle" type="text" disabled>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row pt-3">
+            <div class="col text-end">
+                <button  type="button" class="btn btn-secondary me-2" mat-dialog-close>{{'FW.BUTTON.CANCEL' | translate}}</button>
+
+            </div>
+        </div>
+    </div>
+</ng-template>

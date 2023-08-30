@@ -25,9 +25,6 @@ export class LanguageSwitchComponent implements OnInit {
     }
 
     ngOnInit(): void {
-
-        console.log(this.userService.currentUser);
-        console.log(this.userService.currentUser.language);
         if (this.userService.currentUser.language) {
 
             this.translateService.use(this.userService.currentUser.language);

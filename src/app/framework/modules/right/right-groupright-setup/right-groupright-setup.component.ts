@@ -112,11 +112,9 @@ export class RightGrouprightSetupComponent implements OnInit {
             rightFilter: this.view.data.selectedRightFilter,
             openAllItems: this.view.setting.openAllItems,
         }).subscribe(response => {
-            console.log(response);
             this.view.data.rightList = response.allRights;
             this.view.data.rightGroupList = response.rightGroups;
             this.view.data.rightGroupList.unshift({RGID: 'alle'});
-            console.log(this.view);
         });
     }
 

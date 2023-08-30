@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {DataService} from '../../services/data.service';
 import {UserService} from '../auth/user.service';
 import {Router} from '@angular/router';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {SettingsService} from '../../services/settings.service';
 import {FwLogType, LogService} from '../../services/log.service';
@@ -23,19 +23,26 @@ export class RightService {
     }
 
     loadRights(): Observable<any> {
-        return this.dataService
-            .request('framework.Right/loadCurrentRights')
-            .pipe(
-                map(response => {
-                    this.rights = response.rights;
-                    if (response.rights) {
-                        return true;
-                    } else {
-                        console.error('rights not loaded')
-                        return false;
-                    }
-                })
-            );
+        console.log('loadRights');
+        if (!this.rights) {
+            return this.dataService
+                .request('framework.Right/loadCurrentRights')
+                .pipe(
+                    map(response => {
+                        this.rights = response.rights;
+                        if (response.rights) {
+                            console.log(response.rights);
+                            return true;
+                        } else {
+                            console.error('no rights found/loaded')
+                            return false;
+                        }
+                    })
+                );
+        } else {
+            console.log(this.rights);
+            return of(true);
+        }
     }
 
     routeAllowed(rights: string[], redirectRoute: string = this.settingsService.frameworkSettings.right.exitLink): boolean {
@@ -59,7 +66,7 @@ export class RightService {
                     return false;
                 } else {
                     if (!this.settingsService.frameworkSettings.production) {
-                        console.info('Access to protected route: ' + this.router.url);
+                        //console.info('Access to protected route: ' + this.router.url);
                     }
                     return true;
                 }

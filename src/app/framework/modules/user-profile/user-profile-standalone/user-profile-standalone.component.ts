@@ -1,14 +1,14 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {UserProfileStandaloneService} from './user-profile-standalone.service';
+import {UserProfileService} from '../user-profile.service';
 import {FormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
-import {DataService} from '../../services/data.service';
-import {UserService} from '../auth/user.service';
-import {FormTranslateService} from '../../services/form-translate.service';
+import {DataService} from '../../../services/data.service';
+import {UserService} from '../../auth/user.service';
+import {FormTranslateService} from '../../../services/form-translate.service';
 import {MatDialog} from '@angular/material/dialog';
-import {FwFormViewMode} from '../form/form.interfaces';
-import {fileMimeTypeGroup} from '../file/file.component';
-import {FwUserType} from '../../settings';
+import {FwFormViewMode} from '../../form/form.interfaces';
+import {fileMimeTypeGroup} from '../../file/file.component';
+import {FwUserType} from '../../../settings';
 import {Subscription} from 'rxjs';
 
 interface UserFormSetting {
@@ -77,7 +77,7 @@ export class UserProfileStandaloneComponent implements OnInit {
     constructor(
         private dataService: DataService,
         public userService: UserService,
-        private userProfileService: UserProfileStandaloneService,
+        private userProfileService: UserProfileService,
         public formBuilder: FormBuilder,
         private formTranslateService: FormTranslateService,
         private translateService: TranslateService,

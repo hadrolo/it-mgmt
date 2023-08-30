@@ -25,15 +25,16 @@ import {LanguageSwitchModule} from '../framework/modules/language-switch/languag
 import {NgSelectModule} from '@ng-select/ng-select';
 import {ToolbarModule} from './toolbar/toolbar.module';
 import {LogfileViewerComponent} from './logfile-viewer/logfile-viewer.component';
-import {UserProfileModule} from '../framework/modules/user-profile/user-profile.module';
 import {RightGuard} from '../framework/modules/right/right.guard';
 import {UserMgmtListComponent} from './user-mgmt/user-mgmt-list/user-mgmt-list.component';
 import {UserMgmtFormComponent} from './user-mgmt/user-mgmt-form/user-mgmt-form.component';
 import {FileModule} from '../framework/modules/file/file.module';
 import { UserEditModalComponent } from './user-mgmt/user-edit-modal/user-edit-modal.component';
-import {UserProfileStandaloneModule} from '../framework/modules/user-profile-standalone/user-profile-standalone.module';
-import {MsalGuard} from '@azure/msal-angular';
+import {UserProfileStandaloneModule} from '../framework/modules/user-profile/user-profile-standalone/user-profile-standalone.module';
 import {SsoGuard} from '../framework/modules/auth/sso.guard';
+import {UserProfileSsoComponent} from '../framework/modules/user-profile/user-profile-sso/user-profile-sso.component';
+import {UserProfileSsoModule} from '../framework/modules/user-profile/user-profile-sso/user-profile-sso.module';
+import {RightLoaderGuard} from '../framework/modules/right/right.loader.guard';
 
 
 
@@ -41,7 +42,7 @@ const routes: Routes = [
     {
         path: '',
         component: PageComponent,
-        canActivate: [SsoGuard],
+        /*        canActivate: [SsoGuard],*/
         children: [
             {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
             {path: 'dashboard', component: DashboardComponent},
@@ -49,7 +50,8 @@ const routes: Routes = [
             {path: 'userlist/user/:uid', component: UserMgmtFormComponent},
             {path: 'dashboard/user/:uid', component: UserMgmtFormComponent},
             {path: 'user/:user', component: UserMgmtFormComponent},
-            {path: 'right', loadChildren: () => import('./../framework/modules/right/right.module').then(m => m.RightModule), data: {rights: ['Right/openRights']}, canActivate: [RightGuard]},
+/*            {path: 'right', loadChildren: () => import('./../framework/modules/right/right.module').then(m => m.RightModule), data: {rights: ['Right/openRights']}, canActivate: [RightGuard]},*/
+            {path: 'right', loadChildren: () => import('./../framework/modules/right/right.module').then(m => m.RightModule)},
             {path: 'ot', loadChildren: () => import('./ot/ot.module').then(m => m.OtModule)},
             {path: 'log', component: LogfileViewerComponent},
         ]
@@ -94,6 +96,7 @@ const routes: Routes = [
         ToolbarModule,
         FileModule,
         UserProfileStandaloneModule,
+        UserProfileSsoModule,
     ],
     exports: [],
     providers: [

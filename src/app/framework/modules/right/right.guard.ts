@@ -16,6 +16,7 @@ export class RightGuard implements CanActivate {
     // @ts-ignore ToDo: Prüfe ob ohne Möglich
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
+        console.log('RightGuard');
         const rights = route.data.rights as Array<string>;
 
         return this.rightService.routeAllowed(rights);

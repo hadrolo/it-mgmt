@@ -7,7 +7,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {FwAuthentication} from '../../framework/modules/right/right.interfaces';
 import {SettingsService} from '../../framework/services/settings.service';
 import {SeoService} from '../../framework/services/seo.service';
-import {MsalService} from '@azure/msal-angular';
+/*import {MsalService} from '@azure/msal-angular';*/
 import {HttpClient} from '@angular/common/http';
 import {SsoService} from '../../framework/modules/sso/sso.service';
 import {FwFormViewMode} from '../../framework/modules/form/form.interfaces';
@@ -39,8 +39,7 @@ export class DashboardComponent implements OnInit{
         public dialog: MatDialog,
         private settingsService: SettingsService,
         private seoService: SeoService,
-        private msalService: MsalService,
-        private ssoService: SsoService,
+/*        private msalService: MsalService,*/
         private dataService: DataService,
         private settingService: SettingsService,
     ) {
@@ -49,13 +48,12 @@ export class DashboardComponent implements OnInit{
 
     ngOnInit() {
         //this.seoService.setTitle(this.settingsService.frameworkSettings.appName + ' - ' + this.translateService.instant('MENU.DASHBOARD'));
-/*        this.ssoService.setUser();*/
         this.apiTest();
     }
 
     @ViewChild('modalDashboardSetting') modalDashboardSetting: TemplateRef<any>;
 
-    openRouterLink(link) {
+    openRouterLink(link: any) {
         this.router.navigate([link]);
     }
 
@@ -73,17 +71,30 @@ export class DashboardComponent implements OnInit{
     button2click() {
         this.rightService.loadRights().subscribe((rights) => {
             console.log('Button2 Click');
+            console.log(rights);
         });
     }
 
     button3click() {
         console.log('Button3 Click');
-        console.log(this.rightService.rights);
+        this.rightService.loadRights().subscribe(_=>{
+            console.log(this.rightService.rights);
+        });
+        this.dataService.request('framework.Right/loadCurrentRights', {
+            LANG: 'de'
+        }).subscribe((response: any) => {
+            console.log(response);
+        });
+    }
 
+    button5click() {
+        this.dataService.request('framework.Right/loadCurrentRights').subscribe((response: any) => {
+            console.log(response);
+        });
     }
 
 
-    logout(popup?: boolean) {
+/*    logout(popup?: boolean) {
         if (popup) {
             this.msalService.logoutPopup({
                 mainWindowRedirectUri: "/"
@@ -91,7 +102,8 @@ export class DashboardComponent implements OnInit{
         } else {
             this.msalService.logoutRedirect();
         }
-    }
+    }*/
+
 
     apiTest(): void {
         this.dataService.request('Country/listAll', {

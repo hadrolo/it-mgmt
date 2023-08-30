@@ -4,10 +4,11 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 # Configuration
 First of all you must choose between 3 types of authentication functionality:
 - Standalone - Use own user table 
-- Universe - Use universe db structure
 - SSO - Single sign on windows azure and own user table (under development)
+<hr>
 
 ## Use SSO
+### Install and Configure Msal Modul
 - install msal-plugins `npm install @azure/msal-angular @azure/msal-browser --save`
 - edit `app.modules.ts` and insert to imports:
 <pre>
@@ -45,7 +46,7 @@ First of all you must choose between 3 types of authentication functionality:
         })
     </code>
 </pre>
-- edit `app.modules.ts` and insert to providers:
+### Edit app.modules.ts and insert to providers:
 <pre>
     <code>
         {
@@ -55,17 +56,74 @@ First of all you must choose between 3 types of authentication functionality:
         }
     </code>
 </pre>
+### Edit app-routing.module.ts 
+add `canActivate: [MsalGuard]`
+<pre>
+    <code>
+        path: '', loadChildren: () => import('./page/page.module').then(m => m.PageModule),
+        canActivate: [MsalGuard],
+        runGuardsAndResolvers: 'always'
+    </code>
+</pre>
+### Edit page.module.ts
+and add `canActivate: SsoGuard`
+<pre>
+    <code>
+const routes: Routes = [
+    {
+        path: '',
+        component: PageComponent,
+        canActivate: [SsoGuard],
+    </code>
+</pre>
 
-## Framework
+### API Konfiguration 
+`api/config.inc.php`
+
+### Usertypen festlegen
+Benutzergruppennamen dürfen in der Konfig-Datei nur mit "_" getrennt werden,
+Azure-Gruppennamen werden automatisch auf Großschreibung umgeschrieben und "-" mit "_" ersetzt
+<hr>
+
+## Use Standalone
+### Configure Modules
+### Edit app.modules.ts and insert to providers:
+edit `app.modules.ts` remove sso Entries (MsalModule)
+<pre>
+    <code>
+{
+            provide: HTTP_INTERCEPTORS,
+            useClass: TokenInterceptor,
+            multi: true
+        }
+    </code>
+</pre>
+### Edit app-routing.module.ts
+add `canActivate: [MsalGuard]`
+<pre>
+    <code>
+        path: '', loadChildren: () => import('./page/page.module').then(m => m.PageModule),
+        canActivate: [MsalGuard],
+        runGuardsAndResolvers: 'always'
+    </code>
+</pre>
+### Edit page.module.ts
+and remove `canActivate: SsoGuard`
+<hr>
+
+# Framework
 1) Generate database based on `api/service/create_fw_Tables.sql`
 2) Import basic rights `api/service/create_fw_Tables.sql`
-3) Configure `api/config-standalone.php` or `api/config-universe.php`
-4) Set correct api config in `api/config-standalone.php`
+3) Configure `api/config-standalone.php` or `api/config-sso.php`
 
-## Client
+# Client
 1) Configure Framework `src/app/framework/app.settings.ts`
 2) Configure Routing - use necessary guards (`StandaloneGuard`, `TokenGuard`, `LoggedInGuard`)
 3) Load rights with the `RightLoaderGuard`
 
-## Rights
+# Rights
 Protect Routes with `RightGuard` like `data: {rights: ['Right/openRights']}, canActivate: [RightGuard]}`
+
+# ToDo
+- delete SsoService
+- delete RightLoaderGuard

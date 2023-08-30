@@ -1,7 +1,7 @@
 <?php
 require_once "libs/vendor/autoload.php";
 require_once "classes/Debug.php";
-require_once "config-standalone.inc.php";
+require_once "config-standalone.php.inc";
 require_once "classes/Database.php";
 require_once "classes/Log.php";
 require_once "classes/Mail.php";
@@ -20,8 +20,6 @@ function fatal_handler() {
     $error = error_get_last();
 
     if ($error !== null) {
-        // $server_controller = array_reverse(explode('/', $error['file']))[0];
-        //if ($error['type'] == 1){
         Log::write(
             $request_info['currentUID'],
             'error' ,
@@ -32,9 +30,6 @@ function fatal_handler() {
             $request_info['action']
         );
         debug($error, DEBUGTYPE_ERROR);
-        //} else {
-        //    debug( 'WARNING: ' . print_r($error, true), DEBUGTYPE_WARNING);
-        //}
     }
 }
 
@@ -43,10 +38,10 @@ $response = new stdClass();
 $content_type = explode(';', $_SERVER["CONTENT_TYPE"])[0];
 if ($content_type == 'multipart/form-data') {
     $request = new stdClass();
-    $request->action = isset($_POST['apiController']) ? $_POST['apiController'] : "framework.File/upload";
+    $request->action = $_POST['apiController'] ?? "framework.File/upload";
     $request->data = (object)['upload_files' => $_FILES['files'], 'upload_post' => $_POST];
-    $request->methodName = isset($_POST['infoMethod']) ? $_POST['infoMethod'] : "onUpload()";
-    $request->componentName = isset($_POST['infoComponent']) ? $_POST['infoComponent'] : "UploadComponent.ts";
+    $request->methodName = $_POST['infoMethod'] ?? "onUpload()";
+    $request->componentName = $_POST['infoComponent'] ?? "UploadComponent.ts";
 } else {
     $request = json_decode(file_get_contents("php://input"));
 }
@@ -64,6 +59,9 @@ if (property_exists($request, "action")) {
     }
 
     list($class, $method) = explode("/", $action);
+    debug('---------------------------------------', DEBUGTYPE_SPECIAL);
+    debug($action, DEBUGTYPE_SPECIAL);
+    debug('---------------------------------------', DEBUGTYPE_SPECIAL);
 
     if (isset($class) && isset($method)) {
 
@@ -144,18 +142,62 @@ function guard($module, $class, $method, $request) {
             $allowAccess = false;
 
             // get usertype for every module
-            $userData = [];
-            foreach (FRAMEWORK['AUTH']['MODULES'] as $key => $mod) {
-                if ($decoded->data->UID == 0) {
-                    $userData[$mod['USERTYPE']['NAME']] = 'nobody';
+            // $userData = [];
 
-                    $request_info[$mod['USERTYPE']['NAME']] = 'nobody';
+            $user = new stdClass();
+            //$decoded->data->UID = 1; //todo: overwrite löschen! <----------------------------------------------------------------------------------------------------------------------------------------------------
+
+            foreach (FRAMEWORK['AUTH']['MODULES'] as $key => $mod) {
+                if (intval($decoded->data->UID) == 0) {
+                    $user->uid = null;
+                    $user->public_uid = null;
+                    $user->fw_mode = 'STANDALONE';
+                    $user->family_name = null;
+                    $user->given_name = null;
+                    $user->name = null;
+                    $user->email = null;
+                    $user->uid = null;
+                    $user->usertype = 'NOBODY';
+                    // $userData[$mod['USERTYPE']['NAME']] = 'nobody';
+                    // $request_info[$mod['USERTYPE']['NAME']] = 'nobody';
                 } else {
                     $database = Database::create($key);
-                    $user = $database->query("SELECT " . $mod['USERTYPE']['NAME'] . " FROM " . $mod['TABLE_NAME'] . " WHERE UID = ?", [$decoded->data->UID])['data'][0];
-                    $userData[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
+                    $userRequest = $database->query("SELECT u.UID,
+                        u.public_id,
+                        u.CID,
+                        u.language,
+                        u.usertype,
+                        u.username,
+                        u.firstname,
+                        u.lastname,
+                        u.email
+                        FROM " . $mod['TABLE_NAME'] . " as u WHERE UID = ?", [$decoded->data->UID]);
 
-                    $request_info[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
+                    if ($userRequest['count'] > 0){
+                        $user->uid = $userRequest['data'][0]['UID'];
+                        $user->cid = $userRequest['data'][0]['CID'];
+                        $user->public_uid = $userRequest['data'][0]['public_id'];
+                        $user->fw_mode = 'STANDALONE';
+                        $user->family_name = $userRequest['data'][0]['lastname'];
+                        $user->given_name = $userRequest['data'][0]['firstname'];
+                        $user->name = $userRequest['data'][0]['lastname'] . ' ' . $userRequest['data'][0]['firstname'];
+                        $user->email = $userRequest['data'][0]['email'];
+                        $user->usertype = $userRequest['data'][0]['usertype'];
+                    } else {
+                        debug('ACCESS DENIED - Token UID not found in Table', DEBUGTYPE_ERROR);
+                        Log::write(
+                            $decoded->data->UID,
+                            'access-violation',
+                            'Class: api.php | ACCESS DENIED - Token UID not found in Table',
+                            $request->componentName,
+                            $request->methodName,
+                            $class . 'Controller.php',
+                            $method . '()');
+                        $response->errors[] = 'ACCESS DENIED';
+                    }
+
+                    // $userData[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
+                    // $request_info[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
                 }
             }
 
@@ -168,38 +210,37 @@ function guard($module, $class, $method, $request) {
                     debug('RIGHTS CHECK IS NOT ENABLED!', DEBUGTYPE_WARNING);
                 }
             } else {
-                $data = ['API' => 'API', 'ALIAS' => 'ALIAS', 'CLASS' => $class, 'METHOD' => $method];
-                if (intval($decoded->data->UID) > 0) {
-                    $data['UID'] = $decoded->data->UID;
-                } else {
-                    $data['USERTYPE'] = 'NOBODY';
-                }
                 $database = Database::create('APP');
                 $result = $database->query("SELECT RGID, name, class, method FROM
-                    (SELECT
-                    r.RGID,
-                    r.name,
-                    r2.class,
-                    r2.method
-                    FROM rights AS r
-                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN users AS u ON u.usertype = ru.usertype
-                    LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
-                    LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
-                    WHERE " . ( (intval($decoded->data->UID) > 0) ? "u.UID = :UID" : "ru.usertype = :USERTYPE" ) . " AND r2.type = :API AND r.type = :ALIAS AND r2.class = :CLASS AND r2.method = :METHOD
-                    UNION ALL
-                    SELECT
-                    r.RGID,
-                    r.name,
-                    r.class,
-                    r.method
-                    FROM rights AS r
-                    LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
-                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN users AS u ON u.usertype = ru.usertype
-                    WHERE " . ( (intval($decoded->data->UID) > 0) ? "u.UID = :UID" : "ru.usertype = :USERTYPE" ) . " AND r.type = :API  AND r.class = :CLASS AND r.method = :METHOD
-                    ) t
-                    GROUP BY name", $data);
+                            (SELECT
+                            r.RGID,
+                            r.name,
+                            r2.class,
+                            r2.method
+                            FROM rights AS r
+                            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                            LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
+                            LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
+                            WHERE ru.usertype = :USERTYPE AND r2.type = :API AND r.type = :ALIAS AND r2.class = :CLASS AND r2.method = :METHOD
+                            UNION ALL
+                            SELECT
+                            r.RGID,
+                            r.name,
+                            r.class,
+                            r.method
+                            FROM rights AS r
+                            LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
+                            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                            WHERE ru.usertype = :USERTYPE AND r.type = :API  AND r.class = :CLASS AND r.method = :METHOD
+                            ) t
+                            GROUP BY name", [
+                    'USERTYPE' => $user->usertype,
+                    'API' => 'API',
+                    'ALIAS' => 'ALIAS',
+                    'CLASS' => $class,
+                    'METHOD' => $method
+                ]);
+
 
                 $count = $result['count'];
                 if ($count == 0) {
@@ -207,12 +248,13 @@ function guard($module, $class, $method, $request) {
                 }
             }
 
-            $allowAccess = $count > 0;
+
 
             // aggregate roles - only used for debug output
             $roles = [];
             foreach(FRAMEWORK['AUTH']['MODULES'] as $key => $mod) {
-                $roles[] = $mod['USERTYPE']['NAME'] . ": " . $userData[$mod['USERTYPE']['NAME']];
+                // $roles[] = $mod['USERTYPE']['NAME'] . ": " . $userData[$mod['USERTYPE']['NAME']];
+                $roles[] = $mod['USERTYPE']['NAME'] . ": " . $user->usertype;
             }
 
             foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right){
@@ -226,7 +268,7 @@ function guard($module, $class, $method, $request) {
             if (!$allowAccess) {
                 debug('ACCESS DENIED - MODULE: ' . $module . ' | API: ' . $class . '/' . $method . '() | ' . join(", ", $roles) . ' | CLIENT: ' . $request->componentName . '/' . $request->methodName, DEBUGTYPE_ERROR);
                 Log::write(
-                    $decoded->data->UID,
+                    $user->uid,
                     'access-violation',
                     'Class: api.php | ' . join(", ", $roles),
                     $request->componentName,
@@ -241,14 +283,14 @@ function guard($module, $class, $method, $request) {
                 if ($module == "FRAMEWORK") {
                     // don't instantiate a database for generic framework methods
 
-                    $object = new $class(null, $request->data, $request->componentName, $request->methodName, $decoded->data->UID);
+                    $object = new $class(null, $request->data, $request->componentName, $request->methodName, $user);
                     $object->$method();
                     $response = $object->getResponse();
                 } else {
                     // instantiate database for module
                     $database = Database::create($module);
 
-                    $object = new $class($database, $request->data, $request->componentName, $request->methodName, $decoded->data->UID);
+                    $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
                     $object->$method();
                     $response = $object->getResponse();
 

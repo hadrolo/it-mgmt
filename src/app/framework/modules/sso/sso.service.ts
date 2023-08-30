@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {MsalService} from '@azure/msal-angular';
 import {HttpClient} from '@angular/common/http';
 import {UserService} from '../auth/user.service';
+import {RightService} from '../right/right.service';
 
 @Injectable({
     providedIn: 'root'
@@ -15,11 +16,12 @@ export class SsoService {
         private msalService: MsalService,
         private http: HttpClient,
         private userService: UserService,
+        private rightService: RightService
     ) {
     }
 
     public setUser() {
-        let allAccounts = this.msalService.instance.getAllAccounts();
+/*        let allAccounts = this.msalService.instance.getAllAccounts();
         if (allAccounts.length > 0) {
             let account = allAccounts[0];
             let roles = account.idTokenClaims.roles;
@@ -47,7 +49,7 @@ export class SsoService {
             });
 
 
-        }
+        }*/
 
 
 

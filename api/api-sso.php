@@ -1,7 +1,7 @@
 <?php
 require_once "libs/vendor/autoload.php";
 require_once "classes/Debug.php";
-require_once "config-sso.inc.php";
+require_once "config-sso.php.inc";
 require_once "classes/Database.php";
 require_once "classes/Log.php";
 require_once "classes/Mail.php";
@@ -10,6 +10,8 @@ require_once "classes/Translation.php";
 use Firebase\JWT\JWT;
 
 register_shutdown_function("fatal_handler"); // ToDo: Nötig??
+
+$request_info = [];
 
 function fatal_handler() {
     global $request_info, $response;
@@ -29,13 +31,24 @@ function fatal_handler() {
     }
 }
 
+$response = new stdClass();
+
+$content_type = explode(';', $_SERVER["CONTENT_TYPE"])[0];
 $database = Database::create('APP');
-$request_info = []; // ToDo: Nötig??
+
 
 if ($database->getErrors()) {
-    $response['error'] = $database->getErrors();
+    $response->errors[] = $database->getErrors();
 } else {
-    $request = json_decode(file_get_contents("php://input"));
+    if ($content_type == 'multipart/form-data') {
+        $request = new stdClass();
+        $request->action = $_POST['apiController'] ?? "framework.File/upload";
+        $request->data = (object)['upload_files' => $_FILES['files'], 'upload_post' => $_POST];
+        $request->methodName = $_POST['infoMethod'] ?? "onUpload()";
+        $request->componentName = $_POST['infoComponent'] ?? "UploadComponent.ts";
+    } else {
+        $request = json_decode(file_get_contents("php://input"));
+    }
 
     if (property_exists($request, "action")) {
         $parts = explode(".", $request->action);
@@ -48,7 +61,7 @@ if ($database->getErrors()) {
         }
         list($class, $method) = explode("/", $action);
 
-        if (isset($class) && isset($action)) {
+        if (isset($class) && isset($method)) {
 
 
             // require controller
@@ -80,18 +93,23 @@ if ($database->getErrors()) {
                     $array_publicKeysWithKIDasArrayKey = loadKeysFromAzure($string_microsoftPublicKeyURL);
 
                     $token = explode(" ", $token)[1];
-                    //ebug($token, DEBUGTYPE_WARNING);
+                    //debug($token, DEBUGTYPE_WARNING);
 
+                    // USER CHECK USERTYPE & ACCESS RIGHTS
+                    $allowAccess = false;
+
+                    // READ TOKEN
                     try {
                         $decoded = JWT::decode($token, $array_publicKeysWithKIDasArrayKey, ['RS256']);
                         $user = new stdClass();
                         $user->uid = $decoded->oid;
-                        $user->role = $decoded->roles[0];
+                        $user->fw_mode = 'SSO';
                         $user->family_name = $decoded->family_name;
                         $user->given_name = $decoded->given_name;
                         $user->name = $decoded->name;
                         $user->ip = $decoded->ipaddr;
                         $user->unique_name = $decoded->unique_name;
+                        $user->email = $decoded->unique_name;
                         $user->upn = $decoded->upn;
                         $user->uid = $decoded->oid;
                         $user->token_iat = $decoded->iat;
@@ -101,25 +119,31 @@ if ($database->getErrors()) {
                         $request_info['user'] = $user;
 
                         $data = ['API' => 'API', 'ALIAS' => 'ALIAS', 'CLASS' => $class, 'METHOD' => $method];
-                        $usertype = null;
+                        $usertype = str_replace('-', '_', strtoupper($decoded->roles[0]));
                         foreach(FRAMEWORK['AUTH']['USERS'] as $type => $users){
                             foreach ($users as $id) {
                                 if ($id == $user->uid) $usertype = $type;
                             }
                         }
+                        $user->usertype = $usertype;
 
+                        // PERMANENT_ALLOWED_API from config-sso.inc.php
+                        foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right){
+                            $x=explode('/', $right);
+                            if ($class==$x[0] && $method==$x[1]){
+                                debug('PERMANENT_ALLOWED_API | API: ' . $class . '/' . $method . '()', DEBUGTYPE_SUCCESS);
+                                $allowAccess = true;
+                            }
+                        }
+
+                        // Usertype = SYSADMIN
                         if ($usertype == 'SYSADMIN'){
                             debug('Allow Access - Usertype "sysadmin" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_SUCCESS);
-                            $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
-                            $object->$method();
-                            $response = $object->getResponse();
-                            $response->overrideUserType = $usertype;
-                        } else{
-                            if ($usertype) {
-                                $data['USERTYPE'] = $usertype;
-                            } else {
-                                $data['USERTYPE'] = $user->role;
-                            }
+                            $allowAccess = true;
+                        }
+
+                        // Check rights from database
+                        if (!$allowAccess){
                             $database = Database::create('APP');
                             $result = $database->query("SELECT RGID, name, class, method FROM
                             (SELECT
@@ -129,7 +153,6 @@ if ($database->getErrors()) {
                             r2.method
                             FROM rights AS r
                             LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                            LEFT JOIN users AS u ON u.usertype = ru.usertype
                             LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
                             LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
                             WHERE ru.usertype = :USERTYPE AND r2.type = :API AND r.type = :ALIAS AND r2.class = :CLASS AND r2.method = :METHOD
@@ -142,39 +165,51 @@ if ($database->getErrors()) {
                             FROM rights AS r
                             LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
                             LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                            LEFT JOIN users AS u ON u.usertype = ru.usertype
                             WHERE ru.usertype = :USERTYPE AND r.type = :API  AND r.class = :CLASS AND r.method = :METHOD
                             ) t
-                            GROUP BY name", $data);
+                            GROUP BY name", [
+                                'USERTYPE' => $user->usertype,
+                                'API' => 'API',
+                                'ALIAS' => 'ALIAS',
+                                'CLASS' => $class,
+                                'METHOD' => $method
+                            ]);
 
                             $count = $result['count'];
-                            if ($count > 0){
+                            if ($count == 0) {
+                                debug('No access rights defined for method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_WARNING);
+                            } else {
                                 debug('Allow Access - Usertype "'.$usertype.'" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_SUCCESS);
-                                $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
-                                $object->$method();
-                                $response = $object->getResponse();
-                                $response->overrideUserType = $data['USERTYPE'];
-                                debug($response, DEBUGTYPE_ERROR);
-                            } else{
-                                debug('No access rights defined - Usertype "'.$usertype.'" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_ERROR);
-                                $response = [];
                             }
+                            $allowAccess = $count > 0;
+                        }
+
+                        if ($allowAccess){
+                            $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
+                            $object->$method();
+                            $response = $object->getResponse();
+                            $response->overrideUserType = $user->usertype;
+                        }else{
+                            debug('No access rights defined - Usertype "'.$usertype.'" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_ERROR);
+                            $response = [];
                         }
                     } catch (UnexpectedValueException $e) {
                         $error = [$e->getMessage(), $e->getCode()];
+                        $response->errors[] = $error;
+                        debug($error, DEBUGTYPE_ERROR);
                     }
 
                 } else {
-                    $response['warning'] = 'Unknown method "' . $method . '" for class "' . $class . '"';
+                    $response->errors[] = 'Unknown method "' . $method . '" for class "' . $class . '"';
                 }
             } else {
-                $response['warning'] = 'Unknown class "' . $class . '"';
+                $response->errors[] = 'Unknown class "' . $class . '"';
             }
         } else {
-            $response['warning'] = 'Wrong controller/action "' . $request->action . '"';
+            $response->errors[] = 'Wrong controller/action "' . $request->action . '"';
         }
     } else {
-        $response['warning'] = 'No controller/action submitted';
+        $response->errors[] = 'No controller/action submitted';
     }
 }
 

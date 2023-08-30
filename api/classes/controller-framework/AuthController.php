@@ -220,7 +220,6 @@ class Auth extends Controller {
     }
 
     public function register() {
-        //debug($this->data, DEBUGTYPE_SPECIAL);
         $this->response->data = $this->data;
 
         unset($this->data->values->password_confirm);
