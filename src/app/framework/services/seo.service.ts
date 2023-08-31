@@ -26,7 +26,6 @@ export class SeoService {
     }
 
     setMeta(data: seoData) {
-        //console.log(data);
         this.titleService.setTitle(data.title);
         if (data.description) {
             this.metaService.updateTag({name: 'keywords', content: data.keywords});

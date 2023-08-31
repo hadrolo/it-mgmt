@@ -47,7 +47,7 @@ interface FwLoginModalView {
     templateUrl: './auth-login-modal.component.html',
     styleUrls: ['./auth-login-modal.component.scss']
 })
-export class AuthLoginModalComponent implements OnInit {
+export class AuthLoginModalComponent {
 
     @ViewChild('captchaElem', {static: false}) captchaElem: InvisibleReCaptchaComponent;
     @ViewChild('errorDismissButton') errorDismissButton: ElementRef;
@@ -82,10 +82,6 @@ export class AuthLoginModalComponent implements OnInit {
         private dataService: DataService,
         private toastrService: ToastrService,
     ) {
-    }
-
-    ngOnInit(): void {
-        console.log('AuthLoginModalComponent');
     }
 
     login(): void {

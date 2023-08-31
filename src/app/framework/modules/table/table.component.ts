@@ -348,7 +348,6 @@ export class TableComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     openDataset(openData: FwOpenData, id): void {
-        //console.log(openData, id);
         if (id == this.data.config._id) {
             this.status.emit({
                 type: FwTableStatusType.ENTRY_CLICKED,

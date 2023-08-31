@@ -71,8 +71,6 @@ export class AuthLoginComponent implements OnInit {
                 this.jwtService.setToken(FwTokenType.ACCESS_TOKEN, response.jwt_token.accessToken);
                 this.jwtService.setToken(FwTokenType.REFRESH_TOKEN, response.jwt_token.refreshToken);
 
-                console.log(response);
-
                 this.translateService.use(response.user.language);
                 this.userService.currentUser = response.user;
                 this.userService.currentUser.loggedIn = true;

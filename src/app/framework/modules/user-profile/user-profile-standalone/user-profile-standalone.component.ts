@@ -130,7 +130,6 @@ export class UserProfileStandaloneComponent implements OnInit {
             getCountries: true,
             LANG: this.userService.currentUser.language
         }).subscribe((response: any) => {
-            console.log(response);
             this.view.setting.formViewMode = FwFormViewMode.VIEW;
             this.prepareForm();
             this.view.data.user = response.user;
@@ -180,7 +179,6 @@ export class UserProfileStandaloneComponent implements OnInit {
     }
 
     enablePasswortUpdate(): void {
-        console.log('enablePasswortUpdate()');
         this.view.setting.showPasswordUpdate = true;
         this.userForm.controls.password.enable();
         this.userForm.controls.confirmPassword.enable();

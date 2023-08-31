@@ -94,7 +94,6 @@ export class RightGrouprightSetupComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.rightService.rights);
         this.seoService.setTitle(this.settingsService.frameworkSettings.appName + ' - ' + this.translateService.instant('FW.RIGHT.USERTYPE_RIGHT_TITLE'));
         this.view.data.usertypeList = [];
         Object.values(this.UserType).forEach(elem => {
@@ -108,7 +107,6 @@ export class RightGrouprightSetupComponent implements OnInit {
     }
 
     getAllRights(): void {
-        console.log(this.view);
         this.dataService.request('framework.Right/loadAllUsertypeRights', {
             usertype: this.view.data.selectedUsertype,
             rightType: this.view.data.selectedRightType,

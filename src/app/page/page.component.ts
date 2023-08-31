@@ -75,10 +75,8 @@ export class PageComponent implements AfterContentInit, OnDestroy{
 
     openUserProfile() {
         if (this.settingService.frameworkSettings.frameworkMode == FwMode.STANDALONE){
-            console.log('openUserProfileStandalone');
             this.userProfileService.openUserProfileStandalone.next(true);
         } else {
-            console.log('openUserprofileSso');
             this.userProfileService.openUserprofileSso.next(true);
         }
     }

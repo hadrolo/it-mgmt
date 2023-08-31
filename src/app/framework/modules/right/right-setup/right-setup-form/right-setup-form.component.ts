@@ -145,14 +145,6 @@ export class RightSetupFormComponent implements OnInit {
         }
     }
 
-/*    loadRightList(RGID = null): void {
-        this.dataService.request('framework.Right/loadRightList', {
-            RGID
-        }).subscribe(response => {
-            // console.log(response);
-        });
-    }*/
-
     closeForm(): void {
         this.router.navigate(['list'], {relativeTo: this.activatedRoute.parent});
     }

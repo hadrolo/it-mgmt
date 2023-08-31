@@ -214,7 +214,6 @@ export class SettingsService {
   }
 
   set(settings: FwSettings): void {
-    //console.log('Framework settings changed to "' + settings.frameworkMode + '"');
     this.frameworkSettings = settings;
   }
 

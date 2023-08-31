@@ -372,8 +372,4 @@ export class FileModalComponent implements OnInit {
         this.imageHeight = Math.round(this.result.openFile.height * this.zoom / 100);
     }
 
-    hammerTime($event: any) {
-        console.log($event.type);
-        console.log($event);
-    }
 }

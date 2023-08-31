@@ -51,8 +51,6 @@ export class UserAssignmentComponent implements OnInit, OnDestroy {
     }
 
     openAssignUser($event: FwTableStatus): void {
-        console.log('openAssignUser()');
-        console.log($event);
         this.dataService.request('universe.User/getUserProfile', {
             UID: $event.data
         }).subscribe(response => {
