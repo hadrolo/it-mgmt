@@ -18,7 +18,7 @@ class User extends Controller
             usertype,
             last_login,
             active,
-            postcode
+            postcode,
             info
             FROM users WHERE UID=:UID', ['UID' => $this->currentUser->uid])['data'][0];
 

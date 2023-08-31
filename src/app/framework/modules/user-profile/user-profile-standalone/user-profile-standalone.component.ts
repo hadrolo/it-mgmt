@@ -130,6 +130,7 @@ export class UserProfileStandaloneComponent implements OnInit {
             getCountries: true,
             LANG: this.userService.currentUser.language
         }).subscribe((response: any) => {
+            console.log(response);
             this.view.setting.formViewMode = FwFormViewMode.VIEW;
             this.prepareForm();
             this.view.data.user = response.user;
