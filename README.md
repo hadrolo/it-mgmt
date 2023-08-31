@@ -145,5 +145,6 @@ and remove `canActivate: SsoGuard`
 Protect Routes with `RightGuard` like `data: {rights: ['Right/openRights']}, canActivate: [RightGuard]}`
 
 # ToDo
+- standalone mode - delete UID and move it to public id
 - delete SsoService
 - delete RightLoaderGuard

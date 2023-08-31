@@ -25,7 +25,7 @@ export class ProjectUserService {
 
 
   setRows(field: IField, value) {
-    this.dataService.request('User/updateRows', {
+    this.dataService.request('framework.User/updateRows', {
       UID: this.userService.currentUser.UID,
       field: field,
       value: value

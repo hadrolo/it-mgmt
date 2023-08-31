@@ -49,7 +49,7 @@ if ($content_type == 'multipart/form-data') {
 
 if (property_exists($request, "action")) {
 
-    // get controller
+    // get controller APP, FRAMEWORK, UNIVERSE
     $parts = explode(".", $request->action);
     if (count($parts) > 1) {
         $module = strtoupper($parts[0]);
@@ -199,8 +199,6 @@ function guard($module, $class, $method, $request)
                     // $request_info[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
                 }
             }
-
-            debug($user, DEBUGTYPE_WARNING);
 
             // PERMANENT_ALLOWED_API from config-sso.inc.php
             foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right) {

@@ -108,4 +108,12 @@ export class DashboardComponent implements OnInit{
         });
     }
 
+    loadCountriesUniverse(): void {
+        this.dataService.request('universe.Country/listAll', {
+            LANG: 'de'
+        }).subscribe((response: any) => {
+            console.log(response);
+        });
+    }
+
 }

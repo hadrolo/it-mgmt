@@ -208,7 +208,7 @@ export class UserMgmtFormComponent implements OnInit {
 
     openEditForm(): void {
         this.view.setting.showPasswordUpdate = false;
-        this.dataService.request('User/getUserInfo', {
+        this.dataService.request('framework.User/getUserInfo', {
             public_id: this.view.data.currentPublicId,
             LANG: this.userService.currentUser.language
         }).subscribe((response: any) => {
@@ -265,7 +265,7 @@ export class UserMgmtFormComponent implements OnInit {
     }
 
     checkUsernameExist(): void {
-        this.dataService.request('User/checkUserExist', {
+        this.dataService.request('framework.User/checkUserExist', {
             username: this.userForm.controls.username.value,
         }).subscribe((response: any) => {
             this.view.setting.userExist = response.userExist;
@@ -278,7 +278,7 @@ export class UserMgmtFormComponent implements OnInit {
     }
 
     checkEmailExist(): void {
-        this.dataService.request('User/checkEmailExist', {
+        this.dataService.request('framework.User/checkEmailExist', {
             email: this.userForm.value.email,
             UID: this.view.data.currentUID,
             public_id: this.view.data.currentPublicId
@@ -294,7 +294,7 @@ export class UserMgmtFormComponent implements OnInit {
 
     insertUser(): void {
         this.view.data.currentPublicId = uuidv4();
-        this.dataService.request('User/insert', {
+        this.dataService.request('framework.User/insert', {
             public_id: this.view.data.currentPublicId,
             form: this.userForm.value
         }).subscribe((response: any) => {
@@ -305,7 +305,7 @@ export class UserMgmtFormComponent implements OnInit {
     }
 
     updateUser(): void {
-        this.dataService.request((this.userService.currentUser.usertype === FwUserType.SYSADMIN || this.userService.currentUser.usertype === FwUserType.ADMIN) ? 'User/updateUser' : 'User/updateOwnUser', {
+        this.dataService.request((this.userService.currentUser.usertype === FwUserType.SYSADMIN || this.userService.currentUser.usertype === FwUserType.ADMIN) ? 'framework.User/updateUser' : 'framework.User/updateOwnUser', {
             public_id: this.view.data.currentPublicId,
             form: this.userForm.value,
         }).subscribe(() => {
@@ -318,7 +318,7 @@ export class UserMgmtFormComponent implements OnInit {
     }
 
     deleteUser(): void {
-        this.dataService.request('User/delete', {
+        this.dataService.request('framework.User/delete', {
             public_id: this.view.data.currentPublicId
         }).subscribe(() => {
             this.router.navigate(['/userlist']);

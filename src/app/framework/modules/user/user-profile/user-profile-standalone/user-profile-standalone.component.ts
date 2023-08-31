@@ -126,7 +126,7 @@ export class UserProfileStandaloneComponent implements OnInit {
 
     openUserProfile(){
         this.view.setting.showPasswordUpdate = false;
-        this.dataService.request('User/getOwnUserProfile', {
+        this.dataService.request('framework.User/getOwnUserProfile', {
             getCountries: true,
             LANG: this.userService.currentUser.language
         }).subscribe((response: any) => {
@@ -186,7 +186,7 @@ export class UserProfileStandaloneComponent implements OnInit {
     }
 
     checkEmailExist(): void {
-        this.dataService.request('User/checkEmailExist', {
+        this.dataService.request('framework.User/checkEmailExist', {
             email: this.userForm.value.email,
             UID: this.view.data.currentUID,
             public_id: this.view.data.currentPublicId
@@ -201,7 +201,7 @@ export class UserProfileStandaloneComponent implements OnInit {
     }
 
     updateUser(): void {
-        this.dataService.request('User/updateOwnUser', {
+        this.dataService.request('framework.User/updateOwnUser', {
             public_id: this.view.data.currentPublicId,
             form: this.userForm.value,
         }).subscribe(() => {

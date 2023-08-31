@@ -20,6 +20,7 @@ switch ($path) {
         define("DB", [
             'DEFAULT' => ['HOST' => 'localhost', 'USER' => 'root', 'PASS' => '!D3tl3f!', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
             'APP' => ['HOST' => 'localhost', 'USER' => 'root', 'PASS' => '!D3tl3f!', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
+            'UNIVERSE' => ['HOST' => '127.0.0.1', 'USER' => 'universe-app', 'PASS' => 'd3tl3fd3tl3f', 'DB_NAME' => 'universe', 'PORT' => 33009],
         ]);
         define("ENVIRONMENT", "local");
         define("ASSET_ROOT", SERVER_ROOT . "src/assets/");
@@ -33,6 +34,7 @@ switch ($path) {
         define("DB", [
             'DEFAULT' => ['HOST' => 'localhost', 'USER' => 'it-mgmt', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
             'APP' => ['HOST' => 'localhost', 'USER' => 'it-mgmt', 'PASS' => 'gjjFiytz_w]j8IPR', 'DB_NAME' => 'it-mgmt', 'PORT' => 33009],
+            'UNIVERSE' => ['HOST' => '127.0.0.1', 'USER' => 'universe-app', 'PASS' => 'd3tl3fd3tl3f', 'DB_NAME' => 'universe', 'PORT' => 33009],
         ]);
         define("ENVIRONMENT", "production");
         define("ASSET_ROOT", SERVER_ROOT . "assets/");
@@ -176,6 +178,7 @@ const FRAMEWORK = [
         'DIRECTORIES' => [
             'FRAMEWORK' => 'controller-framework',
             'APP' => 'controller-app',
+            'UNIVERSE' => 'controller-universe',
         ]
     ]
 ];

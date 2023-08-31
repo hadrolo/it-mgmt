@@ -50,6 +50,7 @@ if ($database->getErrors()) {
         $request = json_decode(file_get_contents("php://input"));
     }
 
+    // get controller APP, FRAMEWORK, UNIVERSE
     if (property_exists($request, "action")) {
         $parts = explode(".", $request->action);
         if (count($parts) > 1) {
