@@ -2,11 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 
 @Component({
-    selector: 'app-register',
-    templateUrl: './register.component.html',
-    styleUrls: ['./register.component.scss']
+    selector: 'app-user-register',
+    templateUrl: './user-register.component.html',
+    styleUrls: ['./user-register.component.scss']
 })
-export class RegisterComponent implements OnInit {
+export class UserRegisterComponent implements OnInit {
 
     constructor(
         public translateService: TranslateService

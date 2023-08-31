@@ -16,6 +16,9 @@ import {DebounceKeyupDirective} from './directives/debounce-keyup.directive';
 import {FwTranslatePipe} from './pipes/fw-translate.pipe';
 import {FormModule} from './modules/form/form.module';
 import { LoginFailedComponent } from './modules/sso/login-failed/login-failed.component';
+import {UserProfileModule} from './modules/user/user-profile/user-profile.module';
+import {UserMgmtListComponent} from './modules/user/user-mgmt-list/user-mgmt-list.component';
+import {UserMgmtListModule} from './modules/user/user-mgmt-list/user-mgmt-list.module';
 
 @NgModule({
     declarations: [
@@ -49,7 +52,7 @@ import { LoginFailedComponent } from './modules/sso/login-failed/login-failed.co
         MaintenanceInfoComponent,
         AuthLoginModalComponent,
         DebounceKeyupDirective,
-        FwTranslatePipe
+        FwTranslatePipe,
     ]
 })
 export class FrameworkModule {

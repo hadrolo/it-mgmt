@@ -26,7 +26,6 @@ import {MatButtonModule} from '@angular/material/button';
 import {LayoutModule} from '@angular/cdk/layout';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import {ToastrModule} from 'ngx-toastr';
-import {RegisterComponent} from './page/user-mgmt/register/register.component';
 import {RegisterModule} from './framework/modules/register/register.module';
 import {MsalInterceptor, MsalModule} from '@azure/msal-angular';
 import {BrowserCacheLocation, InteractionType, LogLevel, PublicClientApplication} from '@azure/msal-browser';
@@ -61,7 +60,6 @@ export class MyHammerConfig extends HammerGestureConfig {
     declarations: [
         AppComponent,
         ResetPasswordComponent,
-        RegisterComponent,
     ],
     imports: [
 /*        MsalModule.forRoot(new PublicClientApplication({ // MSAL Configuration
@@ -118,7 +116,6 @@ export class MyHammerConfig extends HammerGestureConfig {
         MatButtonModule,
         LayoutModule,
         BsDatepickerModule.forRoot(),
-        RegisterModule,
     ],
     providers: [
 /*        {

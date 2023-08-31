@@ -25,16 +25,14 @@ import {LanguageSwitchModule} from '../framework/modules/language-switch/languag
 import {NgSelectModule} from '@ng-select/ng-select';
 import {ToolbarModule} from './toolbar/toolbar.module';
 import {LogfileViewerComponent} from './logfile-viewer/logfile-viewer.component';
-import {RightGuard} from '../framework/modules/right/right.guard';
-import {UserMgmtListComponent} from './user-mgmt/user-mgmt-list/user-mgmt-list.component';
-import {UserMgmtFormComponent} from './user-mgmt/user-mgmt-form/user-mgmt-form.component';
+import {UserMgmtFormComponent} from '../framework/modules/user/user-mgmt-form/user-mgmt-form.component';
 import {FileModule} from '../framework/modules/file/file.module';
-import { UserEditModalComponent } from './user-mgmt/user-edit-modal/user-edit-modal.component';
-import {UserProfileStandaloneModule} from '../framework/modules/user-profile/user-profile-standalone/user-profile-standalone.module';
 import {SsoGuard} from '../framework/modules/auth/sso.guard';
-import {UserProfileSsoComponent} from '../framework/modules/user-profile/user-profile-sso/user-profile-sso.component';
-import {UserProfileSsoModule} from '../framework/modules/user-profile/user-profile-sso/user-profile-sso.module';
-import {RightLoaderGuard} from '../framework/modules/right/right.loader.guard';
+import {FrameworkModule} from '../framework/framework.module';
+import {UserProfileModule} from '../framework/modules/user/user-profile/user-profile.module';
+import {UserMgmtListComponent} from '../framework/modules/user/user-mgmt-list/user-mgmt-list.component';
+import {UserRegisterModule} from '../framework/modules/user/user-register/user-register.module';
+import {UserMgmtFormModule} from '../framework/modules/user/user-mgmt-form/user-mgmt-form.module';
 
 
 
@@ -64,9 +62,6 @@ const routes: Routes = [
         PageComponent,
         DashboardComponent,
         LogfileViewerComponent,
-        UserMgmtFormComponent,
-        UserMgmtListComponent,
-        UserEditModalComponent,
     ],
     imports: [
         RouterModule.forChild(routes),
@@ -95,8 +90,10 @@ const routes: Routes = [
         LanguageSwitchModule,
         ToolbarModule,
         FileModule,
-        UserProfileStandaloneModule,
-        UserProfileSsoModule,
+        FrameworkModule,
+        UserProfileModule,
+        UserRegisterModule,
+        UserMgmtFormModule,
     ],
     exports: [],
     providers: [

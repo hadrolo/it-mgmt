@@ -4,11 +4,11 @@ import {LoggedInGuard} from './framework/modules/auth/loggedIn.guard';
 import {TokenGuard} from './framework/modules/auth/token.guard';
 import {ResetPasswordComponent} from './reset-password/reset-password.component';
 import {RightLoaderGuard} from './framework/modules/right/right.loader.guard';
-import {RegisterComponent} from './page/user-mgmt/register/register.component';
 import {MsalGuard} from '@azure/msal-angular';
 import {LoginFailedComponent} from './framework/modules/sso/login-failed/login-failed.component';
 import {SsoGuard} from './framework/modules/auth/sso.guard';
 import {StandaloneGuard} from './framework/modules/auth/standalone.guard';
+import {UserRegisterComponent} from './framework/modules/user/user-register/user-register.component';
 
 const routes: Routes = [
     {
@@ -19,6 +19,12 @@ const routes: Routes = [
     {
         path: 'reset-password/:hash',
         component: ResetPasswordComponent,
+        canActivate: [StandaloneGuard, TokenGuard],
+        runGuardsAndResolvers: 'always'
+    },
+    {
+        path: 'register',
+        component: UserRegisterComponent,
         canActivate: [StandaloneGuard, TokenGuard],
         runGuardsAndResolvers: 'always'
     },

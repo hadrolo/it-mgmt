@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {UserProfileService} from '../user-profile.service';
-import {DataService} from '../../../services/data.service';
-import {UserService} from '../../auth/user.service';
+import {DataService} from '../../../../services/data.service';
+import {UserService} from '../../../auth/user.service';
 import {MatDialog} from '@angular/material/dialog';
-import {FwFormViewMode} from '../../form/form.interfaces';
+import {FwFormViewMode} from '../../../form/form.interfaces';
 
 
 @Component({

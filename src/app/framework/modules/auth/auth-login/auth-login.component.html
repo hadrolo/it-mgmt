@@ -47,14 +47,14 @@
         <div class="modal-form__content">
             {{deniedMessage}}
         </div>
-        <div class="modal-form__button text-end">
+        <div class="modal-form__buttons text-end">
             <button type="button" class="btn btn-secondary" data-dismiss="modal" id="fw-access-denied-button" mat-dialog-close>{{ 'FW.BUTTON.OK' | translate}}</button>
         </div>
     </div>
 </ng-template>
 
 <ng-template #modalPasswordReset>
-    <div mat-dialog-conten class="modal-form" t>
+    <div mat-dialog-conten class="modal-form">
         <div class="modal-form__title">
             <i class="fa fa-warning text-danger"></i> {{settingsService.frameworkSettings.auth.passwordReset.modalTitle | translate}}
         </div>
@@ -63,7 +63,7 @@
             <input type="text" class="form-control" [(ngModel)]="fieldCheck" [placeholder]="settingsService.frameworkSettings.auth.passwordReset.modalPlaceholder | translate" required
                    #fieldCheckInput="ngModel" (keyup.enter)="!fieldCheckInput.invalid ? resetPasswordNow() : ''"/>
         </div>
-        <div class="row modal-form__button">
+        <div class="row modal-form__buttons">
             <div class="col">
                 <button type="button"
                         class="btn btn-primary"

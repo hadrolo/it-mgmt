@@ -5,14 +5,14 @@ import {ToastrService} from 'ngx-toastr';
 import {LangChangeEvent, TranslateService} from '@ngx-translate/core';
 import {fileMimeTypeGroup} from 'src/app/framework/modules/file/file.component';
 import { v4 as uuidv4 } from 'uuid';
-import {FwFormViewMode} from '../../../framework/modules/form/form.interfaces';
-import {FwOpenData, FwUserType} from '../../../framework/settings';
+import {FwFormViewMode} from '../../form/form.interfaces';
+import {FwOpenData, FwUserType} from '../../../settings';
 
-import {DataService} from '../../../framework/services/data.service';
-import {UserService} from '../../../framework/modules/auth/user.service';
-import {FwLogType, LogService} from '../../../framework/services/log.service';
-import {CryptoService} from '../../../framework/services/crypto.service';
-import {AppSettings} from '../../../app.settings';
+import {DataService} from '../../../services/data.service';
+import {UserService} from '../../auth/user.service';
+import {FwLogType, LogService} from '../../../services/log.service';
+import {CryptoService} from '../../../services/crypto.service';
+import {AppSettings} from '../../../../app.settings';
 import {MatDialog} from '@angular/material/dialog';
 
 interface UserFormSetting {

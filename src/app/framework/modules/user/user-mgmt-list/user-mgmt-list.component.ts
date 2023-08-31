@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {NavigationEnd, Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
-import {FwTableColumnFilterType, FwTableData, FwTableRowColorConditionOperator} from '../../../framework/modules/table/table.interfaces';
-import {UserService} from '../../../framework/modules/auth/user.service';
-import {CryptoService} from '../../../framework/services/crypto.service';
-import {RightService} from '../../../framework/modules/right/right.service';
-import {SeoService} from '../../../framework/services/seo.service';
-import {SettingsService} from '../../../framework/services/settings.service';
+import {FwTableColumnFilterType, FwTableData, FwTableRowColorConditionOperator} from '../../table/table.interfaces';
+import {UserService} from '../../auth/user.service';
+import {CryptoService} from '../../../services/crypto.service';
+import {SettingsService} from '../../../services/settings.service';
+import {RightService} from '../../right/right.service';
+import {SeoService} from '../../../services/seo.service';
+
 
 @Component({
     selector: 'app-user-mgmt-list',

@@ -8,7 +8,7 @@ import {RightService} from '../framework/modules/right/right.service';
 import {CryptoService} from '../framework/services/crypto.service';
 import {Router} from '@angular/router';
 import {MatSidenav} from '@angular/material/sidenav';
-import {UserProfileService} from '../framework/modules/user-profile/user-profile.service';
+import {UserProfileService} from '../framework/modules/user/user-profile/user-profile.service';
 import {FwMode, SettingsService} from '../framework/services/settings.service';
 
 
