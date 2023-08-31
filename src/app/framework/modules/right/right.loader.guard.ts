@@ -3,6 +3,7 @@ import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot} from '@angular
 import {Observable} from 'rxjs';
 import {UrlTree} from '@angular/router';
 import {RightService} from './right.service';
+import {map} from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root'
@@ -16,6 +17,5 @@ export class RightLoaderGuard implements CanActivate {
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
         return this.rightService.loadRights();
-
     }
 }

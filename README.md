@@ -99,12 +99,32 @@ edit `app.modules.ts` remove sso Entries (MsalModule)
     </code>
 </pre>
 ### Edit app-routing.module.ts
-add `canActivate: [MsalGuard]`
+adsd login /reset password and error
 <pre>
     <code>
         path: '', loadChildren: () => import('./page/page.module').then(m => m.PageModule),
-        canActivate: [MsalGuard],
+        canActivate: [StandaloneGuard, LoggedInGuard],
         runGuardsAndResolvers: 'always'
+    </code>
+</pre>
+
+<pre>
+    <code>
+    {
+        path: 'login', loadChildren: () => import('./login/login.module').then(m => m.LoginModule),
+        canActivate: [StandaloneGuard, TokenGuard],
+        runGuardsAndResolvers: 'always'
+    },
+    {
+        path: 'reset-password/:hash',
+        component: ResetPasswordComponent,
+        canActivate: [StandaloneGuard, TokenGuard],
+        runGuardsAndResolvers: 'always'
+    },
+    {
+        path: 'error', loadChildren: () => import('./errors/errors.module').then(m => m.ErrorsModule),
+        runGuardsAndResolvers: 'always'
+    },
     </code>
 </pre>
 ### Edit page.module.ts

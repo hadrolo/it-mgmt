@@ -80,11 +80,10 @@ export class DashboardComponent implements OnInit{
         this.rightService.loadRights().subscribe(_=>{
             console.log(this.rightService.rights);
         });
-        this.dataService.request('framework.Right/loadCurrentRights', {
-            LANG: 'de'
+/*        this.dataService.request('framework.Right/loadCurrentRights', {
         }).subscribe((response: any) => {
             console.log(response);
-        });
+        });*/
     }
 
     button5click() {

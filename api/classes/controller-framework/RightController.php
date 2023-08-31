@@ -11,7 +11,6 @@ class Right extends Controller
 
     public function loadCurrentRights()
     {
-        debug('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
         $rights = $this->db->query("SELECT RGID, name FROM rights");
 
         if ($this->currentUser->fw_mode == 'SSO'){
@@ -65,7 +64,6 @@ class Right extends Controller
                 if ($this->currentUser->usertype == 'SYSADMIN'){
                     debug('SYSADMIN------------------------------------------');
                     foreach ($rights['data'] as $value) {
-                        debug($value);
                         $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
                     }
                 } else {

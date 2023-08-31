@@ -14,7 +14,8 @@ register_shutdown_function("fatal_handler");
 
 $request_info = [];
 
-function fatal_handler() {
+function fatal_handler()
+{
     global $request_info, $response;
 
     $error = error_get_last();
@@ -22,11 +23,11 @@ function fatal_handler() {
     if ($error !== null) {
         Log::write(
             $request_info['currentUID'],
-            'error' ,
-            json_encode(str_replace("'", '"', $error)) ,
+            'error',
+            json_encode(str_replace("'", '"', $error)),
             $request_info['component'],
-            $request_info['method'] ,
-            $request_info['controller'] ,
+            $request_info['method'],
+            $request_info['controller'],
             $request_info['action']
         );
         debug($error, DEBUGTYPE_ERROR);
@@ -59,9 +60,6 @@ if (property_exists($request, "action")) {
     }
 
     list($class, $method) = explode("/", $action);
-    debug('---------------------------------------', DEBUGTYPE_SPECIAL);
-    debug($action, DEBUGTYPE_SPECIAL);
-    debug('---------------------------------------', DEBUGTYPE_SPECIAL);
 
     if (isset($class) && isset($method)) {
 
@@ -124,7 +122,8 @@ if (property_exists($request, "action")) {
     $response->errors[] = 'No controller/action submitted';
 }
 
-function guard($module, $class, $method, $request) {
+function guard($module, $class, $method, $request)
+{
     global $response, $request_info;
 
     $headers = apache_request_headers();
@@ -173,7 +172,7 @@ function guard($module, $class, $method, $request) {
                         u.email
                         FROM " . $mod['TABLE_NAME'] . " as u WHERE UID = ?", [$decoded->data->UID]);
 
-                    if ($userRequest['count'] > 0){
+                    if ($userRequest['count'] > 0) {
                         $user->uid = $userRequest['data'][0]['UID'];
                         $user->cid = $userRequest['data'][0]['CID'];
                         $user->public_uid = $userRequest['data'][0]['public_id'];
@@ -182,7 +181,7 @@ function guard($module, $class, $method, $request) {
                         $user->given_name = $userRequest['data'][0]['firstname'];
                         $user->name = $userRequest['data'][0]['lastname'] . ' ' . $userRequest['data'][0]['firstname'];
                         $user->email = $userRequest['data'][0]['email'];
-                        $user->usertype = $userRequest['data'][0]['usertype'];
+                        $user->usertype = strtoupper($userRequest['data'][0]['usertype']);
                     } else {
                         debug('ACCESS DENIED - Token UID not found in Table', DEBUGTYPE_ERROR);
                         Log::write(
@@ -201,39 +200,48 @@ function guard($module, $class, $method, $request) {
                 }
             }
 
-            if (!FRAMEWORK['CONTROLLER']['RIGHTS_ENABLED'] ||
-                (isset($request_info['universetype']) && strtoupper($request_info['universetype']) == 'SYSADMIN') ||
-                (isset($request_info['usertype']) && strtoupper($request_info['usertype']) == 'SYSADMIN')) {
-                $count = 1;
+            debug($user, DEBUGTYPE_WARNING);
 
-                if (!FRAMEWORK['CONTROLLER']['RIGHTS_ENABLED']) {
-                    debug('RIGHTS CHECK IS NOT ENABLED!', DEBUGTYPE_WARNING);
+            // PERMANENT_ALLOWED_API from config-sso.inc.php
+            foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right) {
+                $x = explode('/', $right);
+                if ($class == $x[0] && $method == $x[1]) {
+                    debug('PERMANENT_ALLOWED_API | API: ' . $class . '/' . $method . '()', DEBUGTYPE_SUCCESS);
+                    $allowAccess = true;
                 }
-            } else {
+            }
+
+            // Usertype = SYSADMIN
+            if ($user->usertype == 'SYSADMIN') {
+                debug('Allow Access - Usertype "sysadmin" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_SUCCESS);
+                $allowAccess = true;
+            }
+
+            if (!$allowAccess) {
                 $database = Database::create('APP');
                 $result = $database->query("SELECT RGID, name, class, method FROM
-                            (SELECT
-                            r.RGID,
-                            r.name,
-                            r2.class,
-                            r2.method
-                            FROM rights AS r
-                            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                            LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
-                            LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
-                            WHERE ru.usertype = :USERTYPE AND r2.type = :API AND r.type = :ALIAS AND r2.class = :CLASS AND r2.method = :METHOD
-                            UNION ALL
-                            SELECT
-                            r.RGID,
-                            r.name,
-                            r.class,
-                            r.method
-                            FROM rights AS r
-                            LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
-                            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                            WHERE ru.usertype = :USERTYPE AND r.type = :API  AND r.class = :CLASS AND r.method = :METHOD
-                            ) t
-                            GROUP BY name", [
+                    (SELECT
+                    r.RGID,
+                    r.name,
+                    r2.class,
+                    r2.method
+                    FROM rights AS r
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
+                    LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
+                    WHERE ru.usertype = :USERTYPE AND r2.type = :API AND r.type = :ALIAS AND r2.class = :CLASS AND r2.method = :METHOD
+                    UNION ALL
+                    SELECT
+                    r.RGID,
+                    r.name,
+                    r.class,
+                    r.method
+                    FROM rights AS r
+                    LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
+                    LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                    WHERE ru.usertype = :USERTYPE AND r.type = :API  AND r.class = :CLASS AND r.method = :METHOD
+                    ) t
+                    GROUP BY name", [
                     'USERTYPE' => $user->usertype,
                     'API' => 'API',
                     'ALIAS' => 'ALIAS',
@@ -245,69 +253,33 @@ function guard($module, $class, $method, $request) {
                 $count = $result['count'];
                 if ($count == 0) {
                     debug('No access rights defined for method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_WARNING);
-                }
-            }
-
-
-
-            // aggregate roles - only used for debug output
-            $roles = [];
-            foreach(FRAMEWORK['AUTH']['MODULES'] as $key => $mod) {
-                // $roles[] = $mod['USERTYPE']['NAME'] . ": " . $userData[$mod['USERTYPE']['NAME']];
-                $roles[] = $mod['USERTYPE']['NAME'] . ": " . $user->usertype;
-            }
-
-            foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right){
-                $x=explode('/', $right);
-                if ($class==$x[0] && $method==$x[1]){
-                    debug('PERMANENT_ALLOWED_API | API: ' . $class . '/' . $method . '()', DEBUGTYPE_SUCCESS);
-                    $allowAccess = true;
-                }
-            }
-
-            if (!$allowAccess) {
-                debug('ACCESS DENIED - MODULE: ' . $module . ' | API: ' . $class . '/' . $method . '() | ' . join(", ", $roles) . ' | CLIENT: ' . $request->componentName . '/' . $request->methodName, DEBUGTYPE_ERROR);
-                Log::write(
-                    $user->uid,
-                    'access-violation',
-                    'Class: api.php | ' . join(", ", $roles),
-                    $request->componentName,
-                    $request->methodName,
-                    $class . 'Controller.php',
-                    $method . '()');
-                $response->errors[] = 'ACCESS DENIED';
-                if (ENVIRONMENT == 'production') header('HTTP/1.1 401 Unauthorized');
-            } else {
-                debug('ACCESS - MODULE: ' . $module . ' | API: ' . $class . '/' . $method . '() | ' . join(", ", $roles) . ' | CLIENT: ' . $request->componentName . '/' . $request->methodName, DEBUGTYPE_SUCCESS);
-
-                if ($module == "FRAMEWORK") {
-                    // don't instantiate a database for generic framework methods
-
-                    $object = new $class(null, $request->data, $request->componentName, $request->methodName, $user);
-                    $object->$method();
-                    $response = $object->getResponse();
                 } else {
-                    // instantiate database for module
-                    $database = Database::create($module);
-
-                    $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
-                    $object->$method();
-                    $response = $object->getResponse();
-
-                    if ($database->getErrors()) {
-                        $response->errors = $database->getErrors();
-                    }
+                    debug('Allow Access - Usertype "' . $user->usertype . '" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_SUCCESS);
                 }
+                $allowAccess = $count > 0;
+            }
+
+            if ($allowAccess) {
+                $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
+                $object->$method();
+                $response = $object->getResponse();
+                //$response->overrideUserType = $user->usertype;
+            } else {
+                debug('No access rights defined - Usertype "' . $user->usertype . '" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_ERROR);
+                $response = [];
             }
         } else {
             debug('NO BEARER - HTTP/1.1 401 Unauthorized', DEBUGTYPE_ERROR);
+            $response->errors[] = 'HTTP/1.1 401 Unauthorized';
             header('HTTP/1.1 401 Unauthorized');
         }
     } catch (ExpiredException $e) {
         debug('TOKEN EXPIRED - HTTP/1.1 401 Unauthorized', DEBUGTYPE_WARNING);
+        $response->errors[] = 'HTTP/1.1 401 Unauthorized';
         header('HTTP/1.1 401 Unauthorized');
     } catch (UnexpectedValueException $e) {
         debug('INVALID TOKEN - HTTP/1.1 401 Unauthorized', DEBUGTYPE_ERROR);
+        $response->errors[] = 'HTTP/1.1 401 Unauthorized';
         header('HTTP/1.1 401 Unauthorized');
     }
 }

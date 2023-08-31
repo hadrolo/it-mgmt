@@ -28,7 +28,7 @@ const routes: Routes = [
     },
     {
         path: '', loadChildren: () => import('./page/page.module').then(m => m.PageModule),
-        canActivate: [StandaloneGuard, LoggedInGuard/*, RightLoaderGuard*/],
+        canActivate: [StandaloneGuard, LoggedInGuard],
         runGuardsAndResolvers: 'always'
     },
 /*    {

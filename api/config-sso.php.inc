@@ -56,7 +56,7 @@ const FRAMEWORK = [
             eha '6e180a3d-6716-4a2c-9155-fafdd329e479'
             aze 'b13a37d7-a651-4125-b5e6-02fcc3de03bc'
         */
-        'USERS' => [
+        'SSO_USERS_OVERWRITE' => [
             'SYSADMIN' => ['6e180a3d-6716-4a2c-9155-fafdd329e479'],
             'FIELD_STAFF' => [],
             'ADMIN' => []

@@ -120,12 +120,14 @@ if ($database->getErrors()) {
 
                         $data = ['API' => 'API', 'ALIAS' => 'ALIAS', 'CLASS' => $class, 'METHOD' => $method];
                         $usertype = str_replace('-', '_', strtoupper($decoded->roles[0]));
-                        foreach(FRAMEWORK['AUTH']['USERS'] as $type => $users){
+                        foreach(FRAMEWORK['AUTH']['SSO_USERS_OVERWRITE'] as $type => $users){
                             foreach ($users as $id) {
                                 if ($id == $user->uid) $usertype = $type;
                             }
                         }
                         $user->usertype = $usertype;
+
+                        debug($user, DEBUGTYPE_WARNING);
 
                         // PERMANENT_ALLOWED_API from config-sso.inc.php
                         foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right){
@@ -136,7 +138,7 @@ if ($database->getErrors()) {
                             }
                         }
 
-                        // Usertype = SYSADMIN
+
                         if ($usertype == 'SYSADMIN'){
                             debug('Allow Access - Usertype "sysadmin" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_SUCCESS);
                             $allowAccess = true;
@@ -146,33 +148,33 @@ if ($database->getErrors()) {
                         if (!$allowAccess){
                             $database = Database::create('APP');
                             $result = $database->query("SELECT RGID, name, class, method FROM
-                            (SELECT
-                            r.RGID,
-                            r.name,
-                            r2.class,
-                            r2.method
-                            FROM rights AS r
-                            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                            LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
-                            LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
-                            WHERE ru.usertype = :USERTYPE AND r2.type = :API AND r.type = :ALIAS AND r2.class = :CLASS AND r2.method = :METHOD
-                            UNION ALL
-                            SELECT
-                            r.RGID,
-                            r.name,
-                            r.class,
-                            r.method
-                            FROM rights AS r
-                            LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
-                            LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                            WHERE ru.usertype = :USERTYPE AND r.type = :API  AND r.class = :CLASS AND r.method = :METHOD
-                            ) t
-                            GROUP BY name", [
-                                'USERTYPE' => $user->usertype,
-                                'API' => 'API',
-                                'ALIAS' => 'ALIAS',
-                                'CLASS' => $class,
-                                'METHOD' => $method
+                                (SELECT
+                                r.RGID,
+                                r.name,
+                                r2.class,
+                                r2.method
+                                FROM rights AS r
+                                LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                                LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
+                                LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
+                                WHERE ru.usertype = :USERTYPE AND r2.type = :API AND r.type = :ALIAS AND r2.class = :CLASS AND r2.method = :METHOD
+                                UNION ALL
+                                SELECT
+                                r.RGID,
+                                r.name,
+                                r.class,
+                                r.method
+                                FROM rights AS r
+                                LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
+                                LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
+                                WHERE ru.usertype = :USERTYPE AND r.type = :API  AND r.class = :CLASS AND r.method = :METHOD
+                                ) t
+                                GROUP BY name", [
+                                    'USERTYPE' => $user->usertype,
+                                    'API' => 'API',
+                                    'ALIAS' => 'ALIAS',
+                                    'CLASS' => $class,
+                                    'METHOD' => $method
                             ]);
 
                             $count = $result['count'];

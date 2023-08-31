@@ -23,15 +23,13 @@ export class RightService {
     }
 
     loadRights(): Observable<any> {
-        console.log('loadRights');
-        if (!this.rights) {
+        if (!this.rights || (this.rights && this.rights.length == 0)) {
             return this.dataService
                 .request('framework.Right/loadCurrentRights')
                 .pipe(
                     map(response => {
                         this.rights = response.rights;
                         if (response.rights) {
-                            console.log(response.rights);
                             return true;
                         } else {
                             console.error('no rights found/loaded')
@@ -40,7 +38,6 @@ export class RightService {
                     })
                 );
         } else {
-            console.log(this.rights);
             return of(true);
         }
     }

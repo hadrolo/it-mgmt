@@ -4,7 +4,7 @@ import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 import {LogService} from './log.service';
 import * as StackTrace from 'stacktrace-js';
-import {SettingsService} from './settings.service';
+import {FwMode, SettingsService} from './settings.service';
 import {TranslateService} from '@ngx-translate/core';
 import {UserService} from '../modules/auth/user.service';
 
@@ -25,9 +25,6 @@ export class DataService {
     request(action: string, dataObject: object = null): Observable<any> {
         const stackFrames = StackTrace.getSync();
 
-        console.log(action);
-        console.log(dataObject);
-
         let componentName = null;
         let methodName = null;
 
@@ -46,7 +43,7 @@ export class DataService {
             })
             .pipe(
                 map((response: any) => {
-                    if(response?.overrideUserType){
+                    if(this.settingsService.frameworkSettings.frameworkMode == FwMode.SSO && response?.overrideUserType){
                         this.userService.currentUser.usertype = response?.overrideUserType;
                     }
 

@@ -6,6 +6,7 @@ import {FwFormViewMode} from '../../form/form.interfaces';
 import {SettingsService} from '../../../services/settings.service';
 import {SeoService} from '../../../services/seo.service';
 import {TranslateService} from '@ngx-translate/core';
+import {RightService} from '../right.service';
 
 interface FwRightGroupOverviewSetting {
     formViewMode: FwFormViewMode;
@@ -88,10 +89,12 @@ export class RightGrouprightSetupComponent implements OnInit {
         private settingsService: SettingsService,
         private seoService: SeoService,
         private translateService: TranslateService,
+        private rightService: RightService,
     ) {
     }
 
     ngOnInit(): void {
+        console.log(this.rightService.rights);
         this.seoService.setTitle(this.settingsService.frameworkSettings.appName + ' - ' + this.translateService.instant('FW.RIGHT.USERTYPE_RIGHT_TITLE'));
         this.view.data.usertypeList = [];
         Object.values(this.UserType).forEach(elem => {
@@ -105,6 +108,7 @@ export class RightGrouprightSetupComponent implements OnInit {
     }
 
     getAllRights(): void {
+        console.log(this.view);
         this.dataService.request('framework.Right/loadAllUsertypeRights', {
             usertype: this.view.data.selectedUsertype,
             rightType: this.view.data.selectedRightType,
