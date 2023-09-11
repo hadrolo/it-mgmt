@@ -18,27 +18,7 @@ class Auth extends Controller {
      * Creates a token and populates user data based on configuration.
      */
     public function login() {
-        $default_module = FRAMEWORK['AUTH']['MODULES']['DEFAULT'];
-
-        if (isset(DB['UNIVERSE'])) {
-            // check if the user is assigned to the App
-            $user = $this->db->query("SELECT * FROM " . $default_module['TABLE_NAME'] . " AS u
-                LEFT JOIN universe.M_user_client_app AS muca ON muca.UID = u.UID AND muca.APPID = :APPID
-                WHERE u." . $default_module['FIELD_LOGIN'] . " = :USERNAME", ['USERNAME' => $this->data->username, 'APPID' => APP_NAME]);
-
-            if (is_null($user['data'][0]['APPID'])) {
-                // User not found
-                Log::write(null, 'login-error', 'User not in M_user_client_app ("'.$this->data->username.'")', 'UserService.ts', 'login()', 'AuthController.php', 'login()');
-
-                $this->response->auth = [
-                    "success" => false,
-                    "message" => "user-not-found",
-                ];
-                return;
-            }
-        } else {
-            $user = $this->db->query("SELECT * FROM " . $default_module['TABLE_NAME'] . " WHERE " . $default_module['FIELD_LOGIN'] . " = :USERNAME", ['USERNAME' => $this->data->username]);
-        }
+        $user = $this->db->query("SELECT * FROM " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " WHERE " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['FIELD_LOGIN'] . " = :USERNAME", ['USERNAME' => $this->data->username]);
 
         if ($user['count'] == 0) {
             // User not found
@@ -75,7 +55,7 @@ class Auth extends Controller {
                     ];
 
                     $this->response->jwt_token = TokenFactory::newToken($user['data'][0]['UID']);
-                    $this->populateUserData($default_module, $user['data'][0]['UID']);
+                    $this->populateUserData($user['data'][0]['UID']);
                 }
             }
         }
@@ -109,7 +89,6 @@ class Auth extends Controller {
     }
 
     public function isLoggedIn() {
-        $default_module = FRAMEWORK['AUTH']['MODULES']['DEFAULT'];
 
         if ($this->data->accessToken == null || $this->data->refreshToken == null) {
             $this->logout();
@@ -119,7 +98,7 @@ class Auth extends Controller {
 
                 if ($decoded->data->UID !== 0) {
                     $this->response->anonymous = false;
-                    $this->populateUserData($default_module, $decoded->data->UID);
+                    $this->populateUserData($decoded->data->UID);
                 } else {
                     $this->response->anonymous = true;
                     $this->nobodyUser();
@@ -132,7 +111,7 @@ class Auth extends Controller {
                     if ($decoded_refresh->data->UID !== 0) {
                         $this->response->anonymous = false;
                         $this->response->jwt_token = TokenFactory::newToken($decoded_refresh->data->UID);
-                        $this->populateUserData($default_module, $decoded_refresh->data->UID);
+                        $this->populateUserData($decoded_refresh->data->UID);
                     } else {
                         $this->response->anonymous = true;
                         $this->response->jwt_token = TokenFactory::newToken(0);
@@ -145,13 +124,13 @@ class Auth extends Controller {
         }
     }
 
-    private function populateUserData($default_module, $UID): void {
-        $this->db->query("UPDATE " . $default_module['TABLE_NAME'] . " SET last_login = NOW() WHERE UID = ?", [$UID]);
+    private function populateUserData($UID): void {
+        $this->db->query("UPDATE " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " SET last_login = NOW() WHERE UID = ?", [$UID]);
 
         // merge user data
-        $this->response->user = $this->db->query("SELECT public_id,last_login,active,UID," . $default_module['USERTYPE']['NAME']
-            . (count($default_module['RESPONSE_FIELDS']) > 0 ? "," . join(",", array_keys($default_module['RESPONSE_FIELDS'])) : "")
-            . " FROM " . $default_module['TABLE_NAME'] . " WHERE UID = ?", [$UID])['data'][0];
+        $this->response->user = $this->db->query("SELECT public_id,last_login,active,UID," . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['USERTYPE']['NAME']
+            . (count(FRAMEWORK['AUTH']['MODULES']['DEFAULT']['RESPONSE_FIELDS']) > 0 ? "," . join(",", array_keys(FRAMEWORK['AUTH']['MODULES']['DEFAULT']['RESPONSE_FIELDS'])) : "")
+            . " FROM " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " WHERE UID = ?", [$UID])['data'][0];
 
         foreach (FRAMEWORK['AUTH']['MODULES'] as $key => $module) {
             if ($key != 'DEFAULT') {

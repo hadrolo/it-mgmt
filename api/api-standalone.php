@@ -258,6 +258,7 @@ function guard($module, $class, $method, $request)
             }
 
             if ($allowAccess) {
+                if (!isset($database)) $database = Database::create('APP');
                 $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
                 $object->$method();
                 $response = $object->getResponse();
