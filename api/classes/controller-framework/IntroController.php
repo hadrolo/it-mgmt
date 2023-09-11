@@ -3,7 +3,7 @@
 class Intro extends Controller {
 
     public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
-        $database = Database::create('DEFAULT');
+        $database = Database::create(FRAMEWORK['MODULES']['INTRO']['DB']);
 
         parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
@@ -18,7 +18,7 @@ class Intro extends Controller {
                 $data['COMPONENT'.$key] = $statement;
             }
 
-            $this->response->elements = $this->db->query("SELECT * FROM intro_data WHERE " . join(' OR ', $sql)." ORDER BY id", $data);
+            $this->response->elements = $this->db->query("SELECT * FROM ".FRAMEWORK['MODULES']['INTRO']['DB']['TABLE_NAME']." WHERE " . join(' OR ', $sql)." ORDER BY id", $data);
         } else {
             $this->response->elements = false;
         }

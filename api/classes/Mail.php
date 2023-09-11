@@ -37,17 +37,17 @@ class Mail
             */
             // $mail->SMTPDebug = 1;               // Enable verbose debug output
 
-            if (isset(FRAMEWORK['EMAIL'])) {
+            if (isset(FRAMEWORK['MODULES']['EMAIL'])) {
                 $mail->isSMTP();
-                $mail->Host = FRAMEWORK['EMAIL']['SMTP_SERVER'];          // Specify main and backup SMTP servers
-                $mail->SMTPAuth = FRAMEWORK['EMAIL']['SMTP_AUTH'];        // Enable SMTP authentication
-                if (isset(FRAMEWORK['EMAIL']['SMTP_AUTH'])) {
-                    $mail->Username = FRAMEWORK['EMAIL']['SMTP_USER'];        // SMTP username
-                    $mail->Password = FRAMEWORK['EMAIL']['SMTP_PASS'];        // SMTP password
+                $mail->Host = FRAMEWORK['MODULES']['EMAIL']['SMTP_SERVER'];          // Specify main and backup SMTP servers
+                $mail->SMTPAuth = FRAMEWORK['MODULES']['EMAIL']['SMTP_AUTH'];        // Enable SMTP authentication
+                if (isset(FRAMEWORK['MODULES']['EMAIL']['SMTP_AUTH'])) {
+                    $mail->Username = FRAMEWORK['MODULES']['EMAIL']['SMTP_USER'];        // SMTP username
+                    $mail->Password = FRAMEWORK['MODULES']['EMAIL']['SMTP_PASS'];        // SMTP password
                 }
-                $mail->SMTPSecure = FRAMEWORK['EMAIL']['SMTP_SECURE'];    // Enable TLS encryption, `ssl` also accepted
-                $mail->Port = FRAMEWORK['EMAIL']['SMTP_PORT'];            // TCP port to connect to
-                $mail->SMTPAutoTLS = FRAMEWORK['EMAIL']['SMTPAutoTLS'];
+                $mail->SMTPSecure = FRAMEWORK['MODULES']['EMAIL']['SMTP_SECURE'];    // Enable TLS encryption, `ssl` also accepted
+                $mail->Port = FRAMEWORK['MODULES']['EMAIL']['SMTP_PORT'];            // TCP port to connect to
+                $mail->SMTPAutoTLS = FRAMEWORK['MODULES']['EMAIL']['SMTPAutoTLS'];
             }
 
             $mail->Priority = $priority;
@@ -129,8 +129,8 @@ class Mail
 
             $result = $mail->send();
 
-            if (FRAMEWORK['EMAIL']['ENABLE_LOG']) {
-                $db->query("INSERT INTO " . FRAMEWORK['EMAIL']['TABLE_NAME'] . " (UID, from_name, from_mail, recipients, subject, message, type, ical_data, cc, bcc, attachments, embedded_images, priority, result) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
+            if (FRAMEWORK['MODULES']['EMAIL']['ENABLE_LOG']) {
+                $db->query("INSERT INTO " . FRAMEWORK['MODULES']['EMAIL']['TABLE_NAME'] . " (UID, from_name, from_mail, recipients, subject, message, type, ical_data, cc, bcc, attachments, embedded_images, priority, result) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [
                     $UID, $fromName, $fromMail, join(",", $recipients), $subject, $message, $type, $ical_data != null ? json_encode($ical_data) : null, count($cc) > 0 ? join(",", $cc) : null, count($bcc) > 0 ? join(",", $bcc) : null, count($attachments), count($embeddedImages), $priority, $result
                 ]);
             }

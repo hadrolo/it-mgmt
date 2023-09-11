@@ -6,9 +6,9 @@ class Log
     public static function write($UID, $type, $text, $client_component, $client_method, $server_controller, $server_action): array
     {
 
-        $db = Database::create(FRAMEWORK['LOG']['DB']);
+        $db = Database::create(FRAMEWORK['MODULES']['LOG']['DB']);
 
-        return $db->query("insert into " . FRAMEWORK['LOG']['TABLE_NAME'] . "
+        return $db->query("insert into " . FRAMEWORK['MODULES']['LOG']['TABLE_NAME'] . "
             (UID, APPID, type, text, environment, c_component, c_method, s_controller, s_action, ip, browser, created) values (
             :UID, :APPID, :type, :text, :environment, :c_component, :c_method, :s_controller, :s_action, :ip, :browser, NOW())", [
             'UID' => $UID,

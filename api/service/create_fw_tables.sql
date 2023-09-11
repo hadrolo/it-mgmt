@@ -157,6 +157,29 @@ CREATE TABLE `rights_alias`
     CONSTRAINT `FK_RID_client_M_rights_alias` FOREIGN KEY (`RID_client`) REFERENCES `rights` (`RID`) ON UPDATE RESTRICT ON DELETE RESTRICT
 );
 
+INSERT INTO `rights_alias` (`RID_alias`, `RID_client`) VALUES
+                                                           (82, 77),
+                                                           (82, 57),
+                                                           (82, 47),
+                                                           (82, 49),
+                                                           (82, 50),
+                                                           (82, 61),
+                                                           (82, 51),
+                                                           (82, 59),
+                                                           (82, 45),
+                                                           (82, 44),
+                                                           (82, 46),
+                                                           (82, 52),
+                                                           (82, 62),
+                                                           (82, 53),
+                                                           (82, 55),
+                                                           (82, 56),
+                                                           (82, 54),
+                                                           (82, 58),
+                                                           (82, 48),
+                                                           (82, 60),
+                                                           (82, 63);
+
 
 /* Rechte 03 - Rechte die nur auf Benutzerebene angewendet werden (noch nicht fertig) --------------------------------------------------------------------------------------------------------------- */
 CREATE TABLE `rights_users`
@@ -373,3 +396,9 @@ INSERT INTO rights (RID, RGID, `type`, name, module, class, `method`, i18n, desc
 VALUES (77, 'Layout', 'CLIENT', 'openRights', '', '', '', NULL, 'Sidebar - Open Right Mgmt');
 INSERT INTO rights (RID, RGID, `type`, name, module, class, `method`, i18n, description)
 VALUES (78, 'Dashboard', 'CLIENT', 'openSettings', '', '', '', NULL, 'Sidebar - Open Right Mgmt');
+INSERT INTO rights (RID, RGID, `type`, name, module, class, `method`, i18n, description)
+VALUES (80, 'Dashboard', 'CLIENT', 'openSettings', 'FRAMEWORK', NULL, NULL, NULL, 'Toolbar - openSettings');
+INSERT INTO rights (RID, RGID, `type`, name, module, class, `method`, i18n, description)
+VALUES (81, 'User', 'CLIENT', 'openUserList', 'FRAMEWORK', NULL, '', NULL, 'Sidebar - Open Userlist');
+INSERT INTO `rights` (`RID`, `RGID`, `type`, `name`, `module`, `class`, `method`, `i18n`, `description`)
+VALUES (82, 'Right', 'ALIAS', 'rwRights', 'FRAMEWORK', NULL, NULL, NULL, 'rechte erstellen/bearbeiten ');

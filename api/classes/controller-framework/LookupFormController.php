@@ -3,7 +3,7 @@
 class LookupForm extends Controller {
 
     public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
-        $database = Database::create('DEFAULT');
+        $database = Database::create('APP');
         parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 

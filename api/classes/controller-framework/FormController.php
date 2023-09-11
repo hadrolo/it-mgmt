@@ -10,7 +10,7 @@ class Form extends Controller {
             $db = strtoupper($parts[0]);
             $data->config->tableName = $parts[1];
         } else {
-            $db = 'DEFAULT';
+            $db = 'APP';
         }
         $this->dbName = DB[$db]['DB_NAME'];
         $database = Database::create($db);

@@ -9,7 +9,7 @@ require_once 'classes/TokenFactory.php';
 class Auth extends Controller {
 
     public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null) {
-        $database = Database::create('DEFAULT');
+        $database = Database::create(FRAMEWORK['MODULES']['AUTH']['DB']);
         parent::__construct($database, $data, $componentName, $methodName, $currentUser);
     }
 
@@ -18,7 +18,7 @@ class Auth extends Controller {
      * Creates a token and populates user data based on configuration.
      */
     public function login() {
-        $user = $this->db->query("SELECT * FROM " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " WHERE " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['FIELD_LOGIN'] . " = :USERNAME", ['USERNAME' => $this->data->username]);
+        $user = $this->db->query("SELECT * FROM " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " WHERE " . FRAMEWORK['MODULES']['AUTH']['FIELD_LOGIN'] . " = :USERNAME", ['USERNAME' => $this->data->username]);
 
         if ($user['count'] == 0) {
             // User not found
@@ -63,7 +63,7 @@ class Auth extends Controller {
 
     public function logout() {
         try {
-            $decoded = JWT::decode($this->data->accessToken, FRAMEWORK['AUTH']['JWT_KEY'], array('HS256'));
+            $decoded = JWT::decode($this->data->accessToken, FRAMEWORK['MODULES']['AUTH']['JWT_KEY'], array('HS256'));
             Log::write($decoded->data->UID, 'logout', 'User logged out successfully', 'UserService.ts', 'logout()', 'AuthController.php', 'logout()');
         } catch (ExpiredException $e) {
             // do nothing, we are logging out anyway
@@ -77,12 +77,10 @@ class Auth extends Controller {
     // NOTE: This function also exists in TokenController
     private function nobodyUser() {
         $userData['UID'] = 0;
-        foreach (FRAMEWORK['AUTH']['MODULES'] as $key => $module) {
-            $userData[$module['USERTYPE']['NAME']] = 'nobody';
-            foreach ($module['RESPONSE_FIELDS'] as $field => $value) {
-                if ($value != null) {
-                    $userData[$field] = $value;
-                }
+        $userData[FRAMEWORK['MODULES']['AUTH']['USERTYPE']['NAME']] = 'nobody';
+        foreach (FRAMEWORK['MODULES']['AUTH']['RESPONSE_FIELDS'] as $field => $value) {
+            if ($value != null) {
+                $userData[$field] = $value;
             }
         }
         $this->response->nobodyuser = $userData;
@@ -94,7 +92,7 @@ class Auth extends Controller {
             $this->logout();
         } else {
             try {
-                $decoded = JWT::decode($this->data->accessToken, FRAMEWORK['AUTH']['JWT_KEY'], array('HS256'));
+                $decoded = JWT::decode($this->data->accessToken, FRAMEWORK['MODULES']['AUTH']['JWT_KEY'], array('HS256'));
 
                 if ($decoded->data->UID !== 0) {
                     $this->response->anonymous = false;
@@ -106,7 +104,7 @@ class Auth extends Controller {
             } catch (ExpiredException $e) {
                 // if the access token is expired, try to decode the refresh token and if that works, generate new tokens
                 try {
-                    $decoded_refresh = JWT::decode($this->data->refreshToken, FRAMEWORK['AUTH']['JWT_KEY'], array('HS256'));
+                    $decoded_refresh = JWT::decode($this->data->refreshToken, FRAMEWORK['MODULES']['AUTH']['JWT_KEY'], array('HS256'));
 
                     if ($decoded_refresh->data->UID !== 0) {
                         $this->response->anonymous = false;
@@ -125,14 +123,14 @@ class Auth extends Controller {
     }
 
     private function populateUserData($UID): void {
-        $this->db->query("UPDATE " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " SET last_login = NOW() WHERE UID = ?", [$UID]);
+        $this->db->query("UPDATE " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " SET last_login = NOW() WHERE UID = ?", [$UID]);
 
         // merge user data
-        $this->response->user = $this->db->query("SELECT public_id,last_login,active,UID," . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['USERTYPE']['NAME']
-            . (count(FRAMEWORK['AUTH']['MODULES']['DEFAULT']['RESPONSE_FIELDS']) > 0 ? "," . join(",", array_keys(FRAMEWORK['AUTH']['MODULES']['DEFAULT']['RESPONSE_FIELDS'])) : "")
-            . " FROM " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " WHERE UID = ?", [$UID])['data'][0];
+        $this->response->user = $this->db->query("SELECT public_id,last_login,active,UID," . FRAMEWORK['MODULES']['AUTH']['USERTYPE']['NAME']
+            . (count(FRAMEWORK['MODULES']['AUTH']['RESPONSE_FIELDS']) > 0 ? "," . join(",", array_keys(FRAMEWORK['MODULES']['AUTH']['RESPONSE_FIELDS'])) : "")
+            . " FROM " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " WHERE UID = ?", [$UID])['data'][0];
 
-        foreach (FRAMEWORK['AUTH']['MODULES'] as $key => $module) {
+      /*  foreach (FRAMEWORK['AUTH']['MODULES'] as $key => $module) {
             if ($key != 'DEFAULT') {
                 $database = Database::create($key);
                 $userdata = $database->query("SELECT * FROM " . $module['TABLE_NAME'] . " WHERE UID = ?", [$UID])['data'][0];
@@ -146,7 +144,7 @@ class Auth extends Controller {
                     $this->response->user[$dataname] = $datavalue;
                 }
             }
-        }
+        }*/
 
         // sort by key
         ksort($this->response->user);
@@ -155,8 +153,8 @@ class Auth extends Controller {
     public function resetPassword() {
         $hash = hash('sha256', mt_rand());
 
-        $this->response->update = $this->db->query("UPDATE " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " SET reset_hash = ?, reset_date = NOW() WHERE " . FRAMEWORK['AUTH']['PASSWORD_RESET']['FIELD_CHECK'] . " = ?", [$hash, $this->data->field_check]);
-        $email = $this->db->query("SELECT email FROM " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " WHERE " . FRAMEWORK['AUTH']['PASSWORD_RESET']['FIELD_CHECK'] . " = ?", [$this->data->field_check]);
+        $this->response->update = $this->db->query("UPDATE " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " SET reset_hash = ?, reset_date = NOW() WHERE " . FRAMEWORK['AUTH']['PASSWORD_RESET']['FIELD_CHECK'] . " = ?", [$hash, $this->data->field_check]);
+        $email = $this->db->query("SELECT email FROM " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " WHERE " . FRAMEWORK['AUTH']['PASSWORD_RESET']['FIELD_CHECK'] . " = ?", [$this->data->field_check]);
 
         if ($email['count'] == 1) {
             $email = explode(",", $email['data'][0]['email'])[0];
@@ -175,12 +173,12 @@ class Auth extends Controller {
     public function updatePassword() {
         $password = password_hash($this->data->password, PASSWORD_DEFAULT);
 
-        $query = $this->db->query("UPDATE " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " SET reset_hash = null, reset_date = null, password = ? WHERE reset_hash = ? AND NOW() < DATE_ADD(reset_date, INTERVAL " . FRAMEWORK['AUTH']['PASSWORD_RESET']['EXPIRATION_TIME'] . " second)", [$password, $this->data->hash]);
+        $query = $this->db->query("UPDATE " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " SET reset_hash = null, reset_date = null, password = ? WHERE reset_hash = ? AND NOW() < DATE_ADD(reset_date, INTERVAL " . FRAMEWORK['AUTH']['PASSWORD_RESET']['EXPIRATION_TIME'] . " second)", [$password, $this->data->hash]);
         $this->response->error = $query['affectedRows'] == 0;
     }
 
     public function checkHash() {
-        $hash = $this->db->query("SELECT reset_hash FROM " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " WHERE reset_hash = ? AND NOW() < DATE_ADD(reset_date, INTERVAL " . FRAMEWORK['AUTH']['PASSWORD_RESET']['EXPIRATION_TIME'] . " second)", [$this->data->hash]);
+        $hash = $this->db->query("SELECT reset_hash FROM " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " WHERE reset_hash = ? AND NOW() < DATE_ADD(reset_date, INTERVAL " . FRAMEWORK['AUTH']['PASSWORD_RESET']['EXPIRATION_TIME'] . " second)", [$this->data->hash]);
         $this->response->error = $hash['count'] == 0;
     }
 
@@ -248,13 +246,13 @@ class Auth extends Controller {
     }
 
     public function checkRegistrationHash() {
-        $this->response->loginField = FRAMEWORK['AUTH']['MODULES']['DEFAULT']['FIELD_LOGIN'];
+        $this->response->loginField = FRAMEWORK['MODULES']['AUTH']['FIELD_LOGIN'];
         $result = $this->db->query("SELECT * FROM users WHERE reset_hash = ?", [$this->data->hash]);
 
         if ($result['count'] > 0) {
             if (Carbon::createFromFormat("Y-m-d H:i:s", $result['data'][0]['reset_date'])->greaterThan(Carbon::now())) {
                 $this->db->query("UPDATE users SET active = 1, reset_hash = null, reset_date = null WHERE reset_hash = ?", [$this->data->hash]);
-                $this->response->loginValue = $result['data'][0][FRAMEWORK['AUTH']['MODULES']['DEFAULT']['FIELD_LOGIN']];
+                $this->response->loginValue = $result['data'][0][FRAMEWORK['MODULES']['AUTH']['FIELD_LOGIN']];
                 $this->response->checked = true;
             } else {
                 Log::write(null, 'registration-error', 'Hash expired "' . $this->data->hash . '"', $this->componentName, $this->methodName, 'AuthController.php', 'checkRegistrationHash()');

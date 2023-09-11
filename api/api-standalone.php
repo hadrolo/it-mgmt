@@ -132,7 +132,7 @@ function guard($module, $class, $method, $request)
     if (isset($headers['Authorization'])) $auth = $headers['Authorization']; // Linux
 
     try {
-        $decoded = $auth != null ? JWT::decode(explode(" ", $auth)[1], FRAMEWORK['AUTH']['JWT_KEY'], array('HS256')) : null;
+        $decoded = $auth != null ? JWT::decode(explode(" ", $auth)[1], FRAMEWORK['MODULES']['AUTH']['JWT_KEY'], array('HS256')) : null;
         if ($decoded != null) {
 
             $request_info['currentUID'] = $decoded->data->UID;
@@ -146,22 +146,22 @@ function guard($module, $class, $method, $request)
             $user = new stdClass();
             //$decoded->data->UID = 1; //todo: overwrite löschen! <----------------------------------------------------------------------------------------------------------------------------------------------------
 
-            foreach (FRAMEWORK['AUTH']['MODULES'] as $key => $mod) {
-                if (intval($decoded->data->UID) == 0) {
-                    $user->uid = null;
-                    $user->public_uid = null;
-                    $user->fw_mode = 'STANDALONE';
-                    $user->family_name = null;
-                    $user->given_name = null;
-                    $user->name = null;
-                    $user->email = null;
-                    $user->uid = null;
-                    $user->usertype = 'NOBODY';
-                    // $userData[$mod['USERTYPE']['NAME']] = 'nobody';
-                    // $request_info[$mod['USERTYPE']['NAME']] = 'nobody';
-                } else {
-                    $database = Database::create($key);
-                    $userRequest = $database->query("SELECT u.UID,
+
+            if (intval($decoded->data->UID) == 0) {
+                $user->uid = null;
+                $user->public_uid = null;
+                $user->fw_mode = 'STANDALONE';
+                $user->family_name = null;
+                $user->given_name = null;
+                $user->name = null;
+                $user->email = null;
+                $user->uid = null;
+                $user->usertype = 'NOBODY';
+                // $userData[$mod['USERTYPE']['NAME']] = 'nobody';
+                // $request_info[$mod['USERTYPE']['NAME']] = 'nobody';
+            } else {
+                $database = Database::create(FRAMEWORK['MODULES']['AUTH']['DB']);
+                $userRequest = $database->query("SELECT u.UID,
                         u.public_id,
                         u.CID,
                         u.language,
@@ -170,38 +170,37 @@ function guard($module, $class, $method, $request)
                         u.firstname,
                         u.lastname,
                         u.email
-                        FROM " . $mod['TABLE_NAME'] . " as u WHERE UID = ?", [$decoded->data->UID]);
+                        FROM " .FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " as u WHERE UID = ?", [$decoded->data->UID]);
 
-                    if ($userRequest['count'] > 0) {
-                        $user->uid = $userRequest['data'][0]['UID'];
-                        $user->cid = $userRequest['data'][0]['CID'];
-                        $user->public_uid = $userRequest['data'][0]['public_id'];
-                        $user->fw_mode = 'STANDALONE';
-                        $user->family_name = $userRequest['data'][0]['lastname'];
-                        $user->given_name = $userRequest['data'][0]['firstname'];
-                        $user->name = $userRequest['data'][0]['lastname'] . ' ' . $userRequest['data'][0]['firstname'];
-                        $user->email = $userRequest['data'][0]['email'];
-                        $user->usertype = strtoupper($userRequest['data'][0]['usertype']);
-                    } else {
-                        debug('ACCESS DENIED - Token UID not found in Table', DEBUGTYPE_ERROR);
-                        Log::write(
-                            $decoded->data->UID,
-                            'access-violation',
-                            'Class: api.php | ACCESS DENIED - Token UID not found in Table',
-                            $request->componentName,
-                            $request->methodName,
-                            $class . 'Controller.php',
-                            $method . '()');
-                        $response->errors[] = 'ACCESS DENIED';
-                    }
-
-                    // $userData[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
-                    // $request_info[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
+                if ($userRequest['count'] > 0) {
+                    $user->uid = $userRequest['data'][0]['UID'];
+                    $user->cid = $userRequest['data'][0]['CID'];
+                    $user->public_uid = $userRequest['data'][0]['public_id'];
+                    $user->fw_mode = 'STANDALONE';
+                    $user->family_name = $userRequest['data'][0]['lastname'];
+                    $user->given_name = $userRequest['data'][0]['firstname'];
+                    $user->name = $userRequest['data'][0]['lastname'] . ' ' . $userRequest['data'][0]['firstname'];
+                    $user->email = $userRequest['data'][0]['email'];
+                    $user->usertype = strtoupper($userRequest['data'][0]['usertype']);
+                } else {
+                    debug('ACCESS DENIED - Token UID not found in Table', DEBUGTYPE_ERROR);
+                    Log::write(
+                        $decoded->data->UID,
+                        'access-violation',
+                        'Class: api.php | ACCESS DENIED - Token UID not found in Table',
+                        $request->componentName,
+                        $request->methodName,
+                        $class . 'Controller.php',
+                        $method . '()');
+                    $response->errors[] = 'ACCESS DENIED';
                 }
+
+                // $userData[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
+                // $request_info[$mod['USERTYPE']['NAME']] = $user[$mod['USERTYPE']['NAME']];
             }
 
             // PERMANENT_ALLOWED_API from config-sso.inc.php
-            foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right) {
+            foreach (FRAMEWORK['MODULES']['RIGHT']['PERMANENT_ALLOWED_API'] as $right) {
                 $x = explode('/', $right);
                 if ($class == $x[0] && $method == $x[1]) {
                     debug('PERMANENT_ALLOWED_API | API: ' . $class . '/' . $method . '()', DEBUGTYPE_SUCCESS);
@@ -216,7 +215,7 @@ function guard($module, $class, $method, $request)
             }
 
             if (!$allowAccess) {
-                $database = Database::create('APP');
+                $database = Database::create(FRAMEWORK['MODULES']['RIGHT']['DB']);
                 $result = $database->query("SELECT RGID, name, class, method FROM
                     (SELECT
                     r.RGID,

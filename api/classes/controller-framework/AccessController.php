@@ -6,7 +6,7 @@ class Access extends Controller {
         $this->response->apis = array_keys(CONTROLLER);
 
         if (count(FRAMEWORK['AUTH']['MODULES']) == 1) {
-            $this->response->userTypes = FRAMEWORK['AUTH']['MODULES']['DEFAULT']['USERTYPE']['ROLES'];
+            $this->response->userTypes = FRAMEWORK['MODULES']['AUTH']['USERTYPE']['ROLES'];
         } else {
             $this->response->userTypes = [];
 

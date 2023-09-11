@@ -23,7 +23,7 @@ class Database
 
     /**
      * Create a database instance with a key
-     * Example: Database::create('DEFAULT')
+     * Example: Database::create('APP')
      *
      * @param string $key
      * @return Database|null

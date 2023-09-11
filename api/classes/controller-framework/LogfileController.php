@@ -3,7 +3,7 @@
 class Logfile extends Controller {
 
     public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null) {
-        $database = Database::create(FRAMEWORK['LOG']['DB']);
+        $database = Database::create(FRAMEWORK['MODULES']['LOG']['DB']);
         parent::__construct($database, $data, $componentName, $methodName);
     }
 
@@ -20,9 +20,9 @@ class Logfile extends Controller {
     }
 
     public function getEntry() {
-        $this->response->log = $this->db->query("SELECT " . FRAMEWORK['LOG']['TABLE_NAME'] . ".*, " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . "." . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['FIELD_LOGIN']
-            . " FROM " . FRAMEWORK['LOG']['TABLE_NAME']
-            . " LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " ON " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . ".UID = " . FRAMEWORK['LOG']['TABLE_NAME'] . ".UID"
+        $this->response->log = $this->db->query("SELECT " . FRAMEWORK['MODULES']['LOG']['TABLE_NAME'] . ".*, " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . "." . FRAMEWORK['MODULES']['AUTH']['FIELD_LOGIN']
+            . " FROM " . FRAMEWORK['MODULES']['LOG']['TABLE_NAME']
+            . " LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " ON " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . ".UID = " . FRAMEWORK['MODULES']['LOG']['TABLE_NAME'] . ".UID"
             . " WHERE ULID = ?", [$this->data->ULID])['data'][0];
     }
 

@@ -121,7 +121,7 @@ if ($database->getErrors()) {
 
                         $data = ['API' => 'API', 'ALIAS' => 'ALIAS', 'CLASS' => $class, 'METHOD' => $method];
                         $usertype = str_replace('-', '_', strtoupper($decoded->roles[0]));
-                        foreach(FRAMEWORK['AUTH']['SSO_USERS_OVERWRITE'] as $type => $users){
+                        foreach(FRAMEWORK['MODULES']['AUTH']['SSO_USERS_OVERWRITE'] as $type => $users){
                             foreach ($users as $id) {
                                 if ($id == $user->uid) $usertype = $type;
                             }
@@ -131,7 +131,7 @@ if ($database->getErrors()) {
                         debug($user, DEBUGTYPE_WARNING);
 
                         // PERMANENT_ALLOWED_API from config-sso.inc.php
-                        foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right){
+                        foreach (FRAMEWORK['MODULES']['RIGHT']['PERMANENT_ALLOWED_API'] as $right){
                             $x=explode('/', $right);
                             if ($class==$x[0] && $method==$x[1]){
                                 debug('PERMANENT_ALLOWED_API | API: ' . $class . '/' . $method . '()', DEBUGTYPE_SUCCESS);
@@ -147,7 +147,7 @@ if ($database->getErrors()) {
 
                         // Check rights from database
                         if (!$allowAccess){
-                            $database = Database::create('APP');
+                            $database = Database::create(FRAMEWORK['MODULES']['RIGHT']['DB']);
                             $result = $database->query("SELECT RGID, name, class, method FROM
                                 (SELECT
                                 r.RGID,

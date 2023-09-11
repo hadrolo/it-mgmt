@@ -11,7 +11,7 @@ class File extends Controller
 
     public function __construct(Database $database = null, $data = null, $componentName = null, $methodName = null, $currentUser = null)
     {
-        $database = Database::create(FRAMEWORK['FILE']['GLOBAL']['DB']);
+        $database = Database::create(FRAMEWORK['MODULES']['FILE']['GLOBAL']['DB']);
         parent::__construct($database, $data, $componentName, $methodName, $currentUser);
 
         if ($this->data && (property_exists($this->data, 'upload_post'))) {
@@ -36,7 +36,7 @@ class File extends Controller
      */
     private function getRealFilePath(string $image_size, string $path, string $name, string $extension, string $encrypted): string
     {
-        $realpath = FRAMEWORK['FILE']['GLOBAL']['PATH'] . str_replace('/', DIRECTORY_SEPARATOR, $path) . $name;
+        $realpath = FRAMEWORK['MODULES']['FILE']['GLOBAL']['PATH'] . str_replace('/', DIRECTORY_SEPARATOR, $path) . $name;
 
         if ($image_size != 'orig') {
             $realpath .= "_" . $image_size;
@@ -89,22 +89,22 @@ class File extends Controller
             "missing" => "missing.png"
         ];
         $image = key_exists($extension, $mimeLookup) ? $mimeLookup[$extension] : 'file.png';
-        return 'data:image/png;base64,' . base64_encode(file_get_contents(FRAMEWORK['FILE']['GLOBAL']['PATH_MIME_PICS'] . $image));
+        return 'data:image/png;base64,' . base64_encode(file_get_contents(FRAMEWORK['MODULES']['FILE']['GLOBAL']['PATH_MIME_PICS'] . $image));
     }
 
     public function rotateImageSet()
     {
-        $file = $this->db->query("SELECT doctype, path, name, extension, mimetype, encrypted, width, height FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID = ?", [$this->data->FID])['data'][0];
+        $file = $this->db->query("SELECT doctype, path, name, extension, mimetype, encrypted, width, height FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID = ?", [$this->data->FID])['data'][0];
 
         // check if the file is an image
         if (in_array($file['mimetype'], ['image/png', 'image/jpeg', 'image/gif'])) {
-            foreach (FRAMEWORK['FILE']['DOCTYPES'][$file['doctype']]['IMAGE_RESIZE'] as $image_size) {
+            foreach (FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$file['doctype']]['IMAGE_RESIZE'] as $image_size) {
                 $realpath = $this->getRealFilePath($image_size, $file['path'], $file['name'], $file['extension'], $file['encrypted']);
 
                 $this->rotateImage($realpath, $file['mimetype'], $file['encrypted'], $this->data->degrees);
             }
 
-            $this->db->query('UPDATE ' . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . ' SET width = ?, height = ? WHERE FID = ?', [$file['height'], $file['width'], $this->data->FID]);
+            $this->db->query('UPDATE ' . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . ' SET width = ?, height = ? WHERE FID = ?', [$file['height'], $file['width'], $this->data->FID]);
             $this->response->rotate = true;
         } else {
             debug("Rotate: File is not an image!", DEBUGTYPE_WARNING);
@@ -182,7 +182,7 @@ class File extends Controller
     }
 
     /*public function checkPicExist() {
-        $this->response->filename = FRAMEWORK['FILE']['GLOBAL']['PATH'] . $this->data->filename;
+        $this->response->filename = FRAMEWORK['MODULES']['FILE']['GLOBAL']['PATH'] . $this->data->filename;
         if (strlen($this->data->filename) > 0) {
             $this->response->picexist = file_exists(DATA_PATH . $this->data->filename);
         } else {
@@ -192,17 +192,17 @@ class File extends Controller
 
     public function countAlreadyUploaded()
     {
-        $this->response->uploaded = $this->db->query("SELECT COUNT(*) AS count FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FK_NAME = ? AND FK_ID = ? AND FK_TABLE = ? AND doctype = ?",
+        $this->response->uploaded = $this->db->query("SELECT COUNT(*) AS count FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FK_NAME = ? AND FK_ID = ? AND FK_TABLE = ? AND doctype = ?",
             [$this->data->fk_name, $this->data->fk_id, $this->data->fk_table, $this->data->doctype])['data'][0]['count'];
     }
 
     public function getFile()
     {
         $res = $this->db->query("SELECT"
-            . (strlen(FRAMEWORK['AUTH']['MODULES']['DEFAULT']['FIELD_LOGIN']) > 0 ? " u." . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['FIELD_LOGIN'] . "," : "")
+            . (strlen(FRAMEWORK['MODULES']['AUTH']['FIELD_LOGIN']) > 0 ? " u." . FRAMEWORK['MODULES']['AUTH']['FIELD_LOGIN'] . "," : "")
             . " u.firstname, u.lastname, f.*"
-            . " FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " AS f"
-            . " LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['DB'] . "." . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.UID = f.create_UID"
+            . " FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " AS f"
+            . " LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['DB'] . "." . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS u ON u.UID = f.create_UID"
             . " WHERE f.FID = ?", [$this->data->FID]);
 
         if ($res['count'] > 0) {
@@ -238,8 +238,8 @@ class File extends Controller
     public function listUploadedFiles()
     {
         $this->response->files = $this->db->query("SELECT u.firstname, u.lastname, f.*
-                                                         FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " f
-                                                         LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['DB'] . '.' . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " u ON u.UID = f.create_UID
+                                                         FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " f
+                                                         LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['DB'] . '.' . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " u ON u.UID = f.create_UID
                                                          WHERE f.FK_NAME = ? AND f.FK_TABLE = ? AND f.doctype = ?" .
             ($this->data->fk_id != null ? " AND f.FK_ID = " . $this->data->fk_id : ""),
             [$this->data->fk_name, $this->data->fk_table, $this->data->doctype]);
@@ -284,19 +284,19 @@ class File extends Controller
         }, $this->data->fields);
         $values[] = $this->data->FID;
 
-        $this->response->update = $this->db->query("UPDATE " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " SET " . join(",", $columns) . " WHERE FID = ?", $values);
+        $this->response->update = $this->db->query("UPDATE " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " SET " . join(",", $columns) . " WHERE FID = ?", $values);
     }
 
     public function deleteFile()
     {
         if (isset($this->data->FID)) {
-            $file = $this->db->query("SELECT path, fullname, name FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID = ?", [$this->data->FID])['data'][0];
+            $file = $this->db->query("SELECT path, fullname, name FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID = ?", [$this->data->FID])['data'][0];
 
-            $realpath = FRAMEWORK['FILE']['GLOBAL']['PATH'] . str_replace('/', DIRECTORY_SEPARATOR, $file['path']);
+            $realpath = FRAMEWORK['MODULES']['FILE']['GLOBAL']['PATH'] . str_replace('/', DIRECTORY_SEPARATOR, $file['path']);
             $fullname = $realpath . $file['fullname'];
 
             if (!file_exists($fullname)) {
-                $this->db->query("DELETE FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
+                $this->db->query("DELETE FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
                 $this->writeLog(
                     'delete-file',
                     'File ' . $fullname . '" wurde gelöscht',
@@ -324,7 +324,7 @@ class File extends Controller
                             debug('File ' . $filename . '" konnte nicht gelöscht werden', DEBUGTYPE_ERROR);
                         }
                     }
-                    $result = $this->db->query("DELETE FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
+                    $result = $this->db->query("DELETE FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
                     if (isset($result['error']) && $result['error'] != null) {
                         $error[] = $result['error'];
                         $this->writeLog(
@@ -362,13 +362,13 @@ class File extends Controller
     public function deleteFileUid()
     {
         if (isset($this->data->FID)) {
-            $file = $this->db->query("SELECT path,fullname,name,doctype FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=? AND create_UID=?", [$this->data->FID, $this->currentUser->uid])['data'][0];
-            $realpath = FRAMEWORK['FILE']['GLOBAL']['PATH'] . str_replace('/', DIRECTORY_SEPARATOR, $file['path']);
+            $file = $this->db->query("SELECT path,fullname,name,doctype FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=? AND create_UID=?", [$this->data->FID, $this->currentUser->uid])['data'][0];
+            $realpath = FRAMEWORK['MODULES']['FILE']['GLOBAL']['PATH'] . str_replace('/', DIRECTORY_SEPARATOR, $file['path']);
             $fullname = $realpath . $file['fullname'];
             debug($fullname, DEBUGTYPE_INFO);
 
             if (!file_exists($fullname)) {
-                $this->db->query("DELETE FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
+                $this->db->query("DELETE FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
                 $this->writeLog(
                     'delete-file',
                     'File ' . $fullname . '" wurde gelöscht',
@@ -396,7 +396,7 @@ class File extends Controller
                             debug('File ' . $filename . '" konnte nicht gelöscht werden', DEBUGTYPE_ERROR);
                         }
                     }
-                    $result = $this->db->query("DELETE FROM " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
+                    $result = $this->db->query("DELETE FROM " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE FID=?", [$this->data->FID]);
                     if (isset($result['error']) && $result['error'] != null) {
                         $error[] = $result['error'];
                         $this->writeLog(
@@ -454,7 +454,7 @@ class File extends Controller
         }
 
         if (count($data) == 4) {
-            $res = $this->db->query("SELECT FID from " . FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE 1 " . $sql, $data);
+            $res = $this->db->query("SELECT FID from " . FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'] . " WHERE 1 " . $sql, $data);
             if (intval($res['count']) > 0) {
                 foreach ($res['data'] as $element) {
                     $this->data->FID = $element['FID'];
@@ -482,15 +482,15 @@ class File extends Controller
         }
 
         // Check FRAMEWORK config TODO: add debug message
-        if (!isset(FRAMEWORK['FILE']['GLOBAL']['PATH'])) return false;
-        if (!isset(FRAMEWORK['FILE']['DOCTYPES'])) return false;
-        foreach (FRAMEWORK['FILE']['DOCTYPES'] as $element) {
+        if (!isset(FRAMEWORK['MODULES']['FILE']['GLOBAL']['PATH'])) return false;
+        if (!isset(FRAMEWORK['MODULES']['FILE']['DOCTYPES'])) return false;
+        foreach (FRAMEWORK['MODULES']['FILE']['DOCTYPES'] as $element) {
             if (!isset($element['PATH'])) return false;
             if (!isset($element['IMAGE_RESIZE'])) return false;
         }
 
-        $doctype_path = FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['PATH'];
-        $path = FRAMEWORK['FILE']['GLOBAL']['PATH'] . $doctype_path;
+        $doctype_path = FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$this->data->doctype]['PATH'];
+        $path = FRAMEWORK['MODULES']['FILE']['GLOBAL']['PATH'] . $doctype_path;
 
         if (!isset($this->data->upload_files)) {
             $this->response->error = "No files uploaded";
@@ -516,7 +516,7 @@ class File extends Controller
             ])['data'][0]['sum'];
 
             // set target folder based on existing count
-            $folder = intval(intval($existing_count) / FRAMEWORK['FILE']['GLOBAL']['MAX_FOLDER_ITEMS']);
+            $folder = intval(intval($existing_count) / FRAMEWORK['MODULES']['FILE']['GLOBAL']['MAX_FOLDER_ITEMS']);
 
             // create folder if it does not exist already
             if (!is_dir($path . DIRECTORY_SEPARATOR . $folder)) {
@@ -538,7 +538,7 @@ class File extends Controller
                 $generatedName = $this->data->doctype . '_' . $this->data->fk_id . '_' . rand(1000000, 9999999);
 
                 // save original
-                if (in_array('orig', FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['IMAGE_RESIZE'])) {
+                if (in_array('orig', FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$this->data->doctype]['IMAGE_RESIZE'])) {
                     $subsets[] = $this->saveOriginal($this->data->doctype, $generatedName, $path, $path_parts['extension'], $folder, $fileTmpName, $mime);
                 }
 
@@ -551,7 +551,7 @@ class File extends Controller
                         $fileWidth = $fileDimensions[0];
                         $fileHeight = $fileDimensions[1];
 
-                        foreach (FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['IMAGE_RESIZE'] as $task) {
+                        foreach (FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$this->data->doctype]['IMAGE_RESIZE'] as $task) {
 
                             if ($task == 'orig') continue;
 
@@ -581,7 +581,7 @@ class File extends Controller
                             'lat' => $gps['latitude'],
                             'lng' => $gps['longitude'],
                             'path' => str_replace('\\', '/', $doctype_path . $folder . DIRECTORY_SEPARATOR),
-                            'fullname' => (FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? $generatedName . '.' . $path_parts['extension'] . '.enc' : $generatedName . '.' . $path_parts['extension'],
+                            'fullname' => (FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? $generatedName . '.' . $path_parts['extension'] . '.enc' : $generatedName . '.' . $path_parts['extension'],
                             'name' => $generatedName,
                             'extension' => $path_parts['extension'],
                             'mimetype' => $mime,
@@ -589,10 +589,10 @@ class File extends Controller
                             'width' => $fileWidth,
                             'height' => $fileHeight,
                             'display_name' => $this->data->displayNames[$file_key],
-                            'encrypted' => (FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? '1' : '0',
+                            'encrypted' => (FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? '1' : '0',
                             'create_UID' => $this->currentUser->uid
                         ],
-                        'table' => FRAMEWORK['FILE']['GLOBAL']['TABLE_NAME'],
+                        'table' => FRAMEWORK['MODULES']['FILE']['GLOBAL']['TABLE_NAME'],
                         'index_name' => 'FID',
                         'write_history' => false,
                         'logUid' => $this->currentUser->uid,
@@ -618,7 +618,7 @@ class File extends Controller
                     'fk_table' => $this->data->fk_table,
                     'doctype' => $this->data->doctype,
                     'db_path' => $doctype_path,
-                    'encrypted' => (FRAMEWORK['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? '1' : '0',
+                    'encrypted' => (FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$this->data->doctype]['ENCRYPT_FILES'] === true) ? '1' : '0',
                     'UID' => $this->currentUser->uid
                 ];
 
@@ -647,9 +647,9 @@ class File extends Controller
         // don't add watermark to thumbnail
         if ($task == 'thumb') return;
 
-        if (!isset(FRAMEWORK['FILE']['DOCTYPES'][$doctype]['WATERMARK'])) return;
+        if (!isset(FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$doctype]['WATERMARK'])) return;
 
-        $watermark = imagecreatefrompng(FRAMEWORK['FILE']['DOCTYPES'][$doctype]['WATERMARK']['IMAGE']);
+        $watermark = imagecreatefrompng(FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$doctype]['WATERMARK']['IMAGE']);
 
         $margin_right = 10;
         $margin_bottom = 10;
@@ -664,7 +664,7 @@ class File extends Controller
             0, 0,
             imagesx($watermark),
             imagesy($watermark),
-            FRAMEWORK['FILE']['DOCTYPES'][$doctype]['WATERMARK']['OPACITY']);
+            FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$doctype]['WATERMARK']['OPACITY']);
     }
 
     /**
@@ -703,7 +703,7 @@ class File extends Controller
      */
     private function saveImageResourceToFileSystem(string $doctype, string $generatedName, string $path, string $extension, string $folder, $imageResourceId, string $mime, string $task): string
     {
-        if (FRAMEWORK['FILE']['DOCTYPES'][$doctype]['ENCRYPT_FILES'] === true) {
+        if (FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$doctype]['ENCRYPT_FILES'] === true) {
             $filename = $generatedName . ($task != 'orig' ? "_" . $task : '') . '.' . $extension . '.enc';
             ob_start();
             switch ($mime) {
@@ -756,7 +756,7 @@ class File extends Controller
     {
 
         // if the file is an image and we want to add a watermark load it with GD
-        if (substr($mime, 0, 5) == 'image' && isset(FRAMEWORK['FILE']['DOCTYPES'][$doctype]['WATERMARK'])) {
+        if (substr($mime, 0, 5) == 'image' && isset(FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$doctype]['WATERMARK'])) {
             $imageResourceId = $this->getImageResourceId($mime, $fileTmpName);
 
             $this->addWatermark($imageResourceId, $doctype, 'orig');
@@ -764,7 +764,7 @@ class File extends Controller
             $filename = $this->saveImageResourceToFileSystem($doctype, $generatedName, $path, $extension, $folder, $imageResourceId, $mime, 'orig');
         } else {
             // if the file is no image save it directly
-            if (FRAMEWORK['FILE']['DOCTYPES'][$doctype]['ENCRYPT_FILES'] === true) {
+            if (FRAMEWORK['MODULES']['FILE']['DOCTYPES'][$doctype]['ENCRYPT_FILES'] === true) {
                 $filename = $generatedName . "." . $extension . '.enc';
                 file_put_contents(
                     $path . DIRECTORY_SEPARATOR . $folder . DIRECTORY_SEPARATOR . $filename,
@@ -787,8 +787,8 @@ class File extends Controller
 
         switch ($task) {
             case 'thumb':
-                $targetWidth = FRAMEWORK['FILE']['RESIZE']['THUMB']['X'];
-                $targetHeight = FRAMEWORK['FILE']['RESIZE']['THUMB']['Y'];
+                $targetWidth = FRAMEWORK['MODULES']['FILE']['RESIZE']['THUMB']['X'];
+                $targetHeight = FRAMEWORK['MODULES']['FILE']['RESIZE']['THUMB']['Y'];
                 if (($width / $height) == ($targetWidth / $targetHeight)) {
                     $src_x = 0;
                     $src_y = 0;
@@ -808,37 +808,37 @@ class File extends Controller
                 break;
             case 's':
                 if ($width > $height) {
-                    $targetWidth = FRAMEWORK['FILE']['RESIZE']['S'];
+                    $targetWidth = FRAMEWORK['MODULES']['FILE']['RESIZE']['S'];
                     $targetHeight = round($targetWidth * $height / $width, 0);
                 } else {
-                    $targetHeight = FRAMEWORK['FILE']['RESIZE']['S'];
+                    $targetHeight = FRAMEWORK['MODULES']['FILE']['RESIZE']['S'];
                     $targetWidth = round($targetHeight * $width / $height, 0);
                 }
                 break;
             case 'm':
                 if ($width > $height) {
-                    $targetWidth = FRAMEWORK['FILE']['RESIZE']['M'];
+                    $targetWidth = FRAMEWORK['MODULES']['FILE']['RESIZE']['M'];
                     $targetHeight = round($targetWidth * $height / $width, 0);
                 } else {
-                    $targetHeight = FRAMEWORK['FILE']['RESIZE']['M'];
+                    $targetHeight = FRAMEWORK['MODULES']['FILE']['RESIZE']['M'];
                     $targetWidth = round($targetHeight * $width / $height, 0);
                 }
                 break;
             case 'l':
                 if ($width > $height) {
-                    $targetWidth = FRAMEWORK['FILE']['RESIZE']['L'];
+                    $targetWidth = FRAMEWORK['MODULES']['FILE']['RESIZE']['L'];
                     $targetHeight = round($targetWidth * $height / $width, 0);
                 } else {
-                    $targetHeight = FRAMEWORK['FILE']['RESIZE']['L'];
+                    $targetHeight = FRAMEWORK['MODULES']['FILE']['RESIZE']['L'];
                     $targetWidth = round($targetHeight * $width / $height, 0);
                 }
                 break;
             case 'xl':
                 if ($width > $height) {
-                    $targetWidth = FRAMEWORK['FILE']['RESIZE']['XL'];
+                    $targetWidth = FRAMEWORK['MODULES']['FILE']['RESIZE']['XL'];
                     $targetHeight = round($targetWidth * $height / $width, 0);
                 } else {
-                    $targetHeight = FRAMEWORK['FILE']['RESIZE']['XL'];
+                    $targetHeight = FRAMEWORK['MODULES']['FILE']['RESIZE']['XL'];
                     $targetWidth = round($targetHeight * $width / $height, 0);
                 }
                 break;
@@ -883,7 +883,7 @@ class File extends Controller
         ini_set("memory_limit", "512M");
 
         // Remove the base64 encoding from our key
-        $encryption_key = base64_decode(FRAMEWORK['FILE']['GLOBAL']['ENCRYPT_KEY']);
+        $encryption_key = base64_decode(FRAMEWORK['MODULES']['FILE']['GLOBAL']['ENCRYPT_KEY']);
         // Generate an initialization vector
         $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length('aes-256-cbc'));
         // Encrypt the data using AES 256 encryption in CBC mode using our encryption key and initialization vector.
@@ -897,7 +897,7 @@ class File extends Controller
     {
         ini_set("memory_limit", "1024M");
         // Remove the base64 encoding from our key
-        $encryption_key = base64_decode(FRAMEWORK['FILE']['GLOBAL']['ENCRYPT_KEY']);
+        $encryption_key = base64_decode(FRAMEWORK['MODULES']['FILE']['GLOBAL']['ENCRYPT_KEY']);
         // To decrypt, split the encrypted data from our IV - our unique separator used was "::"
         //list($encrypted_data, $iv) = explode('::', base64_decode($data), 2);
         list($decrypted_data, $iv) = explode('::', $imagedata, 2);

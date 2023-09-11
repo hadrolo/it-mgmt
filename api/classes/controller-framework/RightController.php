@@ -15,7 +15,6 @@ class Right extends Controller
 
         if ($this->currentUser->fw_mode == 'SSO'){
             // SSO-Mode ---------------------------------------------------------------------------------------------------------------------------------------------------
-            debug('SSO-Mode -----------------------------------------------X', DEBUGTYPE_INFO);
             if ($this->currentUser->usertype == 'SYSADMIN'){
                 foreach ($rights['data'] as $value) {
                     $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
@@ -27,7 +26,7 @@ class Right extends Controller
                     r2.name
                     FROM rights AS r
                     LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
                     LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
                     LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
                     WHERE ru.usertype = :USERTYPE AND r.type = :TYPE
@@ -38,7 +37,7 @@ class Right extends Controller
                     FROM rights AS r
                     LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
                     LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
                     WHERE ru.usertype = :USERTYPE AND r.type != :TYPE
                     ) t
                     GROUP BY name", ['USERTYPE' => $this->currentUser->usertype, 'TYPE' => 'ALIAS']);
@@ -59,10 +58,8 @@ class Right extends Controller
             }
         } elseif ($this->currentUser->fw_mode == 'STANDALONE') {
             // Standalone-Mode --------------------------------------------------------------------------------------------------------------------------------------------
-            debug('Standalone-Mode --------------------------------------------X', DEBUGTYPE_INFO);
             if (isset($this->currentUser->uid)){
                 if ($this->currentUser->usertype == 'SYSADMIN'){
-                    debug('SYSADMIN------------------------------------------');
                     foreach ($rights['data'] as $value) {
                         $this->response->rights[strtolower($value['RGID'])][$value['name']] = true;
                     }
@@ -73,7 +70,7 @@ class Right extends Controller
                     r2.name
                     FROM rights AS r
                     LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
                     LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
                     LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
                     WHERE u.UID = :UID AND r.type = :TYPE
@@ -84,7 +81,7 @@ class Right extends Controller
                     FROM rights AS r
                     LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
                     LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
                     WHERE u.UID = :UID AND r.type != :TYPE
                     ) t
                     GROUP BY name", ['UID' => $this->currentUser->uid, 'TYPE' => 'ALIAS']);
@@ -96,7 +93,7 @@ class Right extends Controller
                     r2.name
                     FROM rights AS r
                     LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
                     LEFT JOIN rights_alias AS ra ON ra.RID_alias = r.RID
                     LEFT JOIN rights AS r2 ON r2.RID = ra.RID_client
                     WHERE ru.usertype = :USERTYPE AND r.type = :TYPE
@@ -107,7 +104,7 @@ class Right extends Controller
                     FROM rights AS r
                     LEFT JOIN rights_groups AS rg ON rg.RGID=r.RGID
                     LEFT JOIN rights_usertypes AS ru ON ru.RID=r.RID
-                    LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
+                    LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS u ON u.usertype = ru.usertype
                     WHERE ru.usertype = :USERTYPE AND r.type != :TYPE
                     ) t
                     GROUP BY name", ['USERTYPE' => $this->currentUser->usertype, 'TYPE' => 'ALIAS']);
@@ -213,7 +210,6 @@ class Right extends Controller
 
         foreach ($src_rights as $row) {
             $this->db->query("INSERT INTO rights_usertypes (RID, usertype) VALUES (?, ?)", [$row['RID'], $this->data->dst_usertype]);
-            debug("INSERT INTO rights_usertypes (RID, usertype) VALUES (" . $row['RID'] . ", " . $this->data->dst_usertype . ")", DEBUGTYPE_DB_QUERY);
         }
     }
 
@@ -227,7 +223,6 @@ class Right extends Controller
         $src_rights = $this->db->query("SELECT RID FROM rights")['data'];
         foreach ($src_rights as $row) {
             $this->db->query("INSERT INTO rights_usertypes (RID, usertype) VALUES (?, ?)", [$row['RID'], $this->data->usertype]);
-            debug("INSERT INTO rights_usertypes (RID, usertype) VALUES (" . $row['RID'] . ", " . $this->data->usertype . ")", DEBUGTYPE_DB_QUERY);
         }
     }
 
@@ -242,7 +237,7 @@ class Right extends Controller
                 uu.firstname,
                 uu.lastname
                 FROM " . FRAMEWORK['AUTH']['MODULES']['APP']['TABLE_NAME'] . " AS u
-                LEFT JOIN " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['DB'] . "." . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " AS uu ON uu.UID=u.UID ORDER BY uu.lastname");
+                LEFT JOIN " . FRAMEWORK['MODULES']['AUTH']['DB'] . "." . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " AS uu ON uu.UID=u.UID ORDER BY uu.lastname");
         } else {
             // OTHER
             $this->response->users = $this->db->query("SELECT
@@ -250,7 +245,7 @@ class Right extends Controller
                 username,
                 firstname,
                 lastname
-                FROM " . FRAMEWORK['AUTH']['MODULES']['DEFAULT']['TABLE_NAME'] . " ORDER BY lastname");
+                FROM " . FRAMEWORK['MODULES']['AUTH']['TABLE_NAME'] . " ORDER BY lastname");
         }
     }
 
@@ -277,7 +272,7 @@ class Right extends Controller
     public function loadRightAliases()
     {
         $allowPermanent = '';
-        foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right) {
+        foreach (FRAMEWORK['MODULES']['RIGHT']['PERMANENT_ALLOWED_API'] as $right) {
             $allowPermanent .= " AND NOT (class='" . explode('/', $right)[0] . "' and method='" . explode('/', $right)[1] . "')";
         }
 
@@ -445,7 +440,7 @@ class Right extends Controller
 
         foreach ($allRights as $row) {
             $allowPermanent = false;
-            foreach (FRAMEWORK['AUTH']['PERMANENT_ALLOWED_API'] as $right_check) {
+            foreach (FRAMEWORK['MODULES']['RIGHT']['PERMANENT_ALLOWED_API'] as $right_check) {
                 $x = explode('/', $right_check);
                 if ($row['class'] == $x[0] && $row['method'] == $x[1]) {
                     $allowPermanent = true;
@@ -478,7 +473,6 @@ class Right extends Controller
 
         /* activation from alias */
         foreach ($out as $i => $value){
-/*            debug($value, DEBUGTYPE_WARNING);*/
             foreach ($value['rights'] as $row){
                 if ($row['type']=='ALIAS' && isset($row['assigned'])){
                     $aliases = $this->db->query("SELECT ra.RID_alias, ra.RID_client, r.RGID, r.name FROM rights_alias AS ra
@@ -490,9 +484,7 @@ class Right extends Controller
                             'USERTYPE' => $this->data->usertype
                         ])['data'];
                     foreach ($aliases as $value){
-                        debug($value, DEBUGTYPE_SUCCESS);
                         $found_key = array_search($value['RID_client'], array_column($out[$i]['rights'], 'RID'));
-                        debug($out[$i]['rights'][$found_key], DEBUGTYPE_WARNING);
                         $out[$i]['rights'][$found_key]['allowFromAlias'] = true;
                         $out[$i]['rights'][$found_key]['aliasBase'] = $value['RGID'].'/'.$value['name'];
                     }

@@ -17,7 +17,7 @@ class Table extends Controller {
             $db = strtoupper($parts[0]);
             $data->config->dataConfig->tableName = $parts[1];
         } else {
-            $db = 'DEFAULT';
+            $db = 'APP';
         }
         $this->dbName = DB[$db]['DB_NAME'];
         $database = Database::create($db);
