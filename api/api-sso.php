@@ -128,8 +128,6 @@ if ($database->getErrors()) {
                         }
                         $user->usertype = $usertype;
 
-                        debug($user, DEBUGTYPE_WARNING);
-
                         // PERMANENT_ALLOWED_API from config-sso.inc.php
                         foreach (FRAMEWORK['MODULES']['RIGHT']['PERMANENT_ALLOWED_API'] as $right){
                             $x=explode('/', $right);
@@ -191,7 +189,7 @@ if ($database->getErrors()) {
                             $object = new $class($database, $request->data, $request->componentName, $request->methodName, $user);
                             $object->$method();
                             $response = $object->getResponse();
-                            $response->overrideUserType = $user->usertype;
+                            if(is_object($response)) $response->overrideUserType = $user->usertype;
                         }else{
                             debug('No access rights defined - Usertype "'.$usertype.'" - method "' . $method . '" in class "' . $class . '"', DEBUGTYPE_ERROR);
                             $response = [];

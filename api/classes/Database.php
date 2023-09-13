@@ -1,5 +1,8 @@
 <?php
 
+namespace classes;
+use Log;
+
 /**
  * Database class using PDO.
  *
@@ -269,8 +272,7 @@ class Database
 
             if (is_null($this->errors)) $this->errors = [];
 
-            if ((isset($request_info['universetype']) && strtoupper($request_info['universetype']) == 'SYSADMIN') ||
-                (isset($request_info['usertype']) && strtoupper($request_info['usertype']) == 'SYSADMIN')) {
+            if (isset($request_info['user']->usertype) && strtoupper($request_info['user']->usertype) == 'SYSADMIN') {
                 $error_code = $result['message'];
             } else {
                 $error_code = 'FW.ERRORS.DB';
@@ -288,7 +290,7 @@ class Database
             }
 
             $this->writeLog(
-                $request_info['currentUID'],
+                $request_info['user']->uid,
                 'exception',
                 json_encode($result['message']),
                 $request_info['component'],
@@ -348,7 +350,7 @@ class Database
 
         // write to history
         if (count($updates) > 0 && $settings['write_history'] === true) {
-            $this->query("INSERT INTO " . FRAMEWORK['HISTORY']['TABLE_NAME'] . " (UID, FK_ID, FK_name, FK_table, created, type, data) VALUES (?, ?, ?, ?, NOW(), ?, ?)",
+            $this->query("INSERT INTO " . FRAMEWORK['MODULES']['HISTORY']['TABLE_NAME'] . " (UID, FK_ID, FK_name, FK_table, created, type, data) VALUES (?, ?, ?, ?, NOW(), ?, ?)",
                 [$settings['logUid'], $settings['index_value'], $settings['index_name'], $settings['table'], 'update', json_encode($updates)]
             );
         }
@@ -399,7 +401,7 @@ class Database
                 }
 
                 // write to history
-                $this->query("INSERT INTO " . FRAMEWORK['HISTORY']['TABLE_NAME'] . " (UID, FK_ID, FK_name, FK_table, created, type, data) VALUES (?, ?, ?, ?, NOW(), ?, ?)",
+                $this->query("INSERT INTO " . FRAMEWORK['MODULES']['HISTORY']['TABLE_NAME'] . " (UID, FK_ID, FK_name, FK_table, created, type, data) VALUES (?, ?, ?, ?, NOW(), ?, ?)",
                     [$settings['logUid'], $lastInsertId, $settings['index_name'], $settings['table'], 'insert', json_encode($inserts)]
                 );
             }
@@ -436,7 +438,7 @@ class Database
             'index_name' => $index_name,
             'write_history' => $write_history,
             'index_value' => $index_value,
-            'logUid' => $request_info['currentUID'],
+            'logUid' => $request_info['user']->uid,
             'logComponent' => $request_info['component'],
             'logMethod' => $request_info['method'],
         ]);
@@ -469,8 +471,8 @@ class Database
 
             if (!isset($result['error'])) {
                 // write to history
-                if ($settings['write_history'] === true) {
-                    $this->query("INSERT INTO " . FRAMEWORK['HISTORY']['TABLE_NAME'] . " (UID, FK_ID, FK_name, FK_table, created, type, data) VALUES (?, ?, ?, ?, NOW(), ?, ?)",
+                if (isset($settings['write_history']) && $settings['write_history'] === true) {
+                    $this->query("INSERT INTO " . FRAMEWORK['MODULES']['HISTORY']['TABLE_NAME'] . " (UID, FK_ID, FK_name, FK_table, created, type, data) VALUES (?, ?, ?, ?, NOW(), ?, ?)",
                         [$settings['logUid'], $settings['index_value'], $settings['index_name'], $settings['table'], 'delete', json_encode($deletes)]
                     );
                 }
